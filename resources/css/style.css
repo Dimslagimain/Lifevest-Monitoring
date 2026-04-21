@@ -614,6 +614,43 @@ body {
     font-size: 0.8rem;
 }
 
+/* Icon Buttons */
+.btn-icon {
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-subtle);
+    border-radius: 10px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    text-decoration: none;
+}
+
+.btn-icon:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+    border-color: var(--border);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-icon svg {
+    transition: transform var(--transition-fast);
+}
+
+.btn-icon:hover svg {
+    transform: scale(1.1);
+}
+
+[data-theme="light"] .btn-icon {
+    background: rgba(15, 23, 42, 0.05);
+}
+
 /* ========================================
    PREMIUM FORMS & MODALS SYSTEM
    ======================================== */

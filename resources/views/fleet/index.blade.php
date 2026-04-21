@@ -113,16 +113,16 @@
                             </td>
                             <td class="fleet-td text-right">
                                 <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
-                                    <a href="{{ route('fleet.edit', $aircraft->id) }}" class="btn-icon" title="Edit Aircraft">
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                    <a href="{{ route('fleet.edit', $aircraft->id) }}" class="btn btn-icon" title="Edit Aircraft">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                                     </a>
                                     <form action="{{ route('fleet.destroy', $aircraft->id) }}" method="POST"
                                         style="display: inline-block;"
                                         onsubmit="return confirm('Type DELETE to confirm removal of {{ $aircraft->registration }}?');">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn-icon" style="color: var(--danger);" title="Delete Aircraft">
-                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                        <button type="submit" class="btn btn-icon" style="color: var(--danger);" title="Delete Aircraft">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                                         </button>
                                     </form>
                                 </div>
@@ -155,16 +155,20 @@
                                 <span class="status-badge active">{{ $airline->aircraft_count }} aircraft</span>
                             </td>
                             <td class="fleet-td text-right">
-                                <a href="{{ route('airlines.edit', $airline->id) }}" class="btn btn-sm btn-secondary"
-                                    style="display:inline-flex; height:32px; padding: 0 12px; margin-right: 0.5rem;">Edit</a>
-                                <form action="{{ route('airlines.destroy', $airline->id) }}" method="POST"
-                                    style="display: inline-block;"
-                                    onsubmit="return confirm('Are you sure you want to delete {{ $airline->name }}?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger"
-                                        style="background: var(--danger); color: white; height:32px; padding: 0 12px;">Delete</button>
-                                </form>
+                                <div style="display: flex; gap: 0.75rem; justify-content: flex-end; align-items: center;">
+                                    <a href="{{ route('airlines.edit', $airline->id) }}" class="btn btn-icon" title="Edit Airline">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                    </a>
+                                    <form action="{{ route('airlines.destroy', $airline->id) }}" method="POST"
+                                        style="display: inline-block;"
+                                        onsubmit="return confirm('Type DELETE to confirm removal of {{ $airline->name }}?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-icon" style="color: var(--danger);" title="Delete Airline">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                     @endforeach

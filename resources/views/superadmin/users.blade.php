@@ -157,22 +157,6 @@
     .data-table tr:hover {
         background: rgba(255, 255, 255, 0.01);
     }
-    .btn-icon {
-        width: 38px; height: 38px; padding: 0;
-        display: flex; align-items: center; justify-content: center;
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid var(--border-subtle);
-        border-radius: 10px;
-        color: var(--text-secondary);
-        cursor: pointer;
-        transition: all var(--transition-fast);
-    }
-    .btn-icon:hover {
-        background: var(--bg-hover);
-        color: var(--text-primary);
-        border-color: var(--border);
-        transform: translateY(-1px);
-    }
 </style>
 
 <script>

@@ -35,24 +35,23 @@ class AircraftController extends Controller
         // Determine template from DB layout
         $template = 'aircraft.' . ($aircraft->layout ?? 'show');
 
-        // Get last update time for this aircraft
-        $lastUpdate = Seat::where('registration', $registration)->max('updated_at');
-
-        // Calculate life vest quantities per category (by class_type)
-        $allSeats = Seat::where('registration', $registration)->get();
+        // Reuse the collection for stats to avoid redundant DB queries
         $today = now()->startOfDay();
 
-        $adultSeats = $allSeats->filter(fn($s) => in_array($s->class_type, ['business', 'economy', 'spare-pax']));
-        $crewSeats = $allSeats->filter(fn($s) => in_array($s->class_type, ['cockpit', 'attendant']));
-        $infantSeats = $allSeats->filter(fn($s) => $s->class_type === 'spare-inf');
+        $adultSeats = $seats->filter(fn($s) => in_array($s->class_type, ['business', 'economy', 'spare-pax']));
+        $crewSeats = $seats->filter(fn($s) => in_array($s->class_type, ['cockpit', 'attendant']));
+        $infantSeats = $seats->filter(fn($s) => $s->class_type === 'spare-inf');
 
         $qtyAdult = $adultSeats->count();
         $qtyCrew = $crewSeats->count();
         $qtyInfant = $infantSeats->count();
 
-        $expAdult = $adultSeats->filter(fn($s) => $s->expiry_date && \Carbon\Carbon::parse($s->expiry_date)->lt($today))->count();
-        $expCrew = $crewSeats->filter(fn($s) => $s->expiry_date && \Carbon\Carbon::parse($s->expiry_date)->lt($today))->count();
-        $expInfant = $infantSeats->filter(fn($s) => $s->expiry_date && \Carbon\Carbon::parse($s->expiry_date)->lt($today))->count();
+        $expAdult = $adultSeats->filter(fn($s) => $s->expiry_date && $s->expiry_date->lt($today))->count();
+        $expCrew = $crewSeats->filter(fn($s) => $s->expiry_date && $s->expiry_date->lt($today))->count();
+        $expInfant = $infantSeats->filter(fn($s) => $s->expiry_date && $s->expiry_date->lt($today))->count();
+
+        // Get last update time from the collection
+        $lastUpdate = $seats->max('updated_at');
 
         return view($template, [
             'registration' => $registration,

@@ -242,10 +242,8 @@ function handleRowClick(e) {
     const row = e.currentTarget.dataset.row;
     const seatsInRow = document.querySelectorAll(`.seat-card[data-row="${row}"]`);
 
-
     seatsInRow.forEach(seat => {
-        state.selectedSeats.add(seat.dataset.seat);
-        seat.classList.add('selected');
+        selectSeat(seat.dataset.seat);
     });
 
     updateUI();
@@ -260,10 +258,7 @@ function handleColumnClick(e) {
     const seatsInCol = section.querySelectorAll(`.seat-card[data-col="${col}"]`);
 
     seatsInCol.forEach(seat => {
-        if (!state.selectedSeats.has(seat.dataset.seat)) {
-            state.selectedSeats.add(seat.dataset.seat);
-            seat.classList.add('selected');
-        }
+        selectSeat(seat.dataset.seat);
     });
 
     updateUI();
@@ -450,8 +445,7 @@ function handleKeyboard(e) {
         e.preventDefault();
         // Select all visible seats
         document.querySelectorAll('.seat-card').forEach(seat => {
-            state.selectedSeats.add(seat.dataset.seat);
-            seat.classList.add('selected');
+            selectSeat(seat.dataset.seat);
         });
         updateUI();
         showToast('All seats selected', 'success');
@@ -620,6 +614,8 @@ function handleAddSpare(e) {
     const newCard = document.createElement('div');
     newCard.className = 'seat-card spare-card status-no-data';
     newCard.dataset.seat = newSeatId;
+    newCard.dataset.row = newSeatId; // STANDARDIZATION: Use seat-id as row for spares
+    newCard.dataset.col = newSeatId;
     newCard.innerHTML = `
         <button type="button" class="btn-delete-spare" title="Delete">&times;</button>
         <div class="seat-id">${newNum}</div>

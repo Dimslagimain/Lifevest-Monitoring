@@ -351,11 +351,11 @@
                     <span style="color: purple; font-weight: 600; display: flex; align-items: center; gap: 0.25rem;">🟣 {{ $aExp }}</span>
                 </div>
 
-                <div style="width: 100%; height: 6px; background: var(--bg); border-radius: 3px; display: flex; overflow: hidden; margin-top: auto;">
+                <div style="width: 100%; height: 8px; background: rgba(0,0,0,0.1); border-radius: 10px; display: flex; overflow: hidden; margin-top: auto; box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);">
                     @if($aTotal > 0)
-                        <div style="width: {{ ($aSafe/$aTotal)*100 }}%; background: var(--success); height: 100%;"></div>
-                        <div style="width: {{ ($aWarn/$aTotal)*100 }}%; background: var(--warning); height: 100%;"></div>
-                        <div style="width: {{ (($aCrit+$aExp)/$aTotal)*100 }}%; background: var(--danger); height: 100%;"></div>
+                        <div style="width: {{ ($aSafe/$aTotal)*100 }}%; background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, var(--success) 50%, rgba(0,0,0,0.1) 100%); height: 100%;"></div>
+                        <div style="width: {{ ($aWarn/$aTotal)*100 }}%; background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, var(--warning) 50%, rgba(0,0,0,0.1) 100%); height: 100%;"></div>
+                        <div style="width: {{ (($aCrit+$aExp)/$aTotal)*100 }}%; background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, var(--danger) 50%, rgba(0,0,0,0.1) 100%); height: 100%;"></div>
                     @endif
                 </div>
             </div>

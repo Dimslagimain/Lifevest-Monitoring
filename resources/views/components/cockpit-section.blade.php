@@ -11,7 +11,7 @@
                 $dateFormat = isset($isPdfExport) && $isPdfExport ? 'd M Y' : 'j M Y';
                 $expiryDate = $seat?->expiry_date?->format($dateFormat) ?? 'Click to set';
             @endphp
-            <div class="seat-card cockpit-seat status-{{ $status }}" data-seat="{{ $seatId }}">
+            <div class="seat-card cockpit-seat status-{{ $status }}" data-seat="{{ $seatId }}" data-row="Cockpit">
                 <div class="seat-label">{{ ucfirst(str_replace(['1', '2'], [' 1', ' 2'], $seatId)) }}</div>
                 <div class="seat-date" data-date="{{ $seat?->expiry_date?->format('Y-m-d') ?? '' }}">
                     {{ $expiryDate }}

@@ -62,6 +62,39 @@
     --transition-normal: 220ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* --- GLOBAL SCROLLBAR --- */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.2); 
+    border-radius: 20px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+    transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary);
+    border: 2px solid transparent;
+    background-clip: content-box;
+}
+
+[data-theme="light"] ::-webkit-scrollbar-thumb {
+    background: rgba(15, 23, 42, 0.15);
+    background-clip: content-box;
+}
+
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover {
+    background: var(--primary);
+    background-clip: content-box;
+}
 
 /* --- LIGHT THEME --- */
 [data-theme="light"] {
@@ -667,6 +700,10 @@ body {
     justify-content: center;
     padding: var(--spacing-md);
     animation: fadeIn 0.3s ease-out;
+}
+
+.modal-overlay-premium.show {
+    display: flex;
 }
 
 .modal-content-premium {

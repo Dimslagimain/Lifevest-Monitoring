@@ -28,8 +28,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Check if we're on aircraft page
     if (!window.AIRCRAFT_CONFIG) return;
 
-    // Check if user is admin
-    const isAdmin = window.AIRCRAFT_CONFIG.isAdmin === true;
+    // Check if user is admin (be resilient to truthy values)
+    const isAdmin = window.AIRCRAFT_CONFIG.isAdmin == true || window.AIRCRAFT_CONFIG.isAdmin === 'true';
 
     // Get elements
     elements.btnSetDate = document.getElementById('btnSetDate');

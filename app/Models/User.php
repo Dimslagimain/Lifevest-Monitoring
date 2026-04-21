@@ -36,7 +36,7 @@ class User extends Authenticatable
      */
     public function isSuperAdmin(): bool
     {
-        return $this->role === self::ROLE_SUPERADMIN;
+        return strtolower(trim($this->role)) === self::ROLE_SUPERADMIN;
     }
 
     /**
@@ -44,7 +44,8 @@ class User extends Authenticatable
      */
     public function isAdmin(): bool
     {
-        return in_array($this->role, [self::ROLE_SUPERADMIN, self::ROLE_ADMIN]);
+        $role = strtolower(trim($this->role));
+        return in_array($role, [self::ROLE_SUPERADMIN, self::ROLE_ADMIN]);
     }
 
     /**

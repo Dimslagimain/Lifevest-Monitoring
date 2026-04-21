@@ -6,8 +6,8 @@
     <h2>Attendant D11</h2>
     <div class="seat-grid">
         <div class="grid-header grid-row-2-2">
-            <span class="col-label col-header" data-col="att/d11-LL">LL</span>
-            <span class="col-label col-header" data-col="att/d11-LR">LR</span>
+            <span class="col-label col-header" data-col="att/d11-LL" data-row="D11">LL</span>
+            <span class="col-label col-header" data-col="att/d11-LR" data-row="D11">LR</span>
             <span class="row-label"></span>
             <span class="seat-placeholder"></span>
             <span class="seat-placeholder"></span>
@@ -20,14 +20,14 @@
                     $status = $seat?->status ?? 'no-data';
                     $expiryDate = $seat?->expiry_date?->format($dateFormat) ?? '-';
                 @endphp
-                <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-col="{{ $col }}">
+                <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-row="D11" data-col="{{ $col }}">
                     <div class="seat-id">D11-{{ $col }}</div>
                     <div class="seat-date" data-date="{{ $seat?->expiry_date?->format('Y-m-d') ?? '' }}">
                         {{ $expiryDate }}
                     </div>
                 </div>
             @endforeach
-            <div class="row-number">D11</div>
+            <div class="row-number" data-row="D11">D11</div>
             <div class="seat-placeholder"></div>
             <div class="seat-placeholder"></div>
         </div>
@@ -98,11 +98,11 @@
     <h2>Attendant D12 & D22</h2>
     <div class="seat-grid">
         <div class="grid-header grid-row-2-2">
-            <span class="col-label col-header" data-col="att/d12-LL">LL</span>
-            <span class="col-label col-header" data-col="att/d12-LR">LR</span>
+            <span class="col-label col-header" data-col="att/d12-LL" data-row="D12/D22">LL</span>
+            <span class="col-label col-header" data-col="att/d12-LR" data-row="D12/D22">LR</span>
             <span class="row-label"></span>
-            <span class="col-label col-header" data-col="att/d22-RL">RL</span>
-            <span class="col-label col-header" data-col="att/d22-RR">RR</span>
+            <span class="col-label col-header" data-col="att/d22-RL" data-row="D12/D22">RL</span>
+            <span class="col-label col-header" data-col="att/d22-RR" data-row="D12/D22">RR</span>
         </div>
         <div class="seat-row grid-row-2-2">
             @foreach(['LL', 'LR'] as $col)
@@ -112,14 +112,14 @@
                     $status = $seat?->status ?? 'no-data';
                     $expiryDate = $seat?->expiry_date?->format($dateFormat) ?? '-';
                 @endphp
-                <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-col="{{ $col }}">
+                <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-row="D12/D22" data-col="{{ $col }}">
                     <div class="seat-id">D12-{{ $col }}</div>
                     <div class="seat-date" data-date="{{ $seat?->expiry_date?->format('Y-m-d') ?? '' }}">
                         {{ $expiryDate }}
                     </div>
                 </div>
             @endforeach
-            <div class="row-number">D12/D22</div>
+            <div class="row-number" data-row="D12/D22">D12/D22</div>
             @foreach(['RL', 'RR'] as $col)
                 @php
                     $seatId = 'att/d22-' . $col;
@@ -127,7 +127,7 @@
                     $status = $seat?->status ?? 'no-data';
                     $expiryDate = $seat?->expiry_date?->format($dateFormat) ?? '-';
                 @endphp
-                <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-col="{{ $col }}">
+                <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-row="D12/D22" data-col="{{ $col }}">
                     <div class="seat-id">D22-{{ $col }}</div>
                     <div class="seat-date" data-date="{{ $seat?->expiry_date?->format('Y-m-d') ?? '' }}">
                         {{ $expiryDate }}

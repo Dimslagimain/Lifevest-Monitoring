@@ -6,11 +6,11 @@
         <h2>Attendant D11 & D21</h2>
         <div class="seat-grid">
             <div class="grid-header grid-row-2-2">
-                <span class="col-label col-header" data-col="att/d11-LL1">LL</span>
-                <span class="col-label col-header" data-col="att/d11-LR">LR</span>
+                <span class="col-label col-header" data-col="att/d11-LL1" data-row="D11/D21">LL</span>
+                <span class="col-label col-header" data-col="att/d11-LR" data-row="D11/D21">LR</span>
                 <span class="row-label"></span>
                 <span class="seat-placeholder"></span>
-                <span class="col-label col-header" data-col="att/d21-R">R</span>
+                <span class="col-label col-header" data-col="att/d21-R" data-row="D11/D21">R</span>
             </div>
             <!-- Row 1: D11-LL1 only, D21-R -->
             <div class="seat-row grid-row-2-2">
@@ -20,14 +20,14 @@
                     $status = $seat?->status ?? 'no-data';
                     $expiryDate = $seat?->expiry_date?->format($dateFormat) ?? '-';
                 @endphp
-                <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-col="LL1">
+                <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-row="D11/D21" data-col="LL1">
                     <div class="seat-id">D11-LL1</div>
                     <div class="seat-date" data-date="{{ $seat?->expiry_date?->format('Y-m-d') ?? '' }}">
                         {{ $expiryDate }}
                     </div>
                 </div>
                 <div class="seat-placeholder"></div>
-                <div class="row-number">D11/D21</div>
+                <div class="row-number" data-row="D11/D21">D11/D21</div>
                 <div class="seat-placeholder"></div>
                 @php
                     $seatId = 'att/d21-R';
@@ -50,7 +50,7 @@
                     $status = $seat?->status ?? 'no-data';
                     $expiryDate = $seat?->expiry_date?->format($dateFormat) ?? '-';
                 @endphp
-                <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-col="LL2">
+                <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-row="D11/D21" data-col="LL2">
                     <div class="seat-id">D11-LL2</div>
                     <div class="seat-date" data-date="{{ $seat?->expiry_date?->format('Y-m-d') ?? '' }}">
                         {{ $expiryDate }}
@@ -62,7 +62,7 @@
                     $status = $seat?->status ?? 'no-data';
                     $expiryDate = $seat?->expiry_date?->format($dateFormat) ?? '-';
                 @endphp
-                <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-col="LR">
+                <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-row="D11/D21" data-col="LR">
                     <div class="seat-id">D11-LR</div>
                     <div class="seat-date" data-date="{{ $seat?->expiry_date?->format('Y-m-d') ?? '' }}">
                         {{ $expiryDate }}
@@ -139,11 +139,11 @@
         <h2>Attendant D12 & D22</h2>
         <div class="seat-grid">
             <div class="grid-header grid-row-2-2">
-                <span class="col-label col-header" data-col="att/d12-L">L</span>
+                <span class="col-label col-header" data-col="att/d12-L" data-row="D12/D22">L</span>
                 <span class="seat-placeholder"></span>
                 <span class="row-label"></span>
                 <span class="seat-placeholder"></span>
-                <span class="col-label col-header" data-col="att/d22-R">R</span>
+                <span class="col-label col-header" data-col="att/d22-R" data-row="D12/D22">R</span>
             </div>
             <div class="seat-row grid-row-2-2">
                 @php
@@ -159,7 +159,7 @@
                     </div>
                 </div>
                 <div class="seat-placeholder"></div>
-                <div class="row-number">D12/D22</div>
+                <div class="row-number" data-row="D12/D22">D12/D22</div>
                 <div class="seat-placeholder"></div>
                 @php
                     $seatId = 'att/d22-R';
@@ -222,11 +222,11 @@
         <h2>Attendant D13 & D23</h2>
         <div class="seat-grid">
             <div class="grid-header grid-row-2-2">
-                <span class="col-label col-header" data-col="att/d13-L">L</span>
+                <span class="col-label col-header" data-col="att/d13-L" data-row="D13/D23">L</span>
                 <span class="seat-placeholder"></span>
                 <span class="row-label"></span>
                 <span class="seat-placeholder"></span>
-                <span class="col-label col-header" data-col="att/d23-R">R</span>
+                <span class="col-label col-header" data-col="att/d23-R" data-row="D13/D23">R</span>
             </div>
             <div class="seat-row grid-row-2-2">
                 @php
@@ -242,7 +242,7 @@
                     </div>
                 </div>
                 <div class="seat-placeholder"></div>
-                <div class="row-number">D13/D23</div>
+                <div class="row-number" data-row="D13/D23">D13/D23</div>
                 <div class="seat-placeholder"></div>
                 @php
                     $seatId = 'att/d23-R';

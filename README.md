@@ -43,12 +43,21 @@ npm run dev
 
 Berikut adalah folder dan file utama yang mengelola logika dan tampilan sistem ini:
 
-- **config/aircraft_class_rows.php**: Pusat pengaturan baris bisnis dan ekonomi untuk setiap tipe pesawat.
-- **app/Http/Controllers/**: Berisi logika utama sistem untuk pengolahan data dan laporan.
-- **resources/views/fleet/**: Halaman untuk mengelola data armada dan maskapai (Fleet Manager).
-- **resources/views/aircraft/partials/**: Konfigurasi khusus untuk lebih dari 16 layout kursi pesawat yang berbeda.
-- **resources/css/style.css**: Sistem desain utama (Design System) yang mengelola warna dan gaya visual.
-- **resources/js/app.js**: Logika untuk interaksi seat map seperti pemilihan kursi dan pencarian.
+```
+lifevest-laravel/
+├── app/
+│   └── Http/Controllers/              # Logika utama pengolah data & laporan
+├── config/
+│   └── aircraft_class_rows.php        # Pusat pengaturan baris bisnis/ekonomi
+├── resources/
+│   ├── css/
+│   │   └── style.css                  # Desain sistem & warna (Premium UI)
+│   ├── js/
+│   │   └── app.js                     # Logika interaksi & pencarian kursi
+│   └── views/
+│       ├── aircraft/partials/         # Konfigurasi 16+ layout kursi pesawat
+│       └── fleet/                     # Halaman pengelolaan armada & maskapai
+```
 
 ---
 

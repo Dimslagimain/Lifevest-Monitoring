@@ -1,17 +1,24 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="header-section">
-        <h2 class="form-header" style="text-align: left; margin:0;">Fleet Manager</h2>
-        @if($tab === 'aircraft')
-            <a href="{{ route('fleet.create') }}" class="btn btn-primary">
-                + Add New Aircraft
-            </a>
-        @else
-            <a href="{{ route('airlines.create') }}" class="btn btn-primary">
-                + Add New Airline
-            </a>
-        @endif
+    <div class="header-section" style="background: var(--bg-card); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm); margin-bottom: 2rem;">
+        <div>
+            <h2 class="form-header" style="text-align: left; margin: 0; font-weight: 800; letter-spacing: -0.03em;">Fleet Manager</h2>
+            <p style="margin-top: 0.25rem; opacity: 0.7; font-size: 0.9rem;">Management of aircraft and airlines system-wide.</p>
+        </div>
+        <div class="header-actions">
+            @if($tab === 'aircraft')
+                <a href="{{ route('fleet.create') }}" class="btn btn-primary" style="padding: 0.7rem 1.4rem; font-weight: 700;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right: 4px;"><path d="M12 5v14M5 12h14"/></svg>
+                    New Aircraft
+                </a>
+            @else
+                <a href="{{ route('airlines.create') }}" class="btn btn-primary" style="padding: 0.7rem 1.4rem; font-weight: 700;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right: 4px;"><path d="M12 5v14M5 12h14"/></svg>
+                    New Airline
+                </a>
+            @endif
+        </div>
     </div>
 
     @if(session('success'))
@@ -28,15 +35,17 @@
     @endif
 
     <!-- Tab Navigation -->
-    <div class="tab-nav" style="display: flex; gap: 0; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border);">
+    <div class="tab-nav" style="display: flex; gap: 4px; margin-bottom: 2rem; background: rgba(0,0,0,0.1); padding: 4px; border-radius: 12px; width: fit-content; border: 1px solid var(--border-subtle);">
         <a href="{{ route('fleet.index', ['tab' => 'aircraft']) }}"
             class="tab-link {{ $tab === 'aircraft' ? 'active' : '' }}"
-            style="padding: 0.65rem 1.25rem; font-weight: 600; font-size: 0.9rem; text-decoration: none; color: {{ $tab === 'aircraft' ? 'var(--primary)' : 'var(--text-secondary)' }}; border-bottom: 2px solid {{ $tab === 'aircraft' ? 'var(--primary)' : 'transparent' }}; margin-bottom: -1px; transition: all 0.2s;">
+            style="padding: 0.6rem 1.75rem; border-radius: 9px; font-weight: 700; font-size: 0.85rem; text-decoration: none; text-transform: uppercase; letter-spacing: 0.05em; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            {{ $tab === 'aircraft' ? 'background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);' : 'color: var(--text-muted);' }};">
             Aircraft ({{ $fleet->count() }})
         </a>
         <a href="{{ route('fleet.index', ['tab' => 'airlines']) }}"
             class="tab-link {{ $tab === 'airlines' ? 'active' : '' }}"
-            style="padding: 0.65rem 1.25rem; font-weight: 600; font-size: 0.9rem; text-decoration: none; color: {{ $tab === 'airlines' ? 'var(--primary)' : 'var(--text-secondary)' }}; border-bottom: 2px solid {{ $tab === 'airlines' ? 'var(--primary)' : 'transparent' }}; margin-bottom: -1px; transition: all 0.2s;">
+            style="padding: 0.6rem 1.75rem; border-radius: 9px; font-weight: 700; font-size: 0.85rem; text-decoration: none; text-transform: uppercase; letter-spacing: 0.05em; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            {{ $tab === 'airlines' ? 'background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);' : 'color: var(--text-muted);' }};">
             Airlines ({{ $airlines->count() }})
         </a>
     </div>
@@ -103,16 +112,20 @@
                                 </span>
                             </td>
                             <td class="fleet-td text-right">
-                                <a href="{{ route('fleet.edit', $aircraft->id) }}" class="btn btn-sm btn-secondary"
-                                    style="display:inline-flex; height:32px; padding: 0 12px; margin-right: 0.5rem;">Edit</a>
-                                <form action="{{ route('fleet.destroy', $aircraft->id) }}" method="POST"
-                                    style="display: inline-block;"
-                                    onsubmit="return confirm('Are you sure you want to delete {{ $aircraft->registration }}?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger"
-                                        style="background: var(--danger); color: white; height:32px; padding: 0 12px;">Delete</button>
-                                </form>
+                                <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                                    <a href="{{ route('fleet.edit', $aircraft->id) }}" class="btn-icon" title="Edit Aircraft">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                    </a>
+                                    <form action="{{ route('fleet.destroy', $aircraft->id) }}" method="POST"
+                                        style="display: inline-block;"
+                                        onsubmit="return confirm('Type DELETE to confirm removal of {{ $aircraft->registration }}?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn-icon" style="color: var(--danger);" title="Delete Aircraft">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                     @endforeach

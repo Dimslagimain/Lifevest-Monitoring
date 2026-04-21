@@ -2,15 +2,15 @@
 
 @section('content')
 <div class="dashboard-container">
-    <div class="header-section">
+    <div class="header-section" style="background: var(--bg-card); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm);">
         <div>
-            <h1 class="page-title">User Accounts Management</h1>
-            <p class="page-subtitle">Manage system access, roles, and user permissions.</p>
+            <h1 class="page-title" style="margin: 0; font-weight: 800; letter-spacing: -0.03em;">User Accounts Management</h1>
+            <p class="page-subtitle" style="margin-top: 0.5rem; opacity: 0.8;">Manage system access, roles, and user permissions.</p>
         </div>
         <div class="header-actions">
-            <button class="btn btn-primary" onclick="openAddModal()">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-                Add User
+            <button class="btn btn-primary btn-lg" onclick="openAddModal()" style="padding: 0.8rem 1.5rem; font-weight: 700;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px;"><path d="M12 5v14M5 12h14"/></svg>
+                Add User Account
             </button>
         </div>
     </div>
@@ -87,119 +87,91 @@
 </div>
 
 <!-- Add/Edit Modal -->
-<div id="userModal" class="modal-overlay">
-    <div class="modal-content">
-        <div class="modal-header">
+<div id="userModal" class="modal-overlay-premium">
+    <div class="modal-content-premium">
+        <div class="modal-header-premium">
             <h2 id="modalTitle">Add New User</h2>
-            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <button class="modal-close-premium" onclick="closeModal()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </button>
         </div>
-        <form id="userForm" method="POST">
+        <form id="userForm" method="POST" style="padding: var(--spacing-lg);">
             @csrf
             <div id="methodField"></div>
-            <div class="form-group">
+            
+            <div class="form-group-premium">
                 <label>Full Name</label>
-                <input type="text" name="name" id="userName" required placeholder="User's full name">
+                <input type="text" name="name" id="userName" class="input-premium" required placeholder="User's full name">
             </div>
-            <div class="form-group">
+
+            <div class="form-group-premium">
                 <label>Email Address</label>
-                <input type="email" name="email" id="userEmail" required placeholder="name@domain.com">
+                <input type="email" name="email" id="userEmail" class="input-premium" required placeholder="name@domain.com">
             </div>
-            <div class="form-group">
+
+            <div class="form-group-premium">
                 <label id="passLabel">Password</label>
-                <input type="password" name="password" id="userPass" placeholder="Leave blank to keep current">
+                <input type="password" name="password" id="userPass" class="input-premium" placeholder="Leave blank to keep current">
             </div>
-            <div class="form-group">
+
+            <div class="form-group-premium">
                 <label>System Role</label>
-                <select name="role" id="userRole" required>
-                    <option value="user">User (Viewer)</option>
-                    <option value="admin">Administrator (Editor)</option>
+                <select name="role" id="userRole" class="input-premium select-premium" required>
+                    <option value="user">User (Viewer Only)</option>
+                    <option value="admin">Administrator (Full Access)</option>
                     <option value="superadmin">Super Administrator (Owner)</option>
                 </select>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn" onclick="closeModal()">Cancel</button>
-                <button type="submit" class="btn btn-primary" id="submitBtn">Create User Account</button>
+
+            <div style="margin-top: 2rem; display: flex; justify-content: flex-end; gap: 1rem;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal()" style="min-width: 100px;">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="submitBtn" style="min-width: 160px; font-weight: 700;">Create User Account</button>
             </div>
         </form>
     </div>
 </div>
 
 <style>
-    .modal-overlay {
-        display: none;
-        position: fixed;
-        top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0, 0, 0, 0.5);
-        backdrop-filter: blur(4px);
-        z-index: 1000;
-        align-items: center;
-        justify-content: center;
-    }
-    .modal-content {
-        background: var(--bg-primary);
-        width: 100%;
-        max-width: 450px;
-        border-radius: 12px;
-        box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
-        overflow: hidden;
-    }
-    .modal-header {
-        padding: 1.5rem;
-        border-bottom: 1px solid var(--border-color);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    .modal-header h2 { font-size: 1.25rem; margin: 0; color: var(--text-primary); }
-    .modal-close { background: none; border: none; font-size: 1.5rem; color: var(--text-muted); cursor: pointer; }
-    
-    #userForm { padding: 1.5rem; }
-    .form-group { margin-bottom: 1.25rem; }
-    .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-muted); }
-    .form-group input, .form-group select {
-        width: 100%;
-        padding: 0.75rem;
-        border-radius: 8px;
-        border: 1px solid var(--border-color);
-        background: var(--bg-secondary);
-        color: var(--text-primary);
-        font-family: inherit;
-    }
-    .modal-footer {
-        padding-top: 1rem;
-        display: flex;
-        justify-content: flex-end;
-        gap: 0.75rem;
-    }
-
     .data-table {
         width: 100%;
         border-collapse: collapse;
+        background: var(--bg-card);
     }
     .data-table th {
         text-align: left;
-        padding: 1rem 1.5rem;
-        background: var(--bg-secondary);
+        padding: 1.25rem 1.5rem;
+        background: rgba(255, 255, 255, 0.02);
         font-size: 0.75rem;
-        font-weight: 700;
+        font-weight: 800;
         text-transform: uppercase;
-        letter-spacing: 0.05em;
+        letter-spacing: 0.08em;
         color: var(--text-muted);
-        border-bottom: 1px solid var(--border-color);
+        border-bottom: 1px solid var(--border-subtle);
     }
     .data-table td {
-        padding: 1rem 1.5rem;
-        border-bottom: 1px solid var(--border-color);
-        font-size: 0.9rem;
+        padding: 1.15rem 1.5rem;
+        border-bottom: 1px solid var(--border-subtle);
+        font-size: 0.95rem;
+        vertical-align: middle;
+    }
+    .data-table tr:hover {
+        background: rgba(255, 255, 255, 0.01);
     }
     .btn-icon {
-        width: 32px; height: 32px; padding: 0;
+        width: 38px; height: 38px; padding: 0;
         display: flex; align-items: center; justify-content: center;
-        background: var(--bg-secondary);
-        border: 1px solid var(--border-color);
-        border-radius: 6px;
-        color: var(--text-primary);
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--border-subtle);
+        border-radius: 10px;
+        color: var(--text-secondary);
         cursor: pointer;
+        transition: all var(--transition-fast);
+    }
+    .btn-icon:hover {
+        background: var(--bg-hover);
+        color: var(--text-primary);
+        border-color: var(--border);
+        transform: translateY(-1px);
     }
 </style>
 

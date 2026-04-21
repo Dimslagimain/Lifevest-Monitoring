@@ -2,8 +2,16 @@
    AUTH PAGE STYLES
    ======================================== */
 
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+}
+
 .auth-page {
-    min-height: 100vh;
+    height: 100vh;
+    width: 100vw;
     display: flex;
     align-items: center;
     justify-content: center;

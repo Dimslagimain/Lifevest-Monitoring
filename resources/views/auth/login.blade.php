@@ -70,12 +70,12 @@
                 @csrf
                 <div class="auth-field">
                     <label for="email">Email</label>
-                    <input type="email" id="email" name="email" value="{{ old('email') }}" placeholder="nama@gmf-aeroasia.co.id" required autofocus autocomplete="email">
+                    <input type="email" id="email" name="email" value="{{ old('email') }}" placeholder="nama@tnp.com" required autofocus autocomplete="email">
                 </div>
 
                 <div class="auth-field">
                     <label for="password">Password</label>
-                    <input type="password" id="password" name="password" placeholder="Masukkan password" required autocomplete="current-password">
+                    <input type="password" id="password" name="password" placeholder="password" required autocomplete="current-password">
                 </div>
 
                 <div class="auth-remember">

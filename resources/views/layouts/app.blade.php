@@ -148,6 +148,10 @@
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17v-8c0-1.105-.895-2-2-2H7c-1.105 0-2 .895-2 2v8M9 8V6c0-1.105.895-2 2-2h2c1.105 0 2 .895 2 2v2m-11 0h14m-7 6v4m-4-4v4"/></svg>
                     <span>Fleet Management</span>
                 </a>
+                <a href="{{ route('dashboard', ['view' => 'activity-log']) }}" class="sidebar-nav-item {{ request()->query('view') === 'activity-log' ? 'active' : '' }}">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg>
+                    <span>Activity Log</span>
+                </a>
                 @endif
 
                 @if(Auth::user() && Auth::user()->isSuperAdmin())

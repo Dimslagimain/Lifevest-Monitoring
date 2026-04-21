@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Seat;
+use App\Models\ActivityLog;
 use App\Models\Aircraft;
 use App\Models\Airline;
 use Illuminate\Http\Request;
@@ -375,9 +376,13 @@ class DashboardController extends Controller
             'lastUpdate' => $lastSeatUpdate ? \Carbon\Carbon::parse($lastSeatUpdate) : null,
             'pnSummary' => $pnSummary,
             'replacementPlans' => $replacementPlans,
-            // also export old monthlyPlan for fallback if necessary, or just skip it
         ];
     }); // End Cache
+
+        // Fetch non-cached data (real-time logs for admins)
+        $data['recentLogs'] = auth()->user() && auth()->user()->isAdmin() 
+            ? ActivityLog::with('user')->latest()->take(10)->get() 
+            : collect();
 
         return view('dashboard', $data);
     }

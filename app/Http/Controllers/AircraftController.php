@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Seat;
+use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 
 class AircraftController extends Controller
@@ -65,6 +66,9 @@ class AircraftController extends Controller
             'expAdult' => $expAdult,
             'expCrew' => $expCrew,
             'expInfant' => $expInfant,
+            'logs' => auth()->user() && auth()->user()->isAdmin() 
+                ? ActivityLog::with('user')->where('registration', $registration)->latest()->take(10)->get() 
+                : collect(),
         ]);
     }
 
@@ -148,6 +152,18 @@ class AircraftController extends Controller
                 );
             }
 
+            // Log the activity
+            ActivityLog::create([
+                'user_id' => auth()->id(),
+                'registration' => $registration,
+                'action' => 'update',
+                'details' => [
+                    'seat_count' => count($seatIds),
+                    'expiry_date' => $expiryDate,
+                    'seats' => array_slice($seatIds, 0, 50) // Limit log size if massive
+                ]
+            ]);
+
             return response()->json([
                 'success' => true,
                 'message' => count($seatIds) . ' seat(s) updated',
@@ -184,6 +200,17 @@ class AircraftController extends Controller
             ->delete();
 
         if ($deleted) {
+            // Log the deletion
+            ActivityLog::create([
+                'user_id' => auth()->id(),
+                'registration' => $registration,
+                'action' => 'delete',
+                'details' => [
+                    'seat_id' => $seatId,
+                    'type' => str_starts_with($seatId, 'pax-') ? 'spare-pax' : 'spare-inf'
+                ]
+            ]);
+
             return response()->json([
                 'success' => true,
                 'message' => 'Seat deleted successfully',

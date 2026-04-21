@@ -58,8 +58,14 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.btn-add-spare').forEach(btn => btn.style.display = 'none');
         // Hide delete spare buttons
         document.querySelectorAll('.btn-delete-spare').forEach(btn => btn.style.display = 'none');
+        
+        // Even for non-admins, if we are on dashboard, init charts
+        if (document.getElementById('pnInsightsChart')) {
+            initPnInsightsChart();
+        }
         return; // Don't setup any event listeners
     }
+
 
     // Setup event listeners (admin only)
     setupEventListeners();
@@ -693,5 +699,134 @@ async function handleDeleteSpare(e) {
     } catch (error) {
         console.error('Delete error:', error);
         showToast('Failed to delete', 'error');
+    }
+}
+
+// ============================================
+// DASHBOARD CHART: PN INSIGHTS
+// ============================================
+function initPnInsightsChart() {
+    const ctx = document.getElementById('pnInsightsChart').getContext('2d');
+    if (!ctx || !window.__pnSummary) return;
+
+    // Filter categories if needed (this logic can be expanded)
+    const categoryFilter = document.getElementById('pnCategoryFilter');
+    
+    function renderChart(category = 'all') {
+        let filteredData = window.__pnSummary;
+        if (category !== 'all') {
+            filteredData = filteredData.filter(item => item.category === category);
+        }
+
+        // Take top 10 for better visibility
+        const topData = filteredData.slice(0, 10);
+        
+        const labels = topData.map(item => `${item.pn} (${item.category.toUpperCase()})`);
+        const expiredData = topData.map(item => item.expired);
+        const criticalData = topData.map(item => item.critical);
+        const warningData = topData.map(item => item.warning);
+
+        if (state.insightsChart) {
+            state.insightsChart.destroy();
+        }
+
+        state.insightsChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Expired',
+                        data: expiredData,
+                        backgroundColor: '#8b5cf6', // purple
+                        borderRadius: 4,
+                    },
+                    {
+                        label: 'Critical (< 3m)',
+                        data: criticalData,
+                        backgroundColor: '#ef4444', // red
+                        borderRadius: 4,
+                    },
+                    {
+                        label: 'Warning (3-6m)',
+                        data: warningData,
+                        backgroundColor: '#f59e0b', // amber
+                        borderRadius: 4,
+                    }
+                ]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: '#64748b',
+                            usePointStyle: true,
+                            font: { family: 'Plus Jakarta Sans', weight: '600', size: 12 }
+                        }
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        backgroundColor: '#1e293b',
+                        titleFont: { family: 'Plus Jakarta Sans', size: 14, weight: '700' },
+                        bodyFont: { family: 'Plus Jakarta Sans', size: 13 },
+                        padding: 12,
+                        cornerRadius: 8,
+                    }
+                },
+                scales: {
+                    x: {
+                        stacked: true,
+                        grid: { display: false },
+                        ticks: { color: '#64748b', font: { family: 'Plus Jakarta Sans' } }
+                    },
+                    y: {
+                        stacked: true,
+                        grid: { color: 'rgba(0,0,0,0.05)' },
+                        ticks: { color: '#1e293b', font: { family: 'Plus Jakarta Sans', weight: '600' } }
+                    }
+                }
+            }
+        });
+
+        // Also update the table
+        updatePnInsightsTable(topData);
+    }
+
+    function updatePnInsightsTable(data) {
+        const tableBody = document.getElementById('pnInsightsTableBody');
+        if (!tableBody) return;
+
+        tableBody.innerHTML = data.map((item, index) => `
+            <tr>
+                <td class="fleet-td">${index + 1}</td>
+                <td class="fleet-td"><strong>${item.pn}</strong></td>
+                <td class="fleet-td"><span class="replacement-category ${item.category}">${item.category.toUpperCase()}</span></td>
+                <td class="fleet-td" style="text-align: center;"><span style="color: #8b5cf6; font-weight: 700;">${item.expired}</span></td>
+                <td class="fleet-td" style="text-align: center;"><span style="color: #ef4444; font-weight: 700;">${item.critical}</span></td>
+                <td class="fleet-td" style="text-align: center;"><span style="color: #f59e0b; font-weight: 700;">${item.warning}</span></td>
+                <td class="fleet-td" style="text-align: center;"><strong>${item.expired + item.critical + item.warning}</strong></td>
+                <td class="fleet-td">
+                    <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                        ${item.aircraft.slice(0, 3).map(ac => `<span class="monthly-aircraft-chip" style="font-size: 0.75rem; padding: 2px 6px;">${ac.reg}</span>`).join('')}
+                        ${item.aircraft.length > 3 ? `<span style="font-size: 0.75rem; color: var(--text-muted);">+${item.aircraft.length - 3} more</span>` : ''}
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    // Initial render
+    renderChart();
+
+    // Listener for category filter
+    if (categoryFilter) {
+        categoryFilter.addEventListener('change', (e) => {
+            renderChart(e.target.value);
+        });
     }
 }

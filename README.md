@@ -1,94 +1,87 @@
-[![PHP](https://github.com/ragepanz/lifevest-laravel/actions/workflows/php.yml/badge.svg)](https://github.com/ragepanz/lifevest-laravel/actions/workflows/php.yml)
 # 🛡️ Life Vest Tracker - GMF AeroAsia
+### *Smart, Real-Time Monitoring for Fleet Safety Excellence*
 
-Aplikasi pelacakan tanggal kedaluwarsa life vest untuk armada pesawat GMF AeroAsia.
+[![PHP](https://github.com/ragepanz/lifevest-laravel/actions/workflows/php.yml/badge.svg)](https://github.com/ragepanz/lifevest-laravel/actions/workflows/php.yml)
 
----
-
-## Daftar Isi
-
-- [Cara Menjalankan](#-cara-menjalankan)
-- [Panduan Penggunaan](#-panduan-penggunaan)
-- [Keyboard Shortcuts](#-keyboard-shortcuts)
-- [PDF Export & Blank Form](#-pdf-export--blank-form)
-- [Fleet Manager](#️-fleet-manager)
-- [Airlines Management](#-airlines-management)
-- [Menambahkan Pesawat Baru](#-menambahkan-pesawat-baru)
-- [Struktur File](#-struktur-file-penting)
-- [Dokumentasi Lengkap](#-dokumentasi-lengkap)
+Aplikasi **Life Vest Tracker** adalah solusi digital modern yang dirancang khusus untuk tim *Engineering* dan *Maintenance* GMF AeroAsia. Aplikasi ini memungkinkan pemantauan status kesehatan peralatan keselamatan (*life vest*) di seluruh armada pesawat secara akurat, cepat, dan visual.
 
 ---
 
-## Cara Menjalankan
+## ⚙️ Panduan Teknis (Developer)
 
 ### Prasyarat
-- PHP 8.1+
+- PHP 8.1+ (Laravel 12)
 - Composer
-- Node.js & npm
-- MySQL/MariaDB (via Laragon/XAMPP)
+- Node.js & npm (Vite)
+- MySQL/MariaDB
 
-### Langkah-langkah
-
+### Instalasi Langkah-demi-Langkah
 ```bash
 # 1. Install dependencies
 composer install
 npm install
 
-# 2. Setup database
+# 2. Setup environment
 cp .env.example .env
 php artisan key:generate
 
-# 3. Edit .env - sesuaikan database
-DB_DATABASE=lifevest_tracker
-DB_USERNAME=root
-DB_PASSWORD=
+# 3. Setup Database (sesuaikan DB_DATABASE di .env)
+php artisan migrate --seed
 
-# 4. Jalankan migration
-php artisan migrate
-
-# 5. Jalankan server (buka 2 terminal)
-# Terminal 1:
+# 4. Jalankan aplikasi (Gunakan 2 terminal)
 php artisan serve
-
-# Terminal 2:
 npm run dev
 ```
 
-Buka http://localhost:8000
+### Struktur File Penting
+```
+lifevest-laravel/
+├── config/aircraft_class_rows.php   # Config baris bisnis/ekonomi
+├── app/Http/Controllers/            # Logika utama sistem
+├── resources/views/
+│   ├── fleet/                       # View Fleet Manager
+│   ├── aircraft/                    # Template wrapper seat map
+│   └── aircraft/partials/           # ⭐ Konfigurasi layout kursi (16+ layout)
+├── resources/css/
+│   ├── style.css                    # Premium UI Design System tokens
+│   └── dashboard.css                # Styling dashboard & navigasi
+└── resources/js/app.js              # Logika interaksi seat map
+```
+---
+
+## 🚀 Fitur Utama (Overview)
+
+Kami merancang aplikasi ini agar mudah dipahami oleh siapa saja, mulai dari teknisi di lapangan hingga manajemen level atas.
+
+### 📊 1. Command Center (Dashboard Utama)
+Layar kendali utama yang memberikan gambaran "Kesehatan Armada" secara instan.
+- **Visualisasi Donut Chart**: Melihat persentase pesawat yang aman (Safe), butuh perhatian (Warning), atau kritis (Critical/Expired).
+- **Auto-Sorting**: Sistem secara otomatis menempatkan maskapai atau pesawat yang membutuhkan perhatian paling mendesak di urutan teratas.
+- **SPA Experience**: Perpindahan antar-menu (via Sidebar) terjadi instan secara dinamis tanpa proses *reload* browser.
+- **Dark/Light Mode**: Mendukung tema gelap dan terang dengan implementasi UI *Glassmorphism*.
+
+### 💺 2. Digital Seat Map (Peta Kursi Interaktif)
+Ucapkan selamat tinggal pada pendataan manual di kertas.
+- **Grid Interaktif**: Visualisasi tata letak kursi (A320, B737, B777, dll.) dengan kode warna status.
+- **Smart Selection**: Pilih banyak kursi sekaligus menggunakan klik, Shift+Klik, atau Ctrl+Klik.
+- **Pencarian Cepat**: Cari kursi spesifik hanya dengan mengetikkan nomor kursinya.
+
+### 📅 3. Predictive Replacement Planning
+Perencanaan cerdas agar tidak ada *life vest* yang terlewat tanggal kedaluwarsanya.
+- **Timeline Pintar**: Lihat jadwal penggantian dalam rentang Mingguan, Bulanan, hingga Tahunan.
+- **Breakdown Part Number (P/N)**: Mengetahui secara spesifik stok *part number* apa yang harus disiapkan.
+- **Export Excel**: Kirim laporan perencanaan langsung ke tim logistik atau pengadaan.
+
+### 🛠️ 4. Operational Efficiency Tools
+- **Batch Data Entry**: Fitur khusus untuk menyalin data dari Excel dan menempelnya langsung ke sistem.
+- **Formulir Lapangan (Blank Form)**: Cetak peta kursi kosong untuk teknisi mencatat manual di lapangan.
+- **Laporan PDF Profesional**: Cetak hasil inspeksi dalam format PDF resmi.
 
 ---
 
-## Panduan Penggunaan
+## ⌨️ Panduan Penggunaan & Shortcuts
 
-### Dashboard (Command Center)
-Dasbor menggunakan navigasi arsitektur **Single Page Application (SPA)**. Perpindahan antar-menu (via Sidebar) terjadi instan secara dinamis tanpa proses *reload* browser.
-
-1. **Airline Master Deck (Level 1)**: 
-   - Layar pertama menampilkan *Master Cards* raksasa untuk masing-masing maskapai yang terdaftar.
-   - Keunikan: Dilengkapi dengan **Conic-Gradient Donut Chart** modern yang menampilkan **Overall Fleet Health** (kesehatan armada maskapai) secara visual dalam lingkaran triwarna dan persentase absolut (Safe, Warning, Critical/Expired).
-   - **Smart Sorting**: Tombol *Sort By* mengizinkan operator untuk otomatis memaksa maskapai dengan kasus kritis ke urutan \#1 *(Lowest Health First / Most Expired Vests)*.
-
-2. **Airline Fleet Profile (Level 2)**:
-   - Mengklik salah satu kartu maskapai memicu transisi *smooth fade-in* untuk meluncur ke rincian armada maskapai tersebut.
-   - Daftar pesawat dikelompokkan secara hierarki berdasarkan **Tipe Tipe Pesawat** (*collapsible accordion*).
-   - **Grid & List Views**: Opsi tombol gaya tampilan (kartu minimalis / *list* padat memanjang ke bawah).
-
-3. **Smart Filters & Search**:
-   - Panel klik "Filter" membuka filter kustomisasi multi-kondisi (Airline, Tipe Pesawat, Active/Prolong, Safe/Critical). 
-   - Terdapat **Live Search** untuk mencari *Registration Number* secara langsung (Text search).
-
-4. **Life Vest Replacement Plans**:
-   - Tersedia di sidebar sebagai menu tunggal (*Weekly, Monthly, Yearly*).
-   - Menampilkan *Timeline* kartu urgensi (Overdue, Critical, Warning) dan *Current Period*.
-   - Detail per-bulan dapat diekspansi secara interaktif untuk membedah kebutuhan pergantian spesifik tiap **Part Number (P/N)** pada suatu bulan.
-   - Seluruh plan dapat langsung di-*Export Excel* di kanan atas tabel.
-
-5. **Dark/Light Mode & Aesthetic**: Mendukung *switch* tema penuh dengan implementasi UI *Glassmorphism*, palet modern, dan animasi transisi.
-
----
-
-## SELECT KURSI
-
+### SELECT KURSI (Mouse & Keyboard)
 | Aksi | Fungsi |
 |------|--------|
 | **Klik biasa** | Pilih 1 kursi (hapus selection sebelumnya) |
@@ -96,43 +89,11 @@ Dasbor menggunakan navigasi arsitektur **Single Page Application (SPA)**. Perpin
 | **Shift + Klik** | Pilih range dari kursi terakhir ke kursi ini |
 | **Klik nomor BARIS** | Pilih semua kursi di baris tersebut |
 | **Klik huruf KOLOM** | Pilih semua kursi di kolom tersebut |
-
----
-
-## UNSELECT / HAPUS SELECTION
-
-| Aksi | Fungsi |
-|------|--------|
-| **Klik area kosong** | Hapus semua selection |
-| **Tekan ESC** | Hapus semua selection |
-| **Ctrl + Klik kursi** | Hapus kursi dari selection (toggle) |
-| **Klik "Clear Selection"** | Hapus semua selection |
-
----
-
-## SET TANGGAL EXPIRY
-
-1. Pilih kursi yang ingin di-update (bisa multi-select)
-2. Klik tombol **"Set Date"** di toolbar
-3. Pilih tanggal expiry life vest dari calendar
-4. Klik **"Apply"** untuk menyimpan
-
-> **Catatan:** Bisa update banyak kursi sekaligus!
-
----
-
-## KEYBOARD SHORTCUTS
-
-| Shortcut | Fungsi |
-|----------|--------|
-| **Ctrl + A** | Pilih SEMUA kursi |
-| **Enter** | Buka dialog Set Date (jika ada kursi terpilih) |
+| **Ctrl + A** | Pilih **SEMUA** kursi |
+| **Enter** | Buka dialog **Set Date** (jika ada kursi terpilih) |
 | **Escape (ESC)** | Tutup dialog / Hapus selection |
 
----
-
-## ARTI WARNA STATUS
-
+### ARTI WARNA STATUS
 | Warna | Status | Keterangan |
 |-------|--------|------------|
 | 🟢 **HIJAU** | Safe | Expiry > 6 bulan lagi |
@@ -143,178 +104,12 @@ Dasbor menggunakan navigasi arsitektur **Single Page Application (SPA)**. Perpin
 
 ---
 
-## PDF Export & Blank Form
+## 📉 Fleet Overview
 
-### Export PDF
-Export seat map sebagai PDF report dengan warna status dan tanggal expiry.
-- Klik tombol **"Export PDF" (warna merah)** di toolbar halaman seat map
-- PDF akan terbuka di tab baru
+Berikut adalah daftar tipe pesawat dan konfigurasi layout yang didukung oleh sistem saat ini:
 
-### Export Excel
-- Daftar perencanaan P/N tiap bulan dapat diekspor ke Excel dengan menekan tombol **"Export Excel" (warna hijau)** di halaman Dasbor.
-
-### Blank Form
-Export formulir kosong untuk teknisi (kotak lebih besar untuk tulisan tangan).
-- Klik tombol **"Blank Form"** di toolbar halaman seat map
-- Form menyediakan kolom untuk pengisian manual di lapangan
-- **Spare Boxes**: Kotak bernomor untuk cadangan PAX & INF, jumlah sesuai buffer per tipe:
-
-| Tipe | PAX | INF |
-|------|:---:|:---:|
-| A320 | 15 | 20 |
-| A330 | 15 | 40 |
-| ATR72 | 10 | 10 |
-| B737 | 10 | 25 |
-| B777 | 35 | 40 |
-
-### Batch Input
-Input data expiry secara massal untuk kursi economy.
-- Klik tombol **"Batch Input"** di toolbar halaman seat map
-- Halaman khusus untuk input cepat banyak kursi sekaligus
-
----
-
-## Fleet Manager
-
-Halaman **Fleet Manager** (`/fleet`) adalah pusat kontrol data pesawat dan airline. Tersedia dalam format **Tab**:
-
-### Tab Aircraft
-- **Monitoring Armada**: Melihat daftar seluruh pesawat
-- **Smart Filter**: Filter maskapai (*Airline*) dan tipe (*Type*). Serupa dengan dasbor, opsi *Type* otomatis berjenjang menyesuaikan daftar *Airline* yang dipilih.
-- **Tambah Pesawat**: Input dengan pilihan airline
-- **Edit Pesawat**: Mengubah status (Active/Prolong) saja (Airline, Type & Registration terkunci)
-- **Hapus Pesawat**: Hapus data permanen
-
-### Tab Airlines
-- **Daftar Airline**: Melihat semua maskapai yang terdaftar
-- **Tambah Airline**: Input nama dan kode IATA
-- **Edit Airline**: Mengubah nama dan kode
-- **Hapus Airline**: Hapus airline (hanya jika tidak ada pesawat terkait)
-
----
-
-## Airlines Management
-
-Sistem mendukung **multi-airline** dengan fitur:
-
-1. **Airline Grouping**: Dashboard menampilkan pesawat dikelompokkan per maskapai
-2. **Dynamic Airlines**: Tambah/hapus airline sesuai kebutuhan
-3. **Default Airline**: Garuda Indonesia (kode: GA)
-
-### Menambah Airline Baru
-1. Buka **Fleet Manager** → Tab **Airlines**
-2. Klik **"+ Add New Airline"**
-3. Isi nama (contoh: Citilink) dan kode IATA (contoh: QG)
-4. Klik **Save**
-
----
-
-## Menambahkan Pesawat Baru
-
-### 1. Via Fleet Manager (Cara Utama)
-Untuk menambahkan pesawat dengan layout yang sudah ada:
-
-1. Buka menu **Fleet Manager** di dashboard (atau akses `/fleet`).
-2. Klik tombol **"+ Add New Aircraft"**.
-3. Isi form:
-    - **Airline**: Pilih maskapai (Garuda Indonesia, Citilink, dll)
-    - **Registration**: Nomor registrasi (misal: PK-GPC)
-    - **Type**: Tipe pesawat (misal: A330-300)
-    - **Layout**: Pilih layout kursi yang sesuai dari dropdown
-    - **Status**: Pilih Active atau Prolong
-4. Klik **Save**. Pesawat akan langsung muncul di dashboard.
-
----
-
-### 2. Menambahkan Layout Baru (Advanced)
-Jika Anda memiliki pesawat dengan konfigurasi kursi yang **belum pernah ada** (template kursi baru):
-
-1. **Buat Template Blade**:
-   - Copy file di `resources/views/aircraft/` (misal `a330-300c.blade.php`), rename jadi `a330-XXX.blade.php`
-   - Template ini adalah wrapper yang memanggil partial
-2. **Buat Partial**:
-   - Copy file di `resources/views/aircraft/partials/` (misal `a330-300a.blade.php`)
-   - Edit konfigurasi kursi di partial tersebut
-3. **Auto-Detect**:
-   Sistem akan **otomatis** mendeteksi file baru tersebut.
-   Saat tambah pesawat di Fleet Manager, pilihan `a330-XXX` akan langsung muncul di dropdown layout.
-4. **Konfigurasi Baris**:
-   Edit `config/aircraft_class_rows.php` untuk menentukan mana baris bisnis/ekonomi.
-
-> 💡 **Tip:** Template di `aircraft/` hanya menyediakan struktur halaman. Logika seat map ada di `aircraft/partials/`.
-
----
-
-## Struktur File Penting
-
-```
-lifevest-laravel/
-├── config/
-│   └── aircraft_class_rows.php   # Config class type per layout
-├── database/
-│   ├── migrations/
-│   └── seeders/
-│       ├── AircraftSeeder.php    # Initial Data Pesawat
-│       └── AirlineSeeder.php     # Initial Data Airlines
-├── app/
-│   ├── Models/
-│   │   ├── Aircraft.php          # Model pesawat (belongsTo Airline)
-│   │   ├── Airline.php           # Model airline (hasMany Aircraft)
-│   │   └── Seat.php              # Model seat/kursi
-│   └── Http/Controllers/
-│       ├── DashboardController.php   # Logic dashboard (grouped by airline)
-│       ├── FleetController.php       # Logic CRUD Pesawat & Airlines
-│       ├── AircraftController.php    # Logic seat map & update expiry
-│       └── ReportController.php      # Logic PDF Export & Blank Form
-├── resources/views/
-│   ├── layouts/app.blade.php     # Master layout + Navbar + Dark Mode
-│   ├── dashboard.blade.php       # Halaman dashboard (with filters)
-│   ├── fleet/                    # Fleet Manager views
-│   ├── aircraft/                 # Template wrapper per layout
-│   │   ├── b737-e46.blade.php
-│   │   ├── b777-3class.blade.php
-│   │   ├── a330-300a.blade.php
-│   │   └── ... (16 layouts)
-│   ├── aircraft/partials/        # ⭐ Seat map layouts (reusable)
-│   │   ├── b737-e46.blade.php    # B737 seat configuration
-│   │   ├── b777-3class.blade.php # B777 3-class configuration
-│   │   ├── a330-300a.blade.php   # A330-300 Layout A
-│   │   ├── a330-300cargo.blade.php # A330-300 Cargo
-│   │   └── ... (16 partials)
-│   ├── reports/                  # ⭐ PDF Reports
-│   │   ├── seat-map.blade.php    # PDF Export template
-│   │   └── blank-form.blade.php  # Blank Form template
-│   └── components/               # Reusable Blade components
-│       ├── cockpit-section.blade.php
-│       ├── seat-cell.blade.php
-│       ├── toolbar.blade.php     # Sticky toolbar + Export buttons
-│       ├── status-legend.blade.php
-│       ├── aircraft-header-info.blade.php
-│       └── date-modal.blade.php
-└── resources/
-    ├── css/
-    │   ├── style.css             # CSS global + Dark/Light mode
-    │   └── dashboard.css         # CSS dashboard
-    └── js/
-        └── app.js                # JavaScript interaksi
-```
-
----
-
-## Teknologi
-
-- **Backend:** Laravel 12
-- **Frontend:** Vanilla CSS & JavaScript (SPA Navigation, Glassmorphism UI, CSS Conic-Gradient Donut Charts)
-- **Database:** MySQL
-- **Build Tool:** Vite
-- **Timezone:** Asia/Jakarta (GMT+7)
-
----
-
-## Fleet Overview
-
-| Tipe | Jumlah Registrasi | Layout |
-|------|-------------------|--------|
+| Tipe | Registrasi | Layout Tersedia |
+|------|------------|-----------------|
 | **B737-800** | 40+ | e46, e47, e48, e49 |
 | **B737 MAX 8** | 1 | e46 |
 | **B777-300** | 8 | 2-Class, 3-Class |
@@ -325,25 +120,37 @@ lifevest-laravel/
 | **A320-200** | 50 | a320a |
 | **ATR72-600** | 2 | atr72 |
 
+### Maskapai (Airlines)
+Sistem mendukung **Multi-Airline Management**:
+1. **Garuda Indonesia (GA)**
+2. **Citilink (QG)**
+
 ---
 
-## Airlines
+## 🛠️ Detail Fitur Operasional
 
-| Airline | Kode IATA |
+### 1. Ekspor & Laporan
+- **Export PDF**: Klik tombol **"Export PDF"** di toolbar seat map untuk laporan berwarna.
+- **Blank Form**: Klik tombol **"Blank Form"** untuk formulir inspeksi lapangan.
+- **Spare Buffer**: Kotak spare (PAX & INF) otomatis muncul di form sesuai tipe pesawat:
+    - A320: 15 PAX, 20 INF
+    - A330: 15 PAX, 40 INF
+    - B737: 10 PAX, 25 INF
+    - B777: 35 PAX, 40 INF
+
+### 2. Fleet Manager
+Pusat kontrol data pesawat melalui rute `/fleet` (Akses Admin/Superadmin):
+- **Tab Aircraft**: Kelola registrasi, tipe, dan layout pesawat.
+- **Tab Airlines**: Kelola daftar maskapai dan kode IATA.
+
+---
+
+## 📖 Dokumentasi Lengkap
+
+| Dokumen | Deskripsi |
 |---------|-----------|
-| Garuda Indonesia | GA |
-| Citilink | QG |
+| [USER_MANUAL.md](dokumentasi/USER_MANUAL.md) | Panduan mendalam untuk end-user & teknisi |
+| [DEVELOPER_MANUAL.md](dokumentasi/DEVELOPER_MANUAL.md) | Dokumentasi teknis & arsitektur sistem |
 
 ---
-
-## Dokumentasi Lengkap
-
-Dokumentasi lengkap tersedia di folder **[`dokumentasi/`](dokumentasi/)**:
-
-| Dokumen | Markdown | PDF |
-|---------|----------|-----|
-| **User Manual** — Panduan penggunaan untuk end-user / teknisi | [USER_MANUAL.md](dokumentasi/USER_MANUAL.md) | [PDF](dokumentasi/Buku%20Panduan%20Pengguna%20(User%20Manual).pdf) |
-| **Developer Manual** — Panduan teknis untuk developer | [DEVELOPER_MANUAL.md](dokumentasi/DEVELOPER_MANUAL.md) | [PDF](dokumentasi/Developer%20Manual.pdf) |
-
-> 💡 File `.md` bisa dibaca langsung di GitHub. File `.pdf` bisa di-download untuk print.
-
+*© 2026 GMF AeroAsia - Life Vest Tracking System*

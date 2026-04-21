@@ -18,26 +18,16 @@
     position: fixed;
     inset: 0;
     z-index: 0;
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 30%, #0f172a 60%, #1a1a2e 100%);
+    background: url('../../public/images/hangar2.jpeg') no-repeat center center;
+    background-size: cover;
 }
 
-.auth-bg::before {
+.auth-bg::after {
     content: '';
     position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(ellipse at 20% 50%, rgba(56, 189, 248, 0.08) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 20%, rgba(139, 92, 246, 0.06) 0%, transparent 50%),
-                radial-gradient(ellipse at 60% 80%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
-    animation: authBgPulse 15s ease-in-out infinite alternate;
-}
-
-@keyframes authBgPulse {
-    0% { transform: translate(0, 0) scale(1); }
-    50% { transform: translate(-2%, 1%) scale(1.02); }
-    100% { transform: translate(1%, -1%) scale(1); }
+    inset: 0;
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(2px);
 }
 
 /* Grid pattern overlay */
@@ -66,18 +56,6 @@
     padding: 2.5rem;
     box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4),
                 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
-    animation: authCardIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-@keyframes authCardIn {
-    from {
-        opacity: 0;
-        transform: translateY(30px) scale(0.96);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
 }
 
 /* Branding */
@@ -289,14 +267,16 @@
    LIGHT MODE
    ======================================== */
 [data-theme="light"] .auth-bg {
-    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 30%, #f0f9ff 60%, #ede9fe 100%);
+    background: url('../../public/images/hangar2.jpeg') no-repeat center center;
+    background-size: cover;
 }
 
-[data-theme="light"] .auth-bg::before {
-    background: radial-gradient(ellipse at 20% 50%, rgba(56, 189, 248, 0.1) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 20%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
-                radial-gradient(ellipse at 60% 80%, rgba(16, 185, 129, 0.06) 0%, transparent 50%);
+
+[data-theme="light"] .auth-bg::after {
+    background: rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(2px);
 }
+
 
 [data-theme="light"] .auth-bg-grid {
     background-image:

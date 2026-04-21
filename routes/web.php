@@ -13,12 +13,14 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
 });
 
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
+
 
 // ============================================
 // AUTHENTICATED ROUTES (All roles)
 // ============================================
 Route::middleware('auth')->group(function () {
+    Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])->name('logout');
+
 
     // Dashboard (homepage)
     Route::get('/', DashboardController::class)->name('dashboard');

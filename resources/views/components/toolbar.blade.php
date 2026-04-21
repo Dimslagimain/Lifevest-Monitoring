@@ -15,7 +15,7 @@
             <div class="divider"></div>
             <span class="selection-info" id="selectionInfo">No seats selected</span>
         @else
-            <span class="selection-info" style="opacity: 0.7;">🔒 View only</span>
+            <span class="selection-info" style="opacity: 0.7;">View only</span>
         @endif
     </div>
     <div class="toolbar-right">

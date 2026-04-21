@@ -1,156 +1,105 @@
-# 🛡️ Life Vest Tracker - GMF AeroAsia
-### *Smart, Real-Time Monitoring for Fleet Safety Excellence*
+# Life Vest Tracker — GMF AeroAsia
+### *Pemantauan Real-Time Cerdas untuk Keselamatan Armada yang Unggul*
 
-[![PHP](https://github.com/ragepanz/lifevest-laravel/actions/workflows/php.yml/badge.svg)](https://github.com/ragepanz/lifevest-laravel/actions/workflows/php.yml)
-
-Aplikasi **Life Vest Tracker** adalah solusi digital modern yang dirancang khusus untuk tim *Engineering* dan *Maintenance* GMF AeroAsia. Aplikasi ini memungkinkan pemantauan status kesehatan peralatan keselamatan (*life vest*) di seluruh armada pesawat secara akurat, cepat, dan visual.
+[![Laravel](https://img.shields.io/badge/Laravel-12.x-FF2D20?style=flat-square&logo=laravel)](https://laravel.com)
+[![PHP](https://img.shields.io/badge/PHP-8.2+-777BB4?style=flat-square&logo=php)](https://php.net)
+[![Vite](https://img.shields.io/badge/Frontend-Vite-646CFF?style=flat-square&logo=vite)](https://vitejs.dev)
+[![UI](https://img.shields.io/badge/UX-Premium_Glassmorphism-00AEEF?style=flat-square)](https://gmf-aeroasia.co.id)
 
 ---
 
 ## Panduan Teknis (Developer)
 
 ### Prasyarat
-- PHP 8.1+ (Laravel 12)
-- Composer
-- Node.js & npm (Vite)
-- MySQL/MariaDB
+- **PHP**: 8.2 atau lebih tinggi
+- **Composer**: Dependency manager
+- **Node.js & NPM**: Asset bundling via Vite
+- **Database**: MySQL / MariaDB
 
-### Instalasi Langkah-demi-Langkah
+### Instalasi Langkah-Demi-Langkah
 ```bash
-# 1. Install dependencies
+# 1. Clone & Instal Dependensi
 composer install
 npm install
 
-# 2. Setup environment
+# 2. Konfigurasi Lingkungan
 cp .env.example .env
 php artisan key:generate
 
-# 3. Setup Database (sesuaikan DB_DATABASE di .env)
+# 3. Migrasi Database & Authentikasi
+# Catatan: Pastikan DB_DATABASE sudah dikonfigurasi di file .env Anda
 php artisan migrate --seed
 
-# 4. Jalankan aplikasi (Gunakan 2 terminal)
+# 4. Jalankan Lingkungan Pengembangan
+# Jalankan kedua perintah ini di jendela terminal yang terpisah
 php artisan serve
 npm run dev
 ```
 
-### Struktur File Penting
-```
-lifevest-laravel/
-├── config/aircraft_class_rows.php   # Config baris bisnis/ekonomi
-├── app/Http/Controllers/            # Logika utama sistem
-├── resources/views/
-│   ├── fleet/                       # View Fleet Manager
-│   ├── aircraft/                    # Template wrapper seat map
-│   └── aircraft/partials/           # ⭐ Konfigurasi layout kursi (16+ layout)
-├── resources/css/
-│   ├── style.css                    # Premium UI Design System tokens
-│   └── dashboard.css                # Styling dashboard & navigasi
-└── resources/js/app.js              # Logika interaksi seat map
-```
 ---
 
-## Fitur Utama (Overview)
+## Ringkasan Proyek
 
-Kami merancang aplikasi ini agar mudah dipahami oleh siapa saja, mulai dari teknisi di lapangan hingga manajemen level atas.
+Life Vest Tracker adalah ekosistem digital mutakhir yang dirancang khusus untuk tim Engineering dan Maintenance GMF AeroAsia. Sistem ini mengubah data keselamatan pesawat yang kompleks menjadi informasi visual yang siap ditindaklanjuti, memastikan setiap pesawat dalam armada dilengkapi dengan peralatan keselamatan yang patuh (compliant) dan aman.
 
-### 1. Command Center (Dashboard Utama)
-Layar kendali utama yang memberikan gambaran "Kesehatan Armada" secara instan.
-- **Visualisasi Donut Chart**: Melihat persentase pesawat yang aman (Safe), butuh perhatian (Warning), atau kritis (Critical/Expired).
-- **Auto-Sorting**: Sistem secara otomatis menempatkan maskapai atau pesawat yang membutuhkan perhatian paling mendesak di urutan teratas.
-- **SPA Experience**: Perpindahan antar-menu (via Sidebar) terjadi instan secara dinamis tanpa proses *reload* browser.
-- **Dark/Light Mode**: Mendukung tema gelap dan terang dengan implementasi UI *Glassmorphism*.
-
-### 2. Digital Seat Map (Peta Kursi Interaktif)
-Ucapkan selamat tinggal pada pendataan manual di kertas.
-- **Grid Interaktif**: Visualisasi tata letak kursi (A320, B737, B777, dll.) dengan kode warna status.
-- **Smart Selection**: Pilih banyak kursi sekaligus menggunakan klik, Shift+Klik, atau Ctrl+Klik.
-- **Pencarian Cepat**: Cari kursi spesifik hanya dengan mengetikkan nomor kursinya.
-
-### 3. Predictive Replacement Planning
-Perencanaan cerdas agar tidak ada *life vest* yang terlewat tanggal kedaluwarsanya.
-- **Timeline Pintar**: Lihat jadwal penggantian dalam rentang Mingguan, Bulanan, hingga Tahunan.
-- **Breakdown Part Number (P/N)**: Mengetahui secara spesifik stok *part number* apa yang harus disiapkan.
-- **Export Excel**: Kirim laporan perencanaan langsung ke tim logistik atau pengadaan.
-
-### 4. Operational Efficiency Tools
-- **Batch Data Entry**: Fitur khusus untuk menyalin data dari Excel dan menempelnya langsung ke sistem.
-- **Formulir Lapangan (Blank Form)**: Cetak peta kursi kosong untuk teknisi mencatat manual di lapangan.
-- **Laporan PDF Profesional**: Cetak hasil inspeksi dalam format PDF resmi.
+Dibangun dengan estetika Premium SaaS, platform ini memprioritaskan kejelasan, kecepatan, dan presisi—mencerminkan standar tinggi dalam industri penerbangan.
 
 ---
 
-## Panduan Penggunaan & Shortcuts
+## Pilar Utama
 
-### SELECT KURSI (Mouse & Keyboard)
+| Presisi | Efisiensi | Pengalaman |
+| :--- | :--- | :--- |
+| Pemetaan konfigurasi LOPA pesawat (A320, B737, B777, A330) yang sangat akurat. | Operasi data massal (batch) dan ekspor instan PDF/Excel untuk kru lapangan. | UI Glassmorphism kelas atas dengan sinkronisasi Mode Gelap/Terang secara native. |
+
+---
+
+## Fitur Utama
+
+### 1. Command Center (Dashboard Modern)
+- **Pemantauan Kesehatan Armada**: Pelacakan status langsung untuk item yang Expired, Critical, dan Warning.
+- **Mesin Prioritas Otomatis**: Secara otomatis menampilkan registrasi pesawat berisiko tinggi di urutan teratas.
+- **Mikro-Interaksi**: Transisi halus dan navigasi glassmorphic untuk alur operasional yang mulus.
+
+### 2. Digital LOPA Interaktif (Seat Map)
+- **Sistem Grid Visual**: Representasi fidelitas tinggi dari tata letak kabin dengan kode warna status keselamatan.
+- **Smart Selection Engine**: Mendukung Multi-Select, Shift-Click Range, dan seleksi Baris/Kolom untuk pembaruan cepat.
+- **Pencarian Instan**: Temukan lokasi kursi tertentu secara instan dengan utilitas pencarian kursi terintegrasi.
+
+### 3. Analitik Keselamatan Prediktif
+- **Perencanaan Penggantian**: Peramalan otomatis untuk penggantian life vest (Mingguan, Bulanan, Tahunan).
+- **Wawasan Part Number**: Rincian cerdas kebutuhan P/N spesifik untuk perencanaan pengadaan stok.
+- **Suite Ekspor**: Hasilkan formulir kosong (Blank Form) PDF profesional untuk teknisi lapangan dan laporan Excel untuk logistik.
+
+---
+
+## Sorotan Arsitektur
+
+- **Sistem UI**: Desain Sistem CSS kustom menggunakan token HSL (resources/css/style.css).
+- **Lapisan Responsif**: Arsitektur desktop-first yang dioptimalkan untuk laptop maintenance penerbangan.
+- **Konfigurasi Layout**: Konfigurasi dinamis kelas/baris pesawat dikelola melalui config/aircraft_class_rows.php.
+
+---
+
+## Pintasan & Interaksi
+
 | Aksi | Fungsi |
-|------|--------|
-| **Klik biasa** | Pilih 1 kursi (hapus selection sebelumnya) |
-| **Ctrl + Klik** | Tambah kursi ke selection (multi-select) |
-| **Shift + Klik** | Pilih range dari kursi terakhir ke kursi ini |
-| **Klik nomor BARIS** | Pilih semua kursi di baris tersebut |
-| **Klik huruf KOLOM** | Pilih semua kursi di kolom tersebut |
-| **Ctrl + A** | Pilih **SEMUA** kursi |
-| **Enter** | Buka dialog **Set Date** (jika ada kursi terpilih) |
-| **Escape (ESC)** | Tutup dialog / Hapus selection |
-
-### ARTI WARNA STATUS
-| Warna | Status | Keterangan |
-|-------|--------|------------|
-| 🟢 **HIJAU** | Safe | Expiry > 6 bulan lagi |
-| 🟡 **KUNING** | Warning | Expiry 3-6 bulan lagi |
-| 🔴 **MERAH** | Critical | Expiry < 3 bulan lagi |
-| 🟣 **UNGU** | Expired | Sudah melewati tanggal expiry |
-| ⚪ **ABU-ABU** | No Data | Belum ada tanggal expiry |
+| :--- | :--- |
+| Ctrl + Klik | Tambahkan kursi individu ke pilihan |
+| Shift + Klik | Pilih rentang kursi secara berkelanjutan |
+| Header Baris/Kolom | Pilih seluruh baris atau kolom secara instan |
+| Ctrl + A | Pilih SEMUA kursi di pesawat |
+| Enter | Buka dialog modifikasi tanggal |
+| Esc | Hapus seleksi atau tutup modal yang aktif |
 
 ---
 
-## Fleet Overview
-
-Berikut adalah daftar tipe pesawat dan konfigurasi layout yang didukung oleh sistem saat ini:
-
-| Tipe | Registrasi | Layout Tersedia |
-|------|------------|-----------------|
-| **B737-800** | 40+ | e46, e47, e48, e49 |
-| **B737 MAX 8** | 1 | e46 |
-| **B777-300** | 8 | 2-Class, 3-Class |
-| **A330-900** | 5 | 900a, 900b |
-| **A330-300** | 14 | 300a, 300b, 300c, Cargo |
-| **A330-341** | 2 | 300c |
-| **A330-200** | 5 | 200a, 200b |
-| **A320-200** | 50 | a320a |
-| **ATR72-600** | 2 | atr72 |
-
-### Maskapai (Airlines)
-Sistem mendukung **Multi-Airline Management**:
-1. **Garuda Indonesia (GA)**
-2. **Citilink (QG)**
+## Roadmap & Status
+- [x] Premium UI 2.0: Migrasi penuh ke desain Glassmorphism.
+- [x] Split-Screen Login: Alur autentikasi perusahaan kelas atas.
+- [x] Dukungan Peran Universal: Standarisasi tampilan administratif lintas peran (Admin/User).
+- [ ] Portal Lapangan Mobile: Progressive Web App untuk entri data langsung di hangar (Direncanakan).
 
 ---
 
-## Detail Fitur Operasional
-
-### 1. Ekspor & Laporan
-- **Export PDF**: Klik tombol **"Export PDF"** di toolbar seat map untuk laporan berwarna.
-- **Blank Form**: Klik tombol **"Blank Form"** untuk formulir inspeksi lapangan.
-- **Spare Buffer**: Kotak spare (PAX & INF) otomatis muncul di form sesuai tipe pesawat:
-    - A320: 15 PAX, 20 INF
-    - A330: 15 PAX, 40 INF
-    - B737: 10 PAX, 25 INF
-    - B777: 35 PAX, 40 INF
-
-### 2. Fleet Manager
-Pusat kontrol data pesawat melalui rute `/fleet` (Akses Admin/Superadmin):
-- **Tab Aircraft**: Kelola registrasi, tipe, dan layout pesawat.
-- **Tab Airlines**: Kelola daftar maskapai dan kode IATA.
-
----
-
-## Dokumentasi Lengkap
-
-| Dokumen | Deskripsi |
-|---------|-----------|
-| [USER_MANUAL.md](dokumentasi/USER_MANUAL.md) | Panduan mendalam untuk end-user & teknisi |
-| [DEVELOPER_MANUAL.md](dokumentasi/DEVELOPER_MANUAL.md) | Dokumentasi teknis & arsitektur sistem |
-
----
-*© 2026 GMF AeroAsia - Life Vest Tracking System*
+*© 2026 GMF AeroAsia — Fleet Management System | Engineering Excellence*

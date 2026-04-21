@@ -55,6 +55,7 @@
 
             <div class="auth-form-container">
                 <div class="auth-form-header">
+                    <span class="welcome-accent">Welcome</span>
                     <h1>Sign in</h1>
                     <p>Enter your credentials to access Life Vest Tracker</p>
                 </div>

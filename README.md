@@ -15,7 +15,7 @@
 - **PHP**: Versi 8.2 atau lebih tinggi
 - **Composer**: Untuk mengelola paket ketergantungan (dependencies)
 - **Node.js & NPM**: Untuk mengompilasi tampilan antarmuka (Vite)
-- **Basis Data**: MySQL atau MariaDB
+- **Basis Data**: MySQL atau MariaDB (via Laragon, XAMPP, atau lainnya)
 
 ### Langkah Instalasi
 ```bash
@@ -28,35 +28,41 @@ cp .env.example .env
 php artisan key:generate
 
 # 3. Persiapan Basis Data
-# Pastikan nama DB_DATABASE sudah sesuai di file .env Anda
+# Sesuaikan poin berikut di dalam file .env Anda:
+# DB_DATABASE=lifevest_tracker
+# DB_USERNAME=root
+# DB_PASSWORD=
 php artisan migrate --seed
 
 # 4. Menjalankan Aplikasi
-# Buka dua terminal berbeda untuk menjalankan perintah berikut:
+# Buka dua jendela terminal berbeda dan jalankan:
+# Terminal 1:
 php artisan serve
+
+# Terminal 2:
 npm run dev
 ```
+Akses aplikasi melalui: `http://localhost:8000`
 
 ---
 
 ## Struktur Inti Proyek (Core Structure)
 
-Berikut adalah folder dan file utama yang mengelola logika dan tampilan sistem ini:
+Sistem ini diorganisir secara sistematis untuk memudahkan pemeliharaan jangka panjang:
 
 ```
 lifevest-laravel/
-├── app/
-│   └── Http/Controllers/              # Logika utama pengolah data & laporan
-├── config/
-│   └── aircraft_class_rows.php        # Pusat pengaturan baris bisnis/ekonomi
-├── resources/
-│   ├── css/
-│   │   └── style.css                  # Desain sistem & warna (Premium UI)
-│   ├── js/
-│   │   └── app.js                     # Logika interaksi & pencarian kursi
-│   └── views/
-│       ├── aircraft/partials/         # Konfigurasi 16+ layout kursi pesawat
-│       └── fleet/                     # Halaman pengelolaan armada & maskapai
+├── app/Http/Controllers/              # Logika pengolah data, dashboard, & laporan
+├── config/aircraft_class_rows.php      # Pusat pengaturan baris bisnis/ekonomi layout
+├── database/seeders/                  # Data awal registrasi pesawat & maskapai
+├── resources/css/style.css            # Sistem desain utama (Premium UI & Dark Mode)
+├── resources/js/app.js                # Interaksi peta kursi & navigasi SPA
+├── resources/views/
+│   ├── aircraft/                      # Template pembungkus tiap layout pesawat
+│   ├── aircraft/partials/             # Konfigurasi teknis 16+ layout kursi (Seat Map)
+│   ├── reports/                       # Template untuk Cetak PDF & Formulir Lapangan
+│   └── components/                    # Komponen visual (Toolbar, Modal, Legend)
+└── dokumentasi/                       # Panduan manual lengkap (User & Developer)
 ```
 
 ---
@@ -65,88 +71,94 @@ lifevest-laravel/
 
 Life Vest Tracker adalah ekosistem digital mutakhir yang dirancang khusus untuk tim Engineering dan Maintenance GMF AeroAsia. Sistem ini mengubah data keselamatan pesawat yang kompleks menjadi informasi visual yang siap ditindaklanjuti, memastikan setiap pesawat dalam armada dilengkapi dengan peralatan keselamatan yang patuh (compliant) dan aman.
 
-Aplikasi ini menggantikan proses pencatatan manual di kertas yang memakan waktu dan rentan kesalahan, beralih ke sistem digital yang rapi, otomatis, dan dapat dipantau secara langsung oleh manajemen.
+Aplikasi ini menggantikan proses pencatatan manual di kertas yang memakan waktu dan rentan kesalahan, beralih ke sistem digital yang rapi, otomatis, dan dapat dipantau secara langsung oleh manajemen melalui antarmuka yang bersih dan modern.
 
 ---
 
-## Penjelasan Fitur Lengkap
+## Panduan Penggunaan Lengkap
 
-### 1. Dashboard Utama (Fleet Health)
-Layar pertama yang memberikan gambaran "Kesehatan Armada" secara instan tanpa perlu membuka data satu per satu.
-- **Sorting Otomatis**: Pesawat yang membutuhkan perhatian paling mendesak (paling dekat kedaluwarsa) akan otomatis berada di urutan teratas.
-- **Navigasi Cepat**: Perpindahan antar-menu terjadi secara instan tanpa proses muat ulang (reload) browser.
-- **Sinkronisasi Tema**: Mendukung Mode Terang dan Gelap yang bisa diganti secara manual melalui tombol di pojok layar.
+Penggunaan aplikasi ini dirancang sesederhana mungkin agar mudah dipahami oleh staf operasional dari berbagai kalangan usia.
+
+### 1. Dashboard Utama (Command Center)
+Dasbor menggunakan navigasi cerdas yang tidak memerlukan pemuatan ulang halaman (SPA). Segala informasi mengalir secara instan.
+
+**Airline Master Deck (Level 1):**
+Layar pertama menampilkan Kartu Maskapai dalam ukuran besar. Setiap kartu dilengkapi dengan diagram lingkaran (Donut Chart) yang menunjukkan profil kesehatan armada maskapai (Safe, Warning, Critical). Terdapat fitur "Smart Sorting" untuk mendahulukan maskapai dengan tingkat kerusakan tertinggi ke urutan paling atas.
+
+**Airline Fleet Profile (Level 2):**
+Mengklik kartu maskapai akan membawa Anda masuk ke daftar pesawat yang dimiliki maskapai tersebut. Pesawat dikelompokkan berdasarkan tipenya (A320, B737, dll.) dalam bentuk daftar yang bisa diciutkan (accordion) untuk kenyamanan pandangan.
 
 ### 2. Peta Kursi Digital (Interactive Seat Map)
-Visualisasi tata letak kursi pesawat dengan fidelitas tinggi untuk memudahkan teknisi melakukan pembaruan data.
-- **Pencarian Kursi**: Pengguna bisa mencari kursi spesifik secara instan hanya dengan mengetik nomor kursinya.
-- **Multi-Selection**: Memungkinkan pengguna memilih banyak kursi sekaligus untuk memperbarui tanggal secara massal.
-- **Informasi Detil**: Mengarahkan kursor ke atas kursi akan menampilkan informasi lengkap mengenai masa berlaku life vest tersebut.
+Fitur ini adalah tempat utama untuk melihat dan memperbarui data pelampung di pesawat.
 
-### 3. Analitik dan Laporan Otomatis
-Membantu pengguna dalam perencanaan pekerjaan di masa depan sehingga tidak ada peralatan yang terlewat.
-- **Ramalan Penggantian**: Melihat jadwal penggantian dalam rentang Mingguan, Bulanan, hingga Tahunan.
-- **Wawasan Part Number (P/N)**: Mengetahui secara spesifik jenis barang apa saja yang harus disiapkan tim logistik.
-- **Ekspor Data**: Hasilkan laporan Excel profesional atau cetak dokumen PDF resmi dalam satu kali klik.
+**Cara Memilih Kursi:**
+- **Klik Biasa**: Memilih satu kursi (menghilangkan pilihan sebelumnya).
+- **Ctrl + Klik**: Menambah kursi ke pilihan yang sudah ada (untuk banyak kursi sekaligus).
+- **Shift + Klik**: Memilih sederetan kursi dari titik awal ke titik akhir.
+- **Klik Header Baris/Kolom**: Memilih seluruh baris atau kolom secara instan.
+
+**Cara Mengisi Tanggal Kedaluwarsa:**
+1. Pilih kursi-kursi yang ingin diperbarui.
+2. Klik tombol "Set Date" di toolbar atas.
+3. Pilih tanggal dari kalender yang muncul.
+4. Klik "Apply". Data akan tersimpan secara massal untuk semua kursi terpilih.
+
+### 3. Pintasan Keyboard (Shortcuts)
+Untuk mempercepat pekerjaan, gunakan tombol keyboard berikut:
+- **Ctrl + A**: Memilih SEMUA kursi di pesawat tersebut.
+- **Enter**: Membuka kotak pengisian tanggal (jika ada kursi yang sedang dipilih).
+- **Escape (ESC)**: Menghapus semua pilihan kursi atau menutup kotak pesan yang aktif.
 
 ---
 
-## Arti Warna Status Pelampung
+## Referensi Visual
 
-Kami menggunakan sistem warna yang standar agar memudahkan identifikasi status setiap kursi di pesawat:
-
-| Warna | Status | Keterangan Waktu |
+### Arti Warna Status
+| Warna | Status | Keterangan Kondisi |
 | :--- | :--- | :--- |
-| **Hijau** | Aman (Safe) | Masa berlaku masih lebih dari 6 bulan lagi |
-| **Kuning** | Peringatan (Warning) | Masa berlaku tersisa 3 sampai 6 bulan lagi |
-| **Merah** | Kritis (Critical) | Masa berlaku kurang dari 3 bulan lagi |
-| **Ungu** | Kedaluwarsa (Expired) | Masa berlaku sudah habis |
-| **Abu-abu** | Tidak Ada Data | Data tanggal kedaluwarsa belum diisi ke sistem |
+| **Hijau** | Aman (Safe) | Masa berlaku masih di atas 6 bulan lagi |
+| **Kuning** | Peringatan (Warning) | Masa berlaku tersisa antara 3 sampai 6 bulan |
+| **Merah** | Kritis (Critical) | Masa berlaku tinggal kurang dari 3 bulan |
+| **Ungu** | Kedaluwarsa (Expired) | Sudah melewati batas tanggal masa berlaku |
+| **Abu-abu** | Tidak Ada Data | Tanggal masa berlaku belum dimasukkan ke sistem |
 
 ---
 
-## Pintasan dan Interaksi (Shortcuts)
+## Cetak Laporan dan Formulir Lapangan
 
-Gunakan kombinasi keyboard dan mouse berikut untuk bekerja lebih efisien pada peta kursi:
+Aplikasi mendukung pengunduhan laporan dalam berbagai format resmi perusahaan:
 
-| Aksi | Fungsi |
-| :--- | :--- |
-| **Klik biasa** | Memilih satu kursi (menghapus pilihan sebelumnya) |
-| **Ctrl + Klik** | Menambahkan kursi ke pilihan yang sudah ada (Multi-select) |
-| **Shift + Klik** | Memilih rentang kursi dari titik awal ke titik akhir |
-| **Klik Nama Baris** | Memilih seluruh kursi dalam baris tersebut |
-| **Klik Nama Kolom** | Memilih seluruh kursi dalam kolom tersebut |
-| **Ctrl + A** | Memilih SEMUA kursi di dalam pesawat sekaligus |
-| **Tombol Enter** | Membuka kotak pengisian tanggal (ketika ada kursi dipilih) |
-| **Tombol Esc** | Mengosongkan pilihan atau menutup kotak pesan yang aktif |
+- **Export PDF**: Menghasilkan laporan peta kursi berwarna yang menunjukkan posisi pelampung dan tanggal kadaluwarsanya. Sangat berguna untuk arsip resmi.
+- **Formulir Kosong (Blank Form)**: Desain khusus dengan kotak yang lebih besar untuk pencatatan manual oleh teknisi di lapangan. Sistem secara otomatis menyesuaikan jumlah "Spare Boxes" (Cadangan PAX & INF) sesuai tipe pesawat:
+    - A320: 15 PAX, 20 INF
+    - A330: 15 PAX, 40 INF
+    - B737: 10 PAX, 25 INF
+    - B777: 35 PAX, 40 INF
+- **Export Excel**: Tersedia pada menu "Replacement Plans" untuk mengunduh daftar perencanaan kebutuhan suku cadang secara massal.
 
 ---
 
-## Daftar Armada dan Maskapai
+## Manajemen Armada dan Maskapai
 
-Sistem ini mendukung pengelolaan armada untuk beberapa maskapai besar:
+Kelola data dasar melalui rute `/fleet` yang dibagi menjadi dua tab utama:
 
-1. **Garuda Indonesia (GA)**
-2. **Citilink (QG)**
+- **Tab Aircraft**: Melihat, memfilter (berdasarkan maskapai atau tipe), menambah, mengubah, dan menghapus registrasi pesawat.
+- **Tab Airlines**: Mengelola daftar maskapai (seperti Garuda Indonesia - GA, Citilink - QG). Anda bisa menambah maskapai baru dengan mengisi Nama dan Kode IATA-nya.
 
-### Kapabilitas Tipe Pesawat
-| Tipe Pesawat | Registrasi | Kapasitas Terpasang |
-| :--- | :--- | :--- |
-| B737-800 | 40+ Pesawat | Hingga 174 Kursi |
-| B737 MAX 8 | Khusus | Konfigurasi Modern |
-| B777-300 | 8 Pesawat | 3-Class Configuration |
-| A330-900 | 5 Pesawat | New Generation Layout |
-| A330-200/300 | 25+ Pesawat | Long Haul Configuration |
-| A320-200 | 50+ Pesawat | Narrow Body Configuration |
-| ATR72-600 | Spesifik | Regional Configuration |
+### Penambahan Pesawat/Layout Baru
+1. **Cara Utama**: Melalui Fleet Manager, pilih Maskapai, Registrasi, Tipe, dan Layout yang sudah tersedia di daftar pilihan.
+2. **Layout Baru (Teknis)**: Jika ada konfigurasi kursi baru, admin dapat menyalin file template Blade di folder `aircraft/` dan menyesuaikan konfigurasi kursinya di folder `aircraft/partials/`. Sistem akan mendeteksi file baru tersebut secara otomatis di menu pilihan layout.
 
 ---
 
-## Detail Operasional Tambahan
+## Ikhtisar Armada Terpasang
 
-- **Formulir Lapangan (Blank Form)**: Cetak denah kursi kosong untuk membantu teknisi mencatat manual saat tidak membawa laptop.
-- **Kelola Fleet**: Admin dapat menambah atau mengubah data maskapai dan registrasi pesawat melalui rute /fleet.
-- **Buffer Spare**: Sistem otomatis menghitung kebutuhan pelampung cadangan (Spare PAX & INF) sesuai jenis pesawat.
+Sistem saat ini mendukung berbagai tipe pesawat dengan cakupan luas:
+- **B737-800 & MAX 8**: (40+ pesawat, layout e46-e49)
+- **B777-300**: (8 pesawat, layout 2-Class & 3-Class)
+- **A330-200/300/900**: (30+ pesawat, berbagai variasi layout & Cargo)
+- **A320-200**: (50+ pesawat, layout a320a)
+- **ATR72-600**: (layout atr72)
 
 ---
 

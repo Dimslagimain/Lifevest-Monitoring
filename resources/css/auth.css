@@ -20,10 +20,11 @@ html, body {
 }
 
 [data-theme="dark"] {
-    --text-main: #f1f5f9;
+    --text-main: #ffffff;
     --text-muted: #94a3b8;
     --bg-form: #0f172a;
-    --border-color: #1e293b;
+    --border-color: rgba(148, 163, 184, 0.45);
+    --bg-card: rgba(30, 41, 59, 0.7);
 }
 
 .auth-split-container {
@@ -58,12 +59,13 @@ html, body {
     left: 3rem;
     z-index: 10;
     padding: 1.2rem 2rem;
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(12px) saturate(1.2);
-    -webkit-backdrop-filter: blur(12px) saturate(1.2);
-    border-radius: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    background: rgba(255, 255, 255, 0.15); /* Glass effect like the bottom badge */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    transition: all 150ms ease;
 }
 
 .auth-large-logo {
@@ -100,7 +102,7 @@ html, body {
     justify-content: center;
     padding: 4rem;
     position: relative;
-    transition: background-color 0.3s ease;
+    transition: background-color 150ms ease;
 }
 
 .auth-form-container {
@@ -110,6 +112,17 @@ html, body {
 
 .auth-form-header {
     margin-bottom: 3rem;
+}
+
+.welcome-accent {
+    display: inline-block;
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    margin-bottom: 0.5rem;
+    opacity: 0.8;
 }
 
 .auth-form-header h1 {
@@ -196,17 +209,17 @@ html, body {
     padding: 0.85rem 1rem 0.85rem 3rem;
     background: transparent;
     border: 1.5px solid var(--border-color);
-    border-radius: 12px;
+    border-radius: 10px;
     font-size: 0.95rem;
     font-family: inherit;
     color: var(--text-main);
-    transition: all 0.2s ease;
+    transition: all 150ms ease;
 }
 
 .input-with-icon input:focus {
     outline: none;
     border-color: var(--primary);
-    box-shadow: 0 0 0 4px rgba(30, 144, 255, 0.1);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); /* Soft shadow, not glow */
 }
 
 /* Password Eye */
@@ -260,22 +273,22 @@ html, body {
     padding: 0;
     background: var(--primary);
     border: none;
-    border-radius: 12px;
+    border-radius: 10px;
     font-size: 1rem;
     font-weight: 700;
     color: #ffffff;
     cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 4px 12px rgba(30, 144, 255, 0.25);
+    transition: all 150ms ease;
+    box-shadow: 0 4px 12px rgba(30, 144, 255, 0.2);
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 .auth-submit:hover:not(:disabled) {
-    background: var(--primary-hover);
+    background: var(--primary-dark);
     transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(30, 144, 255, 0.35);
+    box-shadow: 0 6px 16px rgba(30, 144, 255, 0.3);
 }
 
 .auth-submit:disabled {

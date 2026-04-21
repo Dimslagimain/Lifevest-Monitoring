@@ -462,6 +462,14 @@
     <div class="airline-section" style="text-align: center; margin-top: 2rem; margin-bottom: 2rem; width: 100%;">
         <a href="#" onclick="(document.querySelector('.dashboard-content') || document.querySelector('.main-content') || window).scrollTo({top: 0, behavior: 'smooth'}); return false;" class="btn-premium" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1.5rem;">Back to Top ↑</a>
     </div>
+
+    <!-- Empty State (No Results Found) -->
+    <div id="empty-state" style="display: none; padding: 4rem 2rem; text-align: center; background: var(--bg-card); border: 2px dashed var(--border); border-radius: 12px; margin: 2rem 0;">
+        <div style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;">🔍</div>
+        <h3 style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin: 0 0 0.5rem;">Tidak Ada Hasil Ditemukan</h3>
+        <p style="color: var(--text-muted); font-size: 1rem; max-width: 400px; margin: 0 auto 1.5rem;">Maaf, tidak ada pesawat atau maskapai yang cocok dengan kriteria pencarian Anda. Silakan coba kata kunci lain atau bersihkan filter.</p>
+        <button type="button" onclick="document.getElementById('clearFilters').click();" class="btn-premium" style="padding: 0.6rem 1.5rem;">Bersihkan Semua Filter</button>
+    </div>
     
     </div> <!-- End Fleet Details Container -->
 
@@ -911,6 +919,8 @@
             const cards = Array.from(document.querySelectorAll('.fleet-card'));
             const airlineSections = Array.from(document.querySelectorAll('.airline-section'));
             const fleetSections = Array.from(document.querySelectorAll('.fleet-section'));
+            const emptyState = document.getElementById('empty-state');
+            const airlineMasterOverview = document.getElementById('airline-master-overview');
 
             // Toggle filter panel
             toggleBtn?.addEventListener('click', function () {
@@ -1003,10 +1013,27 @@
                 });
 
                 // Update filter count display
-                if (airlineFilter || typeFilter || statusFilter || healthFilter || searchQuery) {
+                if (hasFilters) {
                     filterCount.textContent = `Showing ${visibleCount} of ${totalCount} aircraft`;
                 } else {
                     filterCount.textContent = '';
+                }
+
+                // Show/Hide Empty State
+                if (emptyState) {
+                    const isMasterVisible = airlineMasterOverview && airlineMasterOverview.style.display !== 'none';
+                    let totalVisibleInView = 0;
+
+                    if (isMasterVisible) {
+                        // Level 1: Check Master Cards
+                        const visibleMaster = airlineMasterOverview.querySelectorAll('.airline-master-card:not([style*="display: none"])');
+                        totalVisibleInView = visibleMaster.length;
+                    } else {
+                        // Level 2: Check standard cards
+                        totalVisibleInView = visibleCount;
+                    }
+
+                    emptyState.style.display = totalVisibleInView === 0 ? 'block' : 'none';
                 }
             }
 

@@ -22,18 +22,18 @@
     
     --expired: #8b5cf6;
     
-    /* Neutrals - Deeper, richer dark palette */
+    /* Neutrals - Solid yet airy executive palette */
     --bg-dark: #0c1222;
     --bg-gradient-end: #162032;
-    --bg-card: rgba(22, 34, 56, 0.75);
+    --bg-card: rgba(22, 34, 56, 0.9); /* Increased solidity for readability */
     --bg-card-solid: #162238;
     --bg-hover: rgba(51, 65, 85, 0.5);
-    --bg-secondary: rgba(30, 41, 59, 0.6);
-    --border: rgba(71, 85, 105, 0.4);
-    --border-subtle: rgba(71, 85, 105, 0.2);
-    --text-primary: #f1f5f9;
-    --text-secondary: #94a3b8;
-    --text-muted: #64748b;
+    --bg-secondary: rgba(30, 41, 59, 0.9); 
+    --border: rgba(148, 163, 184, 0.4); /* Lighter/Visible border for Dark Mode */
+    --border-subtle: rgba(148, 163, 184, 0.2);
+    --text-primary: #ffffff; /* Pure white for maximum contrast */
+    --text-secondary: #f1f5f9;
+    --text-muted: #94a3b8;
     
     /* Spacing */
     --spacing-xs: 4px;
@@ -42,25 +42,24 @@
     --spacing-lg: 24px;
     --spacing-xl: 32px;
     
-    /* Border Radius */
-    --radius-sm: 8px;
-    --radius-md: 12px;
-    --radius-lg: 16px;
-    --radius-xl: 20px;
+    /* Border Radius - Mature & Precise (Reduced from bubbly 20px) */
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 12px;
+    --radius-xl: 14px;
     
-    /* Shadows - Multi-layered for depth */
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2), 0 1px 3px rgba(0, 0, 0, 0.1);
-    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.25), 0 4px 10px rgba(0, 0, 0, 0.1);
-    --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.3), 0 8px 16px rgba(0, 0, 0, 0.15);
-    --shadow-glow-primary: 0 0 20px rgba(59, 130, 246, 0.15);
-    --shadow-glow-success: 0 0 20px rgba(16, 185, 129, 0.15);
-    --shadow-glow-danger: 0 0 20px rgba(239, 68, 68, 0.15);
+    /* Shadows - Deep & Sophisticated (Removed Neon Glows) */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.15);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
     
-    /* Transitions */
+    /* Primary Action Shadow (Professional Elevation) */
+    --shadow-primary: 0 4px 14px 0 rgba(59, 130, 246, 0.35);
+    
+    /* Transitions - Snappy & Responsive */
     --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-smooth: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-normal: 220ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 
@@ -68,21 +67,21 @@
 [data-theme="light"] {
     --bg-dark: #f8fafc;
     --bg-gradient-end: #f1f5f9;
-    --bg-card: rgba(255, 255, 255, 0.85);
+    --bg-card: rgba(255, 255, 255, 0.95); /* Nearly solid for best legibility */
     --bg-card-solid: #ffffff;
     --bg-hover: #f1f5f9;
     --bg-secondary: rgba(241, 245, 249, 1);
-    --border: rgba(15, 23, 42, 0.2);
-    --border-subtle: rgba(15, 23, 42, 0.12);
+    --border: rgba(15, 23, 42, 0.25); /* More visible in light mode */
+    --border-subtle: rgba(15, 23, 42, 0.15);
     
-    --text-primary: #000000;
-    --text-secondary: #000000;
-    --text-muted: #000000;
+    --text-primary: #000000; /* Pure black for maximum contrast */
+    --text-secondary: #1e293b;
+    --text-muted: #475569;
     
-    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.04), 0 2px 4px rgba(0, 0, 0, 0.03);
-    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.06), 0 4px 10px rgba(0, 0, 0, 0.03);
-    --shadow-glow-primary: 0 0 20px rgba(59, 130, 246, 0.08);
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-primary: 0 4px 14px 0 rgba(30, 41, 59, 0.15);
 }
 
 /* Light Mode Component Overrides */

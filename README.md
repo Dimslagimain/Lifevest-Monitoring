@@ -7,7 +7,7 @@ Aplikasi **Life Vest Tracker** adalah solusi digital modern yang dirancang khusu
 
 ---
 
-## ⚙️ Panduan Teknis (Developer)
+## Panduan Teknis (Developer)
 
 ### Prasyarat
 - PHP 8.1+ (Laravel 12)
@@ -49,37 +49,37 @@ lifevest-laravel/
 ```
 ---
 
-## 🚀 Fitur Utama (Overview)
+## Fitur Utama (Overview)
 
 Kami merancang aplikasi ini agar mudah dipahami oleh siapa saja, mulai dari teknisi di lapangan hingga manajemen level atas.
 
-### 📊 1. Command Center (Dashboard Utama)
+### 1. Command Center (Dashboard Utama)
 Layar kendali utama yang memberikan gambaran "Kesehatan Armada" secara instan.
 - **Visualisasi Donut Chart**: Melihat persentase pesawat yang aman (Safe), butuh perhatian (Warning), atau kritis (Critical/Expired).
 - **Auto-Sorting**: Sistem secara otomatis menempatkan maskapai atau pesawat yang membutuhkan perhatian paling mendesak di urutan teratas.
 - **SPA Experience**: Perpindahan antar-menu (via Sidebar) terjadi instan secara dinamis tanpa proses *reload* browser.
 - **Dark/Light Mode**: Mendukung tema gelap dan terang dengan implementasi UI *Glassmorphism*.
 
-### 💺 2. Digital Seat Map (Peta Kursi Interaktif)
+### 2. Digital Seat Map (Peta Kursi Interaktif)
 Ucapkan selamat tinggal pada pendataan manual di kertas.
 - **Grid Interaktif**: Visualisasi tata letak kursi (A320, B737, B777, dll.) dengan kode warna status.
 - **Smart Selection**: Pilih banyak kursi sekaligus menggunakan klik, Shift+Klik, atau Ctrl+Klik.
 - **Pencarian Cepat**: Cari kursi spesifik hanya dengan mengetikkan nomor kursinya.
 
-### 📅 3. Predictive Replacement Planning
+### 3. Predictive Replacement Planning
 Perencanaan cerdas agar tidak ada *life vest* yang terlewat tanggal kedaluwarsanya.
 - **Timeline Pintar**: Lihat jadwal penggantian dalam rentang Mingguan, Bulanan, hingga Tahunan.
 - **Breakdown Part Number (P/N)**: Mengetahui secara spesifik stok *part number* apa yang harus disiapkan.
 - **Export Excel**: Kirim laporan perencanaan langsung ke tim logistik atau pengadaan.
 
-### 🛠️ 4. Operational Efficiency Tools
+### 4. Operational Efficiency Tools
 - **Batch Data Entry**: Fitur khusus untuk menyalin data dari Excel dan menempelnya langsung ke sistem.
 - **Formulir Lapangan (Blank Form)**: Cetak peta kursi kosong untuk teknisi mencatat manual di lapangan.
 - **Laporan PDF Profesional**: Cetak hasil inspeksi dalam format PDF resmi.
 
 ---
 
-## ⌨️ Panduan Penggunaan & Shortcuts
+## Panduan Penggunaan & Shortcuts
 
 ### SELECT KURSI (Mouse & Keyboard)
 | Aksi | Fungsi |
@@ -104,7 +104,7 @@ Perencanaan cerdas agar tidak ada *life vest* yang terlewat tanggal kedaluwarsan
 
 ---
 
-## 📉 Fleet Overview
+## Fleet Overview
 
 Berikut adalah daftar tipe pesawat dan konfigurasi layout yang didukung oleh sistem saat ini:
 
@@ -127,7 +127,7 @@ Sistem mendukung **Multi-Airline Management**:
 
 ---
 
-## 🛠️ Detail Fitur Operasional
+## Detail Fitur Operasional
 
 ### 1. Ekspor & Laporan
 - **Export PDF**: Klik tombol **"Export PDF"** di toolbar seat map untuk laporan berwarna.
@@ -145,7 +145,7 @@ Pusat kontrol data pesawat melalui rute `/fleet` (Akses Admin/Superadmin):
 
 ---
 
-## 📖 Dokumentasi Lengkap
+## Dokumentasi Lengkap
 
 | Dokumen | Deskripsi |
 |---------|-----------|

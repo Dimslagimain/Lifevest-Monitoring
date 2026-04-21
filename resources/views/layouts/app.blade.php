@@ -24,6 +24,7 @@
             } catch (e) {}
         })();
     </script>
+    <link rel="icon" type="image/jpeg" href="{{ asset('images/cabinx.jpeg') }}">
 
     <!-- CSS & JS -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])

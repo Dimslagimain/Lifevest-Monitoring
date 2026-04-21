@@ -28,7 +28,7 @@
     </script>
 
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="{{ asset('images/gmflogo.png') }}">
+    <link rel="icon" type="image/jpeg" href="{{ asset('images/cabinx.jpeg') }}">
 
     @vite(['resources/css/auth.css'])
 </head>

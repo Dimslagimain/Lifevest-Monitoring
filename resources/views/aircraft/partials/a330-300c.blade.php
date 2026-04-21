@@ -20,7 +20,7 @@
                 $status = $seat?->status ?? 'no-data';
                 $expiryDate = $seat?->expiry_date?->format($dateFormat) ?? '-';
             @endphp
-            <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-col="LL1">
+            <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-row="{{ $seatId }}" data-col="LL1">
                 <div class="seat-id">D11-LL1</div>
                 <div class="seat-date" data-date="{{ $seat?->expiry_date?->format('Y-m-d') ?? '' }}">
                     {{ $expiryDate }}
@@ -35,7 +35,7 @@
                 $status = $seat?->status ?? 'no-data';
                 $expiryDate = $seat?->expiry_date?->format($dateFormat) ?? '-';
             @endphp
-            <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-col="R">
+            <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-row="{{ $seatId }}" data-col="R">
                 <div class="seat-id">D21-R</div>
                 <div class="seat-date" data-date="{{ $seat?->expiry_date?->format('Y-m-d') ?? '' }}">
                     {{ $expiryDate }}
@@ -50,7 +50,7 @@
                 $status = $seat?->status ?? 'no-data';
                 $expiryDate = $seat?->expiry_date?->format($dateFormat) ?? '-';
             @endphp
-            <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-col="LL2">
+            <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-row="{{ $seatId }}" data-col="LL2">
                 <div class="seat-id">D11-LL2</div>
                 <div class="seat-date" data-date="{{ $seat?->expiry_date?->format('Y-m-d') ?? '' }}">
                     {{ $expiryDate }}
@@ -62,7 +62,7 @@
                 $status = $seat?->status ?? 'no-data';
                 $expiryDate = $seat?->expiry_date?->format($dateFormat) ?? '-';
             @endphp
-            <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-col="LR">
+            <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-row="{{ $seatId }}" data-col="LR">
                 <div class="seat-id">D11-LR</div>
                 <div class="seat-date" data-date="{{ $seat?->expiry_date?->format('Y-m-d') ?? '' }}">
                     {{ $expiryDate }}
@@ -139,7 +139,7 @@
                 $status = $seat?->status ?? 'no-data';
                 $expiryDate = $seat?->expiry_date?->format($dateFormat) ?? '-';
             @endphp
-            <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-col="L">
+            <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-row="{{ $seatId }}" data-col="L">
                 <div class="seat-id">D12-L</div>
                 <div class="seat-date" data-date="{{ $seat?->expiry_date?->format('Y-m-d') ?? '' }}">
                     {{ $expiryDate }}
@@ -153,7 +153,7 @@
                 $status = $seat?->status ?? 'no-data';
                 $expiryDate = $seat?->expiry_date?->format($dateFormat) ?? '-';
             @endphp
-            <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-col="RL">
+            <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-row="{{ $seatId }}" data-col="RL">
                 <div class="seat-id">D22-RL</div>
                 <div class="seat-date" data-date="{{ $seat?->expiry_date?->format('Y-m-d') ?? '' }}">
                     {{ $expiryDate }}
@@ -165,7 +165,7 @@
                 $status = $seat?->status ?? 'no-data';
                 $expiryDate = $seat?->expiry_date?->format($dateFormat) ?? '-';
             @endphp
-            <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-col="RR">
+            <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-row="{{ $seatId }}" data-col="RR">
                 <div class="seat-id">D22-RR</div>
                 <div class="seat-date" data-date="{{ $seat?->expiry_date?->format('Y-m-d') ?? '' }}">
                     {{ $expiryDate }}
@@ -236,7 +236,7 @@
                 $status = $seat?->status ?? 'no-data';
                 $expiryDate = $seat?->expiry_date?->format($dateFormat) ?? '-';
             @endphp
-            <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-col="L">
+            <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-row="{{ $seatId }}" data-col="L">
                 <div class="seat-id">D13-L</div>
                 <div class="seat-date" data-date="{{ $seat?->expiry_date?->format('Y-m-d') ?? '' }}">
                     {{ $expiryDate }}
@@ -251,7 +251,7 @@
                 $status = $seat?->status ?? 'no-data';
                 $expiryDate = $seat?->expiry_date?->format($dateFormat) ?? '-';
             @endphp
-            <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-col="R">
+            <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-row="{{ $seatId }}" data-col="R">
                 <div class="seat-id">D23-R</div>
                 <div class="seat-date" data-date="{{ $seat?->expiry_date?->format('Y-m-d') ?? '' }}">
                     {{ $expiryDate }}
@@ -323,7 +323,7 @@
                     $status = $seat?->status ?? 'no-data';
                     $expiryDate = $seat?->expiry_date?->format($dateFormat) ?? '-';
                 @endphp
-                <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-col="LL">
+                <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-row="{{ $seatId }}" data-col="LL">
                     <div class="seat-id">D14-LL</div>
                     <div class="seat-date" data-date="{{ $seat?->expiry_date?->format('Y-m-d') ?? '' }}">
                         {{ $expiryDate }}
@@ -335,7 +335,7 @@
                     $status = $seat?->status ?? 'no-data';
                     $expiryDate = $seat?->expiry_date?->format($dateFormat) ?? '-';
                 @endphp
-                <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-col="LR">
+                <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-row="{{ $seatId }}" data-col="LR">
                     <div class="seat-id">D14-LR</div>
                     <div class="seat-date" data-date="{{ $seat?->expiry_date?->format('Y-m-d') ?? '' }}">
                         {{ $expiryDate }}
@@ -354,7 +354,7 @@
                     $status = $seat?->status ?? 'no-data';
                     $expiryDate = $seat?->expiry_date?->format($dateFormat) ?? '-';
                 @endphp
-                <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-col="LC">
+                <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-row="{{ $seatId }}" data-col="LC">
                     <div class="seat-id">Aft-LC</div>
                     <div class="seat-date" data-date="{{ $seat?->expiry_date?->format('Y-m-d') ?? '' }}">
                         {{ $expiryDate }}
@@ -366,7 +366,7 @@
                     $status = $seat?->status ?? 'no-data';
                     $expiryDate = $seat?->expiry_date?->format($dateFormat) ?? '-';
                 @endphp
-                <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-col="RC">
+                <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-row="{{ $seatId }}" data-col="RC">
                     <div class="seat-id">Aft-RC</div>
                     <div class="seat-date" data-date="{{ $seat?->expiry_date?->format('Y-m-d') ?? '' }}">
                         {{ $expiryDate }}
@@ -385,7 +385,7 @@
                     $status = $seat?->status ?? 'no-data';
                     $expiryDate = $seat?->expiry_date?->format($dateFormat) ?? '-';
                 @endphp
-                <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-col="RL">
+                <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-row="{{ $seatId }}" data-col="RL">
                     <div class="seat-id">D24-RL</div>
                     <div class="seat-date" data-date="{{ $seat?->expiry_date?->format('Y-m-d') ?? '' }}">
                         {{ $expiryDate }}
@@ -397,7 +397,7 @@
                     $status = $seat?->status ?? 'no-data';
                     $expiryDate = $seat?->expiry_date?->format($dateFormat) ?? '-';
                 @endphp
-                <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-col="RR">
+                <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-row="{{ $seatId }}" data-col="RR">
                     <div class="seat-id">D24-RR</div>
                     <div class="seat-date" data-date="{{ $seat?->expiry_date?->format('Y-m-d') ?? '' }}">
                         {{ $expiryDate }}
@@ -425,7 +425,7 @@
                         $status = $seat?->status ?? 'no-data';
                         $expiryDate = $seat?->expiry_date?->format($dateFormat) ?? '-';
                     @endphp
-                    <div class="seat-card spare-card status-{{ $status }}" data-seat="{{ $seatId }}">
+                    <div class="seat-card spare-card status-{{ $status }}" data-seat="{{ $seatId }}" data-row="{{ $seatId }}">
                         <button type="button" class="btn-delete-spare" title="Delete">&times;</button>
                         <div class="seat-id">{{ $num }}</div>
                         <div class="seat-date" data-date="{{ $seat?->expiry_date?->format('Y-m-d') ?? '' }}">
@@ -452,7 +452,7 @@
                         $status = $seat?->status ?? 'no-data';
                         $expiryDate = $seat?->expiry_date?->format($dateFormat) ?? '-';
                     @endphp
-                    <div class="seat-card spare-card status-{{ $status }}" data-seat="{{ $seatId }}">
+                    <div class="seat-card spare-card status-{{ $status }}" data-seat="{{ $seatId }}" data-row="{{ $seatId }}">
                         <button type="button" class="btn-delete-spare" title="Delete">&times;</button>
                         <div class="seat-id">{{ $num }}</div>
                         <div class="seat-date" data-date="{{ $seat?->expiry_date?->format('Y-m-d') ?? '' }}">

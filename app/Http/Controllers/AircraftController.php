@@ -67,7 +67,7 @@ class AircraftController extends Controller
             'expCrew' => $expCrew,
             'expInfant' => $expInfant,
             'logs' => auth()->user() && auth()->user()->isAdmin() 
-                ? ActivityLog::with('user')->where('registration', $registration)->latest()->take(10)->get() 
+                ? ActivityLog::with(['user', 'aircraft'])->where('registration', $registration)->latest()->take(10)->get() 
                 : collect(),
         ]);
     }
@@ -365,6 +365,19 @@ class AircraftController extends Controller
                     $savedCount++;
                 }
             }
+        }
+
+        // Log the activity
+        if ($savedCount > 0) {
+            ActivityLog::create([
+                'user_id' => auth()->id(),
+                'registration' => $registration,
+                'action' => 'batch',
+                'details' => [
+                    'seat_count' => $savedCount,
+                    'message' => 'Performed batch update for ' . $savedCount . ' seats'
+                ]
+            ]);
         }
 
         return redirect()->route('aircraft.show', $registration)

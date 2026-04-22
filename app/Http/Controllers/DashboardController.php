@@ -381,7 +381,7 @@ class DashboardController extends Controller
 
         // Fetch non-cached data (real-time logs for admins)
         $data['recentLogs'] = auth()->user() && auth()->user()->isAdmin() 
-            ? ActivityLog::with('user')->latest()->take(10)->get() 
+            ? ActivityLog::with(['user', 'aircraft'])->latest()->take(10)->get() 
             : collect();
 
         return view('dashboard', $data);

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Aircraft;
 use App\Models\Airline;
+use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 
 class FleetController extends Controller
@@ -100,10 +101,34 @@ class FleetController extends Controller
         ]);
 
         $aircraft = Aircraft::findOrFail($id);
+        $oldPn = [
+            'adult' => $aircraft->pn_adult,
+            'crew' => $aircraft->pn_crew,
+            'infant' => $aircraft->pn_infant,
+        ];
 
         // Allow updating airline_id, type and status.
         // Registration and Layout are structural and shouldn't change.
         $aircraft->update($request->only(['airline_id', 'type', 'status', 'pn_adult', 'pn_crew', 'pn_infant']));
+
+        // Log if PN changed
+        $newPn = [
+            'adult' => $aircraft->pn_adult,
+            'crew' => $aircraft->pn_crew,
+            'infant' => $aircraft->pn_infant,
+        ];
+
+        if ($oldPn !== $newPn) {
+            ActivityLog::create([
+                'user_id' => auth()->id(),
+                'registration' => $aircraft->registration,
+                'action' => 'pn_update',
+                'details' => [
+                    'old' => $oldPn,
+                    'new' => $newPn,
+                ]
+            ]);
+        }
 
         return redirect()->route('fleet.index')->with('success', 'Aircraft updated successfully.');
     }

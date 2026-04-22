@@ -25,4 +25,12 @@ class ActivityLog extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    /**
+     * Get the aircraft related to this log
+     */
+    public function aircraft(): BelongsTo
+    {
+        return $this->belongsTo(Aircraft::class, 'registration', 'registration');
+    }
 }

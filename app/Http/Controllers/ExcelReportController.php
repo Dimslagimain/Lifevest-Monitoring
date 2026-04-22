@@ -627,6 +627,7 @@ class ExcelReportController extends Controller
     public function exportActivityLog(Request $request)
     {
         $logs = \App\Models\ActivityLog::with(['user', 'aircraft'])
+            ->whereIn('action', ['update', 'batch', 'pn_update', 'delete'])
             ->orderBy('created_at', 'desc')
             ->get();
 

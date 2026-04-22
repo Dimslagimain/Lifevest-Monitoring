@@ -712,7 +712,7 @@ class ExcelReportController extends Controller
             $sheet->setCellValue('E' . $rowIdx, $pn);
             $sheet->setCellValue('F' . $rowIdx, $log->details['seat_count'] ?? (isset($log->details['seats']) ? count($log->details['seats']) : '-'));
             $sheet->setCellValue('G' . $rowIdx, isset($log->details['seats']) ? implode(', ', $log->details['seats']) : ($log->details['seat_id'] ?? '-'));
-            $sheet->setCellValue('H' . $rowIdx, isset($log->details['expiry_date']) ? \Carbon\Carbon::parse($log->details['expiry_date'])->format('d/m/Y') : '-');
+            $sheet->setCellValue('H' . $rowIdx, isset($log->details['expiry_date']) ? Carbon::parse($log->details['expiry_date'])->format('d/m/Y') : '-');
 
             // Zebra Stripping & Borders
             $range = "A{$rowIdx}:H{$rowIdx}";

@@ -18,7 +18,7 @@ class DashboardController extends Controller
         $lastAircraftUpdate = Aircraft::max('updated_at');
         $lastAirlineUpdate = Airline::max('updated_at');
         
-        $cacheKey = 'dashboard_data_' . md5($lastSeatUpdate . $lastAircraftUpdate . $lastAirlineUpdate);
+        $cacheKey = 'dashboard_data_v2_' . md5($lastSeatUpdate . $lastAircraftUpdate . $lastAirlineUpdate);
 
         $data = Cache::rememberForever($cacheKey, function () use ($lastSeatUpdate) {
             // Load from Database (All status: active & prolong) with airline relationship

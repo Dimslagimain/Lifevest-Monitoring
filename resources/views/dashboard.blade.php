@@ -138,66 +138,51 @@
         </a>
     @endif
 
-    <!-- Filter Toggle Button -->
-    <div id="top" style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
-        <button type="button" id="toggleFilters" class="btn-premium"
-            style="border-radius: 8px;">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
-            <span>Filters</span>
-            <span id="filterArrow" style="transition: transform 0.2s; font-size: 0.65rem; margin-left: 0.25rem;">▼</span>
-        </button>
-        <span id="filterCount" style="color: var(--text-muted); font-size: 0.85rem; font-weight: 500;"></span>
+    <!-- Header & Quick Navigation -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h1 style="margin: 0; font-size: 2rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.02em;">Fleet Overview</h1>
     </div>
 
-    <!-- Collapsible Filter Bar -->
-    <div id="filterPanel" class="filter-bar"
-        style="display: none; flex-wrap: wrap; gap: 0.75rem; align-items: center; margin-bottom: 1.5rem; padding: 1rem; background: var(--bg-secondary); border-radius: 8px;">
 
-        <!-- Search Registration -->
-        <input type="text" id="searchInput" class="form-input" placeholder="Search registration..."
-            style="min-width: 200px; max-width: 250px;">
 
-        <select id="filterAirline" class="form-select" style="min-width: 180px; cursor: pointer;">
-            <option value="">All Airlines</option>
-            @foreach($fleetByAirline as $airlineId => $airline)
-                <option value="{{ $airline['name'] }}">{{ $airline['name'] }}</option>
-            @endforeach
-        </select>
 
-        <select id="filterType" class="form-select" style="min-width: 150px; cursor: pointer;">
-            <option value="">All Types</option>
-            @php
-                $uniqueTypes = collect($fleet)->pluck('type')->unique()->sort();
-            @endphp
-            @foreach($uniqueTypes as $type)
-                <option value="{{ $type }}">{{ $type }}</option>
-            @endforeach
-        </select>
 
-        <select id="filterStatus" class="form-select" style="min-width: 130px; cursor: pointer;">
-            <option value="">All Status</option>
-            <option value="active">Active</option>
-            <option value="prolong">Prolong</option>
-        </select>
-
-        <select id="filterHealth" class="form-select" style="min-width: 160px; cursor: pointer;">
-            <option value="">All Health</option>
-            <option value="critical">🔴 Critical/Expired</option>
-            <option value="warning">🟡 Warning</option>
-            <option value="safe">🟢 Safe</option>
-        </select>
-
-        <button type="button" id="clearFilters" class="btn-premium" style="cursor: pointer; border: none; border-radius: 8px;">Clear</button>
-    </div>
 
     @if($currentView === 'fleet-overview' || $currentView === 'all')
-        {{-- Summary Section --}}
-        <section class="summary-section animate-view">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
-                    <h2>Fleet Overview</h2>
+        {{-- Summary Cards (Modern Redesign) --}}
+        <section class="summary-section animate-view" style="margin-bottom: 3rem;">
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem;">
+                <!-- SAFE -->
+                <div style="background: linear-gradient(135deg, rgba(46, 204, 113, 0.05) 0%, rgba(255,255,255,1) 100%); border: 1px solid rgba(46, 204, 113, 0.2); border-radius: 16px; padding: 2rem 1.5rem; text-align: center; position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.03); border-bottom: 4px solid var(--success);">
+                    <div style="width: 24px; height: 24px; background: radial-gradient(circle at 30% 30%, #58d68d, #2ecc71); border-radius: 50%; margin: 0 auto 1.25rem; box-shadow: 0 4px 10px rgba(46, 204, 113, 0.4);"></div>
+                    <div style="font-size: 2.75rem; font-weight: 800; color: #1a1a1a; letter-spacing: -1px; line-height: 1;">{{ $totalStats['safe'] }}</div>
+                    <div style="font-size: 0.85rem; font-weight: 800; color: #666; text-transform: uppercase; letter-spacing: 1px; margin-top: 0.75rem;">Safe</div>
+                    <div style="font-size: 0.75rem; color: #999; margin-top: 4px; font-weight: 600;">> 6 months</div>
                 </div>
-                {{-- ... content clipped for brevity, using TargetContent for match --}}
+
+                <!-- WARNING -->
+                <div style="background: linear-gradient(135deg, rgba(241, 196, 15, 0.05) 0%, rgba(255,255,255,1) 100%); border: 1px solid rgba(241, 196, 15, 0.2); border-radius: 16px; padding: 2rem 1.5rem; text-align: center; position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.03); border-bottom: 4px solid var(--warning);">
+                    <div style="width: 24px; height: 24px; background: radial-gradient(circle at 30% 30%, #f7dc6f, #f1c40f); border-radius: 50%; margin: 0 auto 1.25rem; box-shadow: 0 4px 10px rgba(241, 196, 15, 0.4);"></div>
+                    <div style="font-size: 2.75rem; font-weight: 800; color: #1a1a1a; letter-spacing: -1px; line-height: 1;">{{ $totalStats['warning'] }}</div>
+                    <div style="font-size: 0.85rem; font-weight: 800; color: #666; text-transform: uppercase; letter-spacing: 1px; margin-top: 0.75rem;">Warning</div>
+                    <div style="font-size: 0.75rem; color: #999; margin-top: 4px; font-weight: 600;">3-6 months</div>
+                </div>
+
+                <!-- CRITICAL -->
+                <div style="background: linear-gradient(135deg, rgba(231, 76, 60, 0.05) 0%, rgba(255,255,255,1) 100%); border: 1px solid rgba(231, 76, 60, 0.2); border-radius: 16px; padding: 2rem 1.5rem; text-align: center; position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.03); border-bottom: 4px solid var(--danger);">
+                    <div style="width: 24px; height: 24px; background: radial-gradient(circle at 30% 30%, #ec7063, #e74c3c); border-radius: 50%; margin: 0 auto 1.25rem; box-shadow: 0 4px 10px rgba(231, 76, 60, 0.4);"></div>
+                    <div style="font-size: 2.75rem; font-weight: 800; color: #1a1a1a; letter-spacing: -1px; line-height: 1;">{{ $totalStats['critical'] }}</div>
+                    <div style="font-size: 0.85rem; font-weight: 800; color: #666; text-transform: uppercase; letter-spacing: 1px; margin-top: 0.75rem;">Critical</div>
+                    <div style="font-size: 0.75rem; color: #999; margin-top: 4px; font-weight: 600;">< 3 months</div>
+                </div>
+
+                <!-- EXPIRED -->
+                <div style="background: linear-gradient(135deg, rgba(142, 68, 173, 0.05) 0%, rgba(255,255,255,1) 100%); border: 1px solid rgba(142, 68, 173, 0.2); border-radius: 16px; padding: 2rem 1.5rem; text-align: center; position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.03); border-bottom: 4px solid purple;">
+                    <div style="width: 24px; height: 24px; background: radial-gradient(circle at 30% 30%, #af7ac5, #8e44ad); border-radius: 50%; margin: 0 auto 1.25rem; box-shadow: 0 4px 10px rgba(142, 68, 173, 0.4);"></div>
+                    <div style="font-size: 2.75rem; font-weight: 800; color: #1a1a1a; letter-spacing: -1px; line-height: 1;">{{ $totalStats['expired'] }}</div>
+                    <div style="font-size: 0.85rem; font-weight: 800; color: #666; text-transform: uppercase; letter-spacing: 1px; margin-top: 0.75rem;">Expired</div>
+                    <div style="font-size: 0.75rem; color: #999; margin-top: 4px; font-weight: 600;">Past due</div>
+                </div>
             </div>
         </section>
 
@@ -288,13 +273,23 @@
     </section>
 
         {{-- Fleet Details Container --}}
-        <div id="airline-fleet-details" class="animate-view" style="display: none;">
-            {{-- ... content clipped for brevity --}}
+        {{-- Fleet Details Container (Dynamic Header) --}}
+        <div id="airline-fleet-details" class="animate-view" style="display: none; margin-bottom: 2rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 1rem; border-bottom: 2px solid var(--border-subtle); margin-bottom: 1.5rem;">
+                <div>
+                    <h1 id="airline-details-title" style="margin: 0; font-size: 2rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.02em;">Airline Fleet</h1>
+                    <p id="airline-details-subtitle" style="margin: 0.25rem 0 0; color: var(--text-muted); font-size: 0.9rem; font-weight: 500;"></p>
+                </div>
+                <button type="button" onclick="hideAirlineDetails()" class="btn-premium" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.6rem 1.25rem; border-radius: 8px; background: var(--bg-card); border: 1px solid var(--border-subtle); color: var(--primary); font-weight: 700; cursor: pointer; transition: all 0.2s;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                    Back to Overview
+                </button>
+            </div>
         </div>
 
         {{-- Fleet Cards Section --}}
         @foreach($fleetByAirline as $airlineId => $airline)
-            <section class="airline-section" data-airline="{{ $airline['name'] }}" style="margin-bottom: 2rem;">
+            <section class="airline-section" data-airline="{{ $airline['name'] }}" style="margin-bottom: 2rem; display: none;">
             <div class="airline-header"
                 style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border);">
                 <div>
@@ -381,9 +376,6 @@
         </section>
     @endforeach
 
-    <div class="airline-section" style="text-align: center; margin-top: 2rem; margin-bottom: 2rem; width: 100%;">
-        <a href="#" onclick="(document.querySelector('.dashboard-content') || document.querySelector('.main-content') || window).scrollTo({top: 0, behavior: 'smooth'}); return false;" class="btn-premium" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1.5rem;">Back to Top ↑</a>
-    </div>
 
     <!-- Empty State (No Results Found) -->
     <div id="empty-state" style="display: none; padding: 4rem 2rem; text-align: center; background: var(--bg-card); border: 2px dashed var(--border); border-radius: 12px; margin: 2rem 0;">
@@ -543,10 +535,7 @@
                     <div class="replacement-card" style="padding: 1.5rem; border-left: none; overflow-x: auto;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                             <h3 style="margin: 0; font-size: 1rem; font-weight: 700; color: var(--text-primary);">Detailed Breakdown</h3>
-                            <a href="{{ route('reports.summary') }}" class="btn-premium-download">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                                Export Insights
-                            </a>
+                            <a href="{{ route('reports.summary') }}" class="btn-premium btn-premium-success">Export Insights</a>
                         </div>
                         <table class="fleet-table" style="width: 100%; border: none;">
                             <thead>
@@ -593,7 +582,7 @@
                             <span class="monthly-plan-subtitle">{{ $subtitleText }}</span>
                         </div>
                         <div style="display: flex; gap: 0.75rem; align-items: center;">
-                            <a href="{{ route('reports.excel') }}" class="btn-premium-download" title="Download Excel Report">
+                            <a href="{{ route('reports.excel') }}" class="btn-premium btn-premium-success" title="Download Excel Report">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                                 Export Schedule
                             </a>
@@ -708,9 +697,9 @@
     @endif
 
     <!-- Quick Stats -->
-    <section class="stats-section" id="quick-stats">
-        <h2>Quick Stats</h2>
-        <div class="stats-grid">
+    <section class="stats-section" style="margin-top: 2rem; margin-bottom: 3rem;">
+        <h3 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; color: var(--text-primary);">Quick Stats</h3>
+        <div style="display: flex; gap: 1.5rem; justify-content: space-between;">
             <div class="stat-item">
                 <div class="stat-value">{{ count($fleetByAirline) }}</div>
                 <div class="stat-label">Airlines</div>
@@ -857,6 +846,12 @@
             });
 
             function applyFilters() {
+                // If we are in Airline Detail view, don't run global filters
+                const fleetDetails = document.getElementById('airline-fleet-details');
+                if (fleetDetails && fleetDetails.style.display === 'block') {
+                    return;
+                }
+
                 const airlineFilter = filterAirline?.value || '';
                 const typeFilter = filterType?.value || '';
                 const statusFilter = filterStatus?.value || '';
@@ -906,61 +901,36 @@
                     if (show) visibleCount++;
                 });
 
-                // Hide empty fleet sections (type groups)
-                const hasFilters = (airlineFilter || typeFilter || statusFilter || healthFilter || searchQuery) !== '';
-                fleetSections.forEach(section => {
-                    const visibleCards = section.querySelectorAll('.fleet-card:not([style*="display: none"])');
-                    section.style.display = visibleCards.length > 0 ? '' : 'none';
-
-                    // Update type count
-                    const typeCount = section.querySelector('.type-count');
-                    if (typeCount) {
-                        typeCount.textContent = `(${visibleCards.length})`;
-                    }
-                    
-                    // Auto Expand if filtered
-                    const cardsContainer = section.querySelector('.fleet-cards');
-                    const headerIcon = section.querySelector('.collapse-icon');
-                    if (cardsContainer && headerIcon && hasFilters) {
-                        cardsContainer.style.display = 'grid';
-                        headerIcon.style.transform = 'rotate(90deg)';
-                    }
-                });
-
-                // Hide empty airline sections
+                // Update Visibility for Airline Sections and Fleet Sections
                 airlineSections.forEach(section => {
-                    const visibleCards = section.querySelectorAll('.fleet-card:not([style*="display: none"])');
-                    section.style.display = visibleCards.length > 0 ? '' : 'none';
-
-                    // Update airline count
-                    const airlineCount = section.querySelector('.airline-count');
-                    if (airlineCount) {
-                        airlineCount.textContent = visibleCards.length;
+                    const sectionAirline = (section.dataset.airline || '').trim().toLowerCase();
+                    const currentFilter = (airlineFilter || '').trim().toLowerCase();
+                    
+                    if (currentFilter) {
+                        if (sectionAirline === currentFilter) {
+                            section.style.display = 'block';
+                            // Explicitly show all fleet sections inside the active airline
+                            section.querySelectorAll('.fleet-section').forEach(fs => {
+                                fs.style.display = 'block';
+                            });
+                        } else {
+                            section.style.display = 'none';
+                        }
+                    } else {
+                        // Overview mode
+                        const visibleCards = section.querySelectorAll('.fleet-card:not([style*="display: none"])');
+                        section.style.display = (visibleCards.length > 0 || searchQuery) ? 'block' : 'none';
+                        
+                        section.querySelectorAll('.fleet-section').forEach(fs => {
+                            const cardsInType = fs.querySelectorAll('.fleet-card:not([style*="display: none"])');
+                            fs.style.display = (cardsInType.length > 0 || searchQuery) ? 'block' : 'none';
+                        });
                     }
                 });
 
-                // Update filter count display
-                if (hasFilters) {
-                    filterCount.textContent = `Showing ${visibleCount} of ${totalCount} aircraft`;
-                } else {
-                    filterCount.textContent = '';
-                }
-
-                // Show/Hide Empty State
+                // Hide/Hide Empty State
                 if (emptyState) {
-                    const isMasterVisible = airlineMasterOverview && airlineMasterOverview.style.display !== 'none';
-                    let totalVisibleInView = 0;
-
-                    if (isMasterVisible) {
-                        // Level 1: Check Master Cards
-                        const visibleMaster = airlineMasterOverview.querySelectorAll('.airline-master-card:not([style*="display: none"])');
-                        totalVisibleInView = visibleMaster.length;
-                    } else {
-                        // Level 2: Check standard cards
-                        totalVisibleInView = visibleCount;
-                    }
-
-                    emptyState.style.display = totalVisibleInView === 0 ? 'block' : 'none';
+                    emptyState.style.display = visibleCount === 0 ? 'block' : 'none';
                 }
             }
 
@@ -1255,32 +1225,51 @@
 
 
         function showAirlineDetails(airlineName) {
-            document.getElementById('airline-master-overview').style.display = 'none';
-            document.getElementById('airline-fleet-details').style.display = 'block';
-            document.getElementById('airline-details-title').textContent = airlineName + ' Fleet Profile';
+            // Hide overview, show details container
+            const masterOverview = document.getElementById('airline-master-overview');
+            const fleetDetails = document.getElementById('airline-fleet-details');
+            const summarySection = document.querySelector('.summary-section');
+            const statsSection = document.querySelector('.stats-section');
             
-            // Set the dropdown to target airline to trigger standard filtering
-            const filterAirline = document.getElementById('filterAirline');
-            if(filterAirline) {
-                filterAirline.value = airlineName;
-                filterAirline.dispatchEvent(new Event('change'));
-            }
+            if (masterOverview) masterOverview.style.display = 'none';
+            if (summarySection) summarySection.style.display = 'none';
+            if (statsSection) statsSection.style.display = 'block';
+            if (fleetDetails) fleetDetails.style.display = 'block';
             
-            // Re-collapse all types locally so they don't auto expand from the airlineFilter
-            document.querySelector('#airline-fleet-details').querySelectorAll('.fleet-cards').forEach(c => c.style.display = 'none'); 
-            document.querySelector('#airline-fleet-details').querySelectorAll('.collapse-icon').forEach(i => i.style.transform = 'rotate(0deg)');
+            // Set Titles
+            const titleEl = document.getElementById('airline-details-title');
+            const subtitleEl = document.getElementById('airline-details-subtitle');
+            if (titleEl) titleEl.textContent = airlineName;
             
-            // View toggles handles display updates
+            // Show only the target airline section
+            document.querySelectorAll('.airline-section').forEach(section => {
+                const sectionName = (section.dataset.airline || '').trim().toLowerCase();
+                const targetName = (airlineName || '').trim().toLowerCase();
+                
+                if (sectionName === targetName) {
+                    section.style.display = 'block';
+                    // Show all fleet type groups inside
+                    section.querySelectorAll('.fleet-section').forEach(fs => {
+                        fs.style.display = 'block';
+                    });
+                } else {
+                    section.style.display = 'none';
+                }
+            });
             
-            // Scroll to top
-            const content = document.querySelector('.dashboard-content') || document.querySelector('.main-content');
-            if (content) content.scrollTo({top: 0, behavior: 'smooth'});
-            else window.scrollTo({top: 0, behavior: 'smooth'});
+            window.scrollTo({top: 0, behavior: 'smooth'});
         }
 
         function hideAirlineDetails() {
-            document.getElementById('airline-master-overview').style.display = 'grid';
-            document.getElementById('airline-fleet-details').style.display = 'none';
+            const masterOverview = document.getElementById('airline-master-overview');
+            const fleetDetails = document.getElementById('airline-fleet-details');
+            const summarySection = document.querySelector('.summary-section');
+            const statsSection = document.querySelector('.stats-section');
+            
+            if (masterOverview) masterOverview.style.display = 'grid';
+            if (summarySection) summarySection.style.display = 'block';
+            if (statsSection) statsSection.style.display = 'block';
+            if (fleetDetails) fleetDetails.style.display = 'none';
             
             // Reset airline filter to ALL
             const filterAirline = document.getElementById('filterAirline');
@@ -1289,13 +1278,9 @@
                 filterAirline.dispatchEvent(new Event('change'));
             }
             
-            // Auto collapse internally
-            document.querySelector('#airline-fleet-details').querySelectorAll('.fleet-cards').forEach(c => c.style.display = 'none'); 
-            document.querySelector('#airline-fleet-details').querySelectorAll('.collapse-icon').forEach(i => i.style.transform = 'rotate(0deg)');
+            // View sections will be hidden by applyFilters() when filterAirline is empty
             
-            const content = document.querySelector('.dashboard-content') || document.querySelector('.main-content');
-            if (content) content.scrollTo({top: 0, behavior: 'smooth'});
-            else window.scrollTo({top: 0, behavior: 'smooth'});
+            window.scrollTo({top: 0, behavior: 'smooth'});
         }
 
         // ====================================================

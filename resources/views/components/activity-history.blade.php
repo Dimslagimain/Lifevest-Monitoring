@@ -7,10 +7,10 @@
             {{ $title }}
         </h3>
         @if(!$logs->isEmpty())
-            <button onclick="exportActivityToExcel()" class="btn-premium-download">
+            <a href="{{ route('reports.activityLog') }}" class="btn-premium-download">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                 <span>Export Excel</span>
-            </button>
+            </a>
         @endif
     </div>
 
@@ -156,38 +156,4 @@
                     'ADMIN' => strtoupper($log->user->name ?? 'SYSTEM'),
                     'AIRCRAFT' => $log->registration ?? '-',
                     'ACTIVITY' => strtoupper($log->action === 'pn_update' ? 'P/N UPDATE' : ($log->action === 'batch' ? 'BATCH INPUT' : $log->action)),
-                    'PART NUMBER' => $pn,
-                    'SEATS COUNT' => $log->details['seat_count'] ?? (isset($log->details['seats']) ? count($log->details['seats']) : '-'),
-                    'SEATS LIST' => isset($log->details['seats']) ? implode(', ', $log->details['seats']) : ($log->details['seat_id'] ?? '-'),
-                    'EXPIRY DATE' => isset($log->details['expiry_date']) ? \Carbon\Carbon::parse($log->details['expiry_date'])->format('d/m/Y') : '-'
-                ];
-            });
-        @endphp
-
-        const logs = {!! json_encode($exportData) !!};
-
-        if (logs.length === 0) {
-            alert('No data to export.');
-            return;
-        }
-
-        const ws = XLSX.utils.json_to_sheet(logs);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Life Vest Activity Log");
-        
-        // Column widths
-        const colWidths = [
-            { wch: 18 }, // DATE
-            { wch: 15 }, // ADMIN
-            { wch: 12 }, // AIRCRAFT
-            { wch: 15 }, // ACTIVITY
-            { wch: 20 }, // P/N
-            { wch: 12 }, // COUNT
-            { wch: 40 }, // LIST
-            { wch: 12 }  // EXPIRY
-        ];
-        ws['!cols'] = colWidths;
-
-        XLSX.writeFile(wb, "LifeVest_Activity_Log_" + new Date().toISOString().slice(0, 10) + ".xlsx");
-    }
-</script>
+</div>

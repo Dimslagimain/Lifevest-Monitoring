@@ -623,4 +623,120 @@ class ExcelReportController extends Controller
         $freezeRow = $tableHeaderRow + 1;
         $sheet->freezePane("C{$freezeRow}");
     }
+
+    public function exportActivityLog(Request $request)
+    {
+        $logs = \App\Models\ActivityLog::with(['user', 'aircraft'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Activity Log');
+
+        // Header Style
+        $sheet->mergeCells("A1:H1");
+        $sheet->setCellValue('A1', 'GMF AEROASIA - CABIN MAINTENANCE');
+        $sheet->getStyle('A1')->applyFromArray([
+            'font' => ['bold' => true, 'size' => 14, 'color' => ['argb' => $this->colorWhite]],
+            'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => $this->colorHeader]],
+            'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER, 'vertical' => Alignment::VERTICAL_CENTER],
+        ]);
+        $sheet->getRowDimension(1)->setRowHeight(35);
+
+        $sheet->mergeCells("A2:H2");
+        $sheet->setCellValue('A2', 'LIFE VEST TRACKER - FULL ACTIVITY AUDIT LOG');
+        $sheet->getStyle('A2')->applyFromArray([
+            'font' => ['bold' => true, 'size' => 11, 'color' => ['argb' => $this->colorWhite]],
+            'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => $this->colorSubHeader]],
+            'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
+        ]);
+        $sheet->getRowDimension(2)->setRowHeight(22);
+
+        $sheet->mergeCells("A3:H3");
+        $sheet->setCellValue('A3', 'Generated on: ' . now()->format('d M Y, H:i'));
+        $sheet->getStyle('A3')->applyFromArray([
+            'font' => ['italic' => true, 'size' => 9],
+            'alignment' => ['horizontal' => Alignment::HORIZONTAL_RIGHT],
+        ]);
+
+        // Table Header
+        $headers = ['DATE & TIME', 'ADMIN', 'AIRCRAFT', 'ACTIVITY', 'PART NUMBER', 'QTY', 'SEATS LIST', 'EXPIRY DATE'];
+        $colIdx = 1;
+        foreach ($headers as $header) {
+            $colStr = Coordinate::stringFromColumnIndex($colIdx);
+            $sheet->setCellValue($colStr . '5', $header);
+            $sheet->getStyle($colStr . '5')->applyFromArray([
+                'font' => ['bold' => true, 'color' => ['argb' => $this->colorWhite]],
+                'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => $this->colorHeader]],
+                'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
+                'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]],
+            ]);
+            $colIdx++;
+        }
+
+        // Column Widths
+        $sheet->getColumnDimension('A')->setWidth(18);
+        $sheet->getColumnDimension('B')->setWidth(15);
+        $sheet->getColumnDimension('C')->setWidth(12);
+        $sheet->getColumnDimension('D')->setWidth(15);
+        $sheet->getColumnDimension('E')->setWidth(20);
+        $sheet->getColumnDimension('F')->setWidth(8);
+        $sheet->getColumnDimension('G')->setWidth(50);
+        $sheet->getColumnDimension('H')->setWidth(15);
+
+        $rowIdx = 6;
+        foreach ($logs as $log) {
+            $pn = '-';
+            if ($log->action === 'update' || $log->action === 'batch') {
+                if (isset($log->details['seats'][0]) && $log->aircraft) {
+                    $firstSeat = $log->details['seats'][0];
+                    if (str_starts_with($firstSeat, 'inf-')) { $pn = $log->aircraft->pn_infant; }
+                    elseif (in_array($firstSeat, ['captain', 'copilot', 'observer1', 'observer2']) || str_starts_with($firstSeat, 'att/')) { $pn = $log->aircraft->pn_crew; }
+                    else { $pn = $log->aircraft->pn_adult; }
+                }
+            } elseif ($log->action === 'pn_update') {
+                $changes = [];
+                foreach(['adult', 'crew', 'infant'] as $t) {
+                    if(($log->details['old'][$t] ?? '') !== ($log->details['new'][$t] ?? '')) {
+                        $changes[] = strtoupper($t) . ": " . ($log->details['old'][$t] ?: '---') . " -> " . ($log->details['new'][$t] ?: '---');
+                    }
+                }
+                $pn = implode(' | ', $changes);
+            }
+
+            $sheet->setCellValue('A' . $rowIdx, $log->created_at->format('d/m/Y H:i'));
+            $sheet->setCellValue('B' . $rowIdx, strtoupper($log->user->name ?? 'SYSTEM'));
+            $sheet->setCellValue('C' . $rowIdx, $log->registration ?? '-');
+            $sheet->setCellValue('D' . $rowIdx, strtoupper($log->action));
+            $sheet->setCellValue('E' . $rowIdx, $pn);
+            $sheet->setCellValue('F' . $rowIdx, $log->details['seat_count'] ?? (isset($log->details['seats']) ? count($log->details['seats']) : '-'));
+            $sheet->setCellValue('G' . $rowIdx, isset($log->details['seats']) ? implode(', ', $log->details['seats']) : ($log->details['seat_id'] ?? '-'));
+            $sheet->setCellValue('H' . $rowIdx, isset($log->details['expiry_date']) ? \Carbon\Carbon::parse($log->details['expiry_date'])->format('d/m/Y') : '-');
+
+            // Zebra Stripping & Borders
+            $range = "A{$rowIdx}:H{$rowIdx}";
+            $sheet->getStyle($range)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN)->getColor()->setARGB('FFE0E0E0');
+            if ($rowIdx % 2 === 0) {
+                $sheet->getStyle($range)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB($this->colorLightGray);
+            }
+
+            // Status Coloring
+            $statusColor = match($log->action) {
+                'delete' => 'FFFFCDD2', // Reddish
+                'add', 'batch' => 'FFC8E6C9', // Greenish
+                default => 'FFE3F2FD', // Blueish
+            };
+            $sheet->getStyle('D' . $rowIdx)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB($statusColor);
+
+            $rowIdx++;
+        }
+
+        $filename = 'LifeVest_ActivityLog_' . date('Y-m-d_His') . '.xlsx';
+        $tempPath = storage_path('app/' . $filename);
+        $writer = new Xlsx($spreadsheet);
+        $writer->save($tempPath);
+
+        return response()->download($tempPath, $filename)->deleteFileAfterSend(true);
+    }
 }

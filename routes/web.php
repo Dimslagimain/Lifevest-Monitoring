@@ -28,6 +28,7 @@ Route::middleware('auth')->group(function () {
     // Export — semua role bisa download
     Route::get('/export/replacement-plan', [\App\Http\Controllers\ExcelReportController::class, 'exportReplacementPlan'])->name('reports.excel');
     Route::get('/export/summary', [\App\Http\Controllers\ExcelReportController::class, 'exportSummaryDashboard'])->name('reports.summary');
+    Route::get('/export/activity-log', [\App\Http\Controllers\ExcelReportController::class, 'exportActivityLog'])->name('reports.activityLog');
 
     // Aircraft view — semua role bisa lihat
     Route::get('/aircraft/{registration}', [AircraftController::class, 'show'])->name('aircraft.show');

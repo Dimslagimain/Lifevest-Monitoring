@@ -6,6 +6,7 @@ use App\Models\Aircraft;
 use App\Models\Airline;
 use App\Models\ActivityLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class FleetController extends Controller
 {
@@ -120,7 +121,7 @@ class FleetController extends Controller
 
         if ($oldPn !== $newPn) {
             ActivityLog::create([
-                'user_id' => auth()->id(),
+                'user_id' => Auth::id(),
                 'registration' => $aircraft->registration,
                 'action' => 'pn_update',
                 'details' => [

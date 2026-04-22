@@ -8,6 +8,7 @@ use App\Models\Aircraft;
 use App\Models\Airline;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
@@ -379,8 +380,11 @@ class DashboardController extends Controller
         ];
     }); // End Cache
 
+        /** @var \App\Models\User|null $user */
+        $user = Auth::user();
+
         // Fetch non-cached data (real-time logs for admins)
-        $data['recentLogs'] = auth()->user() && auth()->user()->isAdmin() 
+        $data['recentLogs'] = $user && $user->isAdmin() 
             ? ActivityLog::with(['user', 'aircraft'])->latest()->take(10)->get() 
             : collect();
 

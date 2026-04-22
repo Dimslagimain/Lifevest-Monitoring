@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Seat;
 use App\Models\ActivityLog;
+use App\Models\Aircraft;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AircraftController extends Controller
 {
@@ -13,8 +15,7 @@ class AircraftController extends Controller
      */
     public function show(string $registration)
     {
-        // NEW: Database
-        $aircraft = \App\Models\Aircraft::where('registration', $registration)->first();
+        $aircraft = Aircraft::where('registration', $registration)->first();
 
         if (!$aircraft) {
             abort(404, 'Aircraft not found');
@@ -47,12 +48,15 @@ class AircraftController extends Controller
         $qtyCrew = $crewSeats->count();
         $qtyInfant = $infantSeats->count();
 
-        $expAdult = $adultSeats->filter(fn($s) => $s->expiry_date && $s->expiry_date->lt($today))->count();
-        $expCrew = $crewSeats->filter(fn($s) => $s->expiry_date && $s->expiry_date->lt($today))->count();
-        $expInfant = $infantSeats->filter(fn($s) => $s->expiry_date && $s->expiry_date->lt($today))->count();
+        $expAdult = $adultSeats->filter(fn($s) => $s->expiry_date && $s->expiry_date < $today)->count();
+        $expCrew = $crewSeats->filter(fn($s) => $s->expiry_date && $s->expiry_date < $today)->count();
+        $expInfant = $infantSeats->filter(fn($s) => $s->expiry_date && $s->expiry_date < $today)->count();
 
         // Get last update time from the collection
         $lastUpdate = $seats->max('updated_at');
+
+        /** @var \App\Models\User|null $user */
+        $user = Auth::user();
 
         return view($template, [
             'registration' => $registration,
@@ -66,7 +70,7 @@ class AircraftController extends Controller
             'expAdult' => $expAdult,
             'expCrew' => $expCrew,
             'expInfant' => $expInfant,
-            'logs' => auth()->user() && auth()->user()->isAdmin() 
+            'logs' => ($user && $user->isAdmin()) 
                 ? ActivityLog::with(['user', 'aircraft'])->where('registration', $registration)->latest()->take(10)->get() 
                 : collect(),
         ]);
@@ -121,7 +125,7 @@ class AircraftController extends Controller
 
                     if ($row) {
                         // Get layout for this aircraft (FROM DB)
-                        $aircraft = \App\Models\Aircraft::where('registration', $registration)->first();
+                        $aircraft = Aircraft::where('registration', $registration)->first();
                         $layout = $aircraft->layout ?? null;
 
                         if ($layout) {
@@ -154,7 +158,7 @@ class AircraftController extends Controller
 
             // Log the activity
             ActivityLog::create([
-                'user_id' => auth()->id(),
+                'user_id' => Auth::id(),
                 'registration' => $registration,
                 'action' => 'update',
                 'details' => [
@@ -202,7 +206,7 @@ class AircraftController extends Controller
         if ($deleted) {
             // Log the deletion
             ActivityLog::create([
-                'user_id' => auth()->id(),
+                'user_id' => Auth::id(),
                 'registration' => $registration,
                 'action' => 'delete',
                 'details' => [
@@ -228,7 +232,7 @@ class AircraftController extends Controller
      */
     public function batchInput(string $registration)
     {
-        $aircraft = \App\Models\Aircraft::where('registration', $registration)->firstOrFail();
+        $aircraft = Aircraft::where('registration', $registration)->firstOrFail();
         $layout = $aircraft->layout ?? 'b737-e46'; // fallback
 
         // Get Economy Sections from config
@@ -253,7 +257,7 @@ class AircraftController extends Controller
      */
     public function storeBatchInput(Request $request, string $registration)
     {
-        $aircraft = \App\Models\Aircraft::where('registration', $registration)->firstOrFail();
+        $aircraft = Aircraft::where('registration', $registration)->firstOrFail();
         $layout = $aircraft->layout ?? 'b737-e46';
 
         // Get sections config
@@ -370,7 +374,7 @@ class AircraftController extends Controller
         // Log the activity
         if ($savedCount > 0) {
             ActivityLog::create([
-                'user_id' => auth()->id(),
+                'user_id' => Auth::id(),
                 'registration' => $registration,
                 'action' => 'batch',
                 'details' => [

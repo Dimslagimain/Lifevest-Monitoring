@@ -543,7 +543,10 @@
                     <div class="replacement-card" style="padding: 1.5rem; border-left: none; overflow-x: auto;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                             <h3 style="margin: 0; font-size: 1rem; font-weight: 700; color: var(--text-primary);">Detailed Breakdown</h3>
-                            <a href="{{ route('reports.summary') }}" class="btn-premium btn-premium-success">Export Insights</a>
+                            <a href="{{ route('reports.summary') }}" class="btn-premium-download">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                Export Insights
+                            </a>
                         </div>
                         <table class="fleet-table" style="width: 100%; border: none;">
                             <thead>
@@ -590,7 +593,7 @@
                             <span class="monthly-plan-subtitle">{{ $subtitleText }}</span>
                         </div>
                         <div style="display: flex; gap: 0.75rem; align-items: center;">
-                            <a href="{{ route('reports.excel') }}" class="btn-premium btn-premium-success" title="Download Excel Report">
+                            <a href="{{ route('reports.excel') }}" class="btn-premium-download" title="Download Excel Report">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                                 Export Schedule
                             </a>

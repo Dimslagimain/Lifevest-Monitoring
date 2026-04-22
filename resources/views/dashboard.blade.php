@@ -149,39 +149,39 @@
 
 
     @if($currentView === 'fleet-overview' || $currentView === 'all')
-        {{-- Summary Cards (Modern Redesign) --}}
+        {{-- Summary Cards (Clean & Responsive) --}}
         <section class="summary-section animate-view" style="margin-bottom: 3rem;">
-            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem;">
+            <div class="summary-cards">
                 <!-- SAFE -->
-                <div style="background: linear-gradient(135deg, rgba(46, 204, 113, 0.05) 0%, rgba(255,255,255,1) 100%); border: 1px solid rgba(46, 204, 113, 0.2); border-radius: 16px; padding: 2rem 1.5rem; text-align: center; position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.03); border-bottom: 4px solid var(--success);">
-                    <div style="width: 24px; height: 24px; background: radial-gradient(circle at 30% 30%, #58d68d, #2ecc71); border-radius: 50%; margin: 0 auto 1.25rem; box-shadow: 0 4px 10px rgba(46, 204, 113, 0.4);"></div>
-                    <div style="font-size: 2.75rem; font-weight: 800; color: #1a1a1a; letter-spacing: -1px; line-height: 1;">{{ $totalStats['safe'] }}</div>
-                    <div style="font-size: 0.85rem; font-weight: 800; color: #666; text-transform: uppercase; letter-spacing: 1px; margin-top: 0.75rem;">Safe</div>
-                    <div style="font-size: 0.75rem; color: #999; margin-top: 4px; font-weight: 600;">> 6 months</div>
+                <div class="summary-card safe">
+                    <div class="summary-icon">🟢</div>
+                    <div class="summary-value">{{ $totalStats['safe'] }}</div>
+                    <div class="summary-label">Safe</div>
+                    <div class="summary-desc">> 6 months</div>
                 </div>
 
                 <!-- WARNING -->
-                <div style="background: linear-gradient(135deg, rgba(241, 196, 15, 0.05) 0%, rgba(255,255,255,1) 100%); border: 1px solid rgba(241, 196, 15, 0.2); border-radius: 16px; padding: 2rem 1.5rem; text-align: center; position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.03); border-bottom: 4px solid var(--warning);">
-                    <div style="width: 24px; height: 24px; background: radial-gradient(circle at 30% 30%, #f7dc6f, #f1c40f); border-radius: 50%; margin: 0 auto 1.25rem; box-shadow: 0 4px 10px rgba(241, 196, 15, 0.4);"></div>
-                    <div style="font-size: 2.75rem; font-weight: 800; color: #1a1a1a; letter-spacing: -1px; line-height: 1;">{{ $totalStats['warning'] }}</div>
-                    <div style="font-size: 0.85rem; font-weight: 800; color: #666; text-transform: uppercase; letter-spacing: 1px; margin-top: 0.75rem;">Warning</div>
-                    <div style="font-size: 0.75rem; color: #999; margin-top: 4px; font-weight: 600;">3-6 months</div>
+                <div class="summary-card warning">
+                    <div class="summary-icon">🟡</div>
+                    <div class="summary-value">{{ $totalStats['warning'] }}</div>
+                    <div class="summary-label">Warning</div>
+                    <div class="summary-desc">3-6 months</div>
                 </div>
 
                 <!-- CRITICAL -->
-                <div style="background: linear-gradient(135deg, rgba(231, 76, 60, 0.05) 0%, rgba(255,255,255,1) 100%); border: 1px solid rgba(231, 76, 60, 0.2); border-radius: 16px; padding: 2rem 1.5rem; text-align: center; position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.03); border-bottom: 4px solid var(--danger);">
-                    <div style="width: 24px; height: 24px; background: radial-gradient(circle at 30% 30%, #ec7063, #e74c3c); border-radius: 50%; margin: 0 auto 1.25rem; box-shadow: 0 4px 10px rgba(231, 76, 60, 0.4);"></div>
-                    <div style="font-size: 2.75rem; font-weight: 800; color: #1a1a1a; letter-spacing: -1px; line-height: 1;">{{ $totalStats['critical'] }}</div>
-                    <div style="font-size: 0.85rem; font-weight: 800; color: #666; text-transform: uppercase; letter-spacing: 1px; margin-top: 0.75rem;">Critical</div>
-                    <div style="font-size: 0.75rem; color: #999; margin-top: 4px; font-weight: 600;">< 3 months</div>
+                <div class="summary-card critical">
+                    <div class="summary-icon">🔴</div>
+                    <div class="summary-value">{{ $totalStats['critical'] }}</div>
+                    <div class="summary-label">Critical</div>
+                    <div class="summary-desc">< 3 months</div>
                 </div>
 
                 <!-- EXPIRED -->
-                <div style="background: linear-gradient(135deg, rgba(142, 68, 173, 0.05) 0%, rgba(255,255,255,1) 100%); border: 1px solid rgba(142, 68, 173, 0.2); border-radius: 16px; padding: 2rem 1.5rem; text-align: center; position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.03); border-bottom: 4px solid purple;">
-                    <div style="width: 24px; height: 24px; background: radial-gradient(circle at 30% 30%, #af7ac5, #8e44ad); border-radius: 50%; margin: 0 auto 1.25rem; box-shadow: 0 4px 10px rgba(142, 68, 173, 0.4);"></div>
-                    <div style="font-size: 2.75rem; font-weight: 800; color: #1a1a1a; letter-spacing: -1px; line-height: 1;">{{ $totalStats['expired'] }}</div>
-                    <div style="font-size: 0.85rem; font-weight: 800; color: #666; text-transform: uppercase; letter-spacing: 1px; margin-top: 0.75rem;">Expired</div>
-                    <div style="font-size: 0.75rem; color: #999; margin-top: 4px; font-weight: 600;">Past due</div>
+                <div class="summary-card expired">
+                    <div class="summary-icon">🟣</div>
+                    <div class="summary-value">{{ $totalStats['expired'] }}</div>
+                    <div class="summary-label">Expired</div>
+                    <div class="summary-desc">Past due</div>
                 </div>
             </div>
         </section>
@@ -479,11 +479,15 @@
     @if(auth()->user() && auth()->user()->isAdmin() && $currentView === 'activity-log')
         <section class="replacement-section animate-view" id="activity-log-section">
             
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; gap: 1rem; flex-wrap: wrap;">
                 <div>
                     <h2 style="margin: 0;">Global Activity Log</h2>
                     <p style="margin: 0.25rem 0 0; color: var(--text-muted); font-size: 0.85rem;">Historical record of all administrative changes across the fleet</p>
                 </div>
+                <a href="{{ route('reports.activityLog') }}" class="btn-premium btn-premium-success">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Export Log
+                </a>
             </div>
 
             <x-activity-history :logs="$recentLogs" title="Full Fleet Traceability" />
@@ -529,7 +533,7 @@
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary);"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
                                 Part Numbers by Urgency Level
                             </h3>
-                            <select id="pnCategoryFilter" class="form-select" style="padding: 0.35rem 0.75rem; font-size: 0.8rem; min-width: 140px;">
+                            <select id="pnCategoryFilter" class="form-select" style="padding: 0.4rem 1rem; font-size: 0.85rem; width: auto !important; min-width: 160px; max-width: 220px; cursor: pointer; border-radius: 8px;">
                                 <option value="all">All Categories</option>
                                 <option value="adult">Adult Vests</option>
                                 <option value="crew">Crew Vests</option>
@@ -545,7 +549,10 @@
                     <div class="replacement-card" style="padding: 1.5rem; border-left: none; overflow-x: auto;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                             <h3 style="margin: 0; font-size: 1rem; font-weight: 700; color: var(--text-primary);">Detailed Breakdown</h3>
-                            <a href="{{ route('reports.summary') }}" class="btn-premium btn-premium-success">Export Insights</a>
+                            <a href="{{ route('reports.summary') }}" class="btn-premium btn-premium-success">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                Export Insights
+                            </a>
                         </div>
                         <table class="fleet-table" style="width: 100%; border: none;">
                             <thead>

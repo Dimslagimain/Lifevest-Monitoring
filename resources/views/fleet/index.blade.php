@@ -34,28 +34,31 @@
         </div>
     @endif
 
-    <!-- Tab Navigation -->
-    <div class="tab-nav" style="display: flex; gap: 4px; margin-bottom: 2rem; background: rgba(0,0,0,0.1); padding: 4px; border-radius: 12px; width: fit-content; border: 1px solid var(--border-subtle);">
+    <!-- Simple & Clean Tab Switcher -->
+    <div class="tab-pill-container" style="display: flex; gap: 4px; margin-bottom: 2.5rem; background: var(--bg-card-solid); padding: 5px; border-radius: 12px; width: fit-content; border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm);">
         <a href="{{ route('fleet.index', ['tab' => 'aircraft']) }}"
-            class="tab-link {{ $tab === 'aircraft' ? 'active' : '' }}"
-            style="padding: 0.6rem 1.75rem; border-radius: 9px; font-weight: 700; font-size: 0.85rem; text-decoration: none; text-transform: uppercase; letter-spacing: 0.05em; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            {{ $tab === 'aircraft' ? 'background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);' : 'color: var(--text-muted);' }};">
-            Aircraft ({{ $fleet->count() }})
+            class="tab-pill {{ $tab === 'aircraft' ? 'active' : '' }}"
+            style="padding: 0.7rem 2rem; border-radius: 10px; font-weight: 700; font-size: 0.85rem; text-decoration: none; text-transform: uppercase; letter-spacing: 0.08em; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; gap: 8px;
+            {{ $tab === 'aircraft' ? 'background: var(--primary); color: white; box-shadow: var(--shadow-primary);' : 'color: var(--text-muted);' }};">
+            Aircraft <span style="opacity: 0.6; font-size: 0.75rem;">({{ $fleet->count() }})</span>
         </a>
         <a href="{{ route('fleet.index', ['tab' => 'airlines']) }}"
-            class="tab-link {{ $tab === 'airlines' ? 'active' : '' }}"
-            style="padding: 0.6rem 1.75rem; border-radius: 9px; font-weight: 700; font-size: 0.85rem; text-decoration: none; text-transform: uppercase; letter-spacing: 0.05em; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            {{ $tab === 'airlines' ? 'background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);' : 'color: var(--text-muted);' }};">
-            Airlines ({{ $airlines->count() }})
+            class="tab-pill {{ $tab === 'airlines' ? 'active' : '' }}"
+            style="padding: 0.7rem 2rem; border-radius: 10px; font-weight: 700; font-size: 0.85rem; text-decoration: none; text-transform: uppercase; letter-spacing: 0.08em; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; gap: 8px;
+            {{ $tab === 'airlines' ? 'background: var(--primary); color: white; box-shadow: var(--shadow-primary);' : 'color: var(--text-muted);' }};">
+            Airlines <span style="opacity: 0.6; font-size: 0.75rem;">({{ $airlines->count() }})</span>
         </a>
     </div>
 
     @if($tab === 'aircraft')
         <!-- Aircraft Tab Content -->
         <!-- Practical Filters -->
-        <div class="filter-bar" style="display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center;">
-            <input type="text" id="fleetSearch" placeholder="Search registration..." class="form-input"
-                style="flex: 1; min-width: 200px; max-width: 300px;">
+        <div class="filter-bar" style="display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; margin-bottom: 1.5rem; background: var(--bg-card); padding: 1.25rem; border-radius: 12px; border: 1px solid var(--border-subtle);">
+            <div style="position: relative; flex: 1; min-width: 200px; max-width: 300px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                <input type="text" id="fleetSearch" placeholder="Search registration..." class="form-input"
+                    style="width: 100%; padding-left: 36px;">
+            </div>
 
             <select id="filterAirline" class="form-select" style="min-width: 180px; cursor: pointer;">
                 <option value="">All Airlines</option>
@@ -80,32 +83,32 @@
                 @endforeach
             </select>
 
-            <button type="button" id="clearFilters" class="btn btn-secondary" style="padding: 0.5rem 1rem;">Clear</button>
+            <button type="button" id="clearFilters" class="btn btn-secondary" style="padding: 0.5rem 1.25rem; font-weight: 600;">Reset Filters</button>
         </div>
 
-        <div class="fleet-table-wrapper">
+        <div class="fleet-table-wrapper" style="background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border-subtle); overflow: hidden;">
             <table class="fleet-table">
                 <thead>
                     <tr>
-                        <th class="fleet-th" style="width: 50px;">#</th>
-                        <th class="fleet-th">Registration</th>
-                        <th class="fleet-th">Airline</th>
-                        <th class="fleet-th">Type</th>
-                        <th class="fleet-th">Layout Code</th>
-                        <th class="fleet-th">Status</th>
-                        <th class="fleet-th text-right">Actions</th>
+                        <th class="fleet-th" style="width: 50px; background: rgba(0,0,0,0.05);">#</th>
+                        <th class="fleet-th" style="background: rgba(0,0,0,0.05);">Registration</th>
+                        <th class="fleet-th" style="background: rgba(0,0,0,0.05);">Airline</th>
+                        <th class="fleet-th" style="background: rgba(0,0,0,0.05);">Type</th>
+                        <th class="fleet-th" style="background: rgba(0,0,0,0.05);">Layout Code</th>
+                        <th class="fleet-th" style="background: rgba(0,0,0,0.05);">Status</th>
+                        <th class="fleet-th text-right" style="background: rgba(0,0,0,0.05);">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($fleet as $aircraft)
                         <tr>
                             <td class="fleet-td text-muted">{{ $loop->iteration }}</td>
-                            <td class="fleet-td font-bold">{{ $aircraft->registration }}</td>
+                            <td class="fleet-td font-bold" style="color: var(--primary-light);">{{ $aircraft->registration }}</td>
                             <td class="fleet-td">
                                 {{ $aircraft->airline?->name ?? '-' }}
                             </td>
                             <td class="fleet-td">{{ $aircraft->type }}</td>
-                            <td class="fleet-td font-mono">{{ $aircraft->layout }}</td>
+                            <td class="fleet-td font-mono" style="font-size: 0.85rem; opacity: 0.8;">{{ $aircraft->layout }}</td>
                             <td class="fleet-td">
                                 <span class="status-badge {{ $aircraft->status }}">
                                     {{ strtoupper($aircraft->status) }}
@@ -113,7 +116,7 @@
                             </td>
                             <td class="fleet-td text-right">
                                 <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
-                                    <a href="{{ route('fleet.edit', $aircraft->id) }}" class="btn btn-icon" title="Edit Aircraft">
+                                    <a href="{{ route('fleet.edit', $aircraft->id) }}" class="btn-icon" title="Edit Aircraft">
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                                     </a>
                                     <form action="{{ route('fleet.destroy', $aircraft->id) }}" method="POST"
@@ -121,7 +124,7 @@
                                         onsubmit="return confirm('Type DELETE to confirm removal of {{ $aircraft->registration }}?');">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-icon" style="color: var(--danger);" title="Delete Aircraft">
+                                        <button type="submit" class="btn-icon" style="color: var(--danger);" title="Delete Aircraft">
                                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                                         </button>
                                     </form>
@@ -129,6 +132,19 @@
                             </td>
                         </tr>
                     @endforeach
+                    <!-- Empty State Row (Hidden by default) -->
+                    <tr id="noResultsRow" style="display: none;">
+                        <td colspan="7" style="padding: 4rem 2rem; text-align: center;">
+                            <div style="display: flex; flex-direction: column; align-items: center; gap: 1rem;">
+                                <div style="width: 64px; height: 64px; background: rgba(148, 163, 184, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--text-muted);">
+                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+                                </div>
+                                <div style="font-weight: 700; color: var(--text-primary); font-size: 1.1rem;">No aircraft found</div>
+                                <div style="color: var(--text-muted); font-size: 0.9rem;">We couldn't find any registration matching "<span id="searchQueryDisplay"></span>"</div>
+                                <button type="button" onclick="document.getElementById('clearFilters').click()" class="btn btn-outline" style="margin-top: 0.5rem;">Clear all filters</button>
+                            </div>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -192,15 +208,20 @@
 
             const rows = Array.from(tableBody.querySelectorAll('tr'));
 
+            const noResultsRow = document.getElementById('noResultsRow');
+            const searchQueryDisplay = document.getElementById('searchQueryDisplay');
+
             function applyFilters() {
                 const searchTerm = searchInput?.value.toLowerCase() || '';
                 const airlineFilter = filterAirline?.value || '';
                 const statusFilter = filterStatus?.value || '';
                 const typeFilter = filterType?.value || '';
 
-                let visibleIndex = 0;
+                let visibleCount = 0;
 
                 rows.forEach(row => {
+                    if (row.id === 'noResultsRow') return;
+
                     const registration = row.cells[1]?.textContent.toLowerCase() || '';
                     const airline = row.cells[2]?.textContent.trim() || '';
                     const type = row.cells[3]?.textContent.trim() || '';
@@ -232,10 +253,20 @@
 
                     // Update row number
                     if (show) {
-                        visibleIndex++;
-                        row.cells[0].textContent = visibleIndex;
+                        visibleCount++;
+                        row.cells[0].textContent = visibleCount;
                     }
                 });
+
+                // Handle Empty State
+                if (noResultsRow) {
+                    if (visibleCount === 0) {
+                        noResultsRow.style.display = '';
+                        if (searchQueryDisplay) searchQueryDisplay.textContent = searchInput?.value || 'selected filters';
+                    } else {
+                        noResultsRow.style.display = 'none';
+                    }
+                }
             }
 
             function updateTypeDropdown() {

@@ -3,12 +3,22 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Prunable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use App\Models\User;
-use App\Models\Aircraft;
 
 class ActivityLog extends Model
 {
+    use Prunable;
+
+    /**
+     * Get the prunable model query.
+     */
+    public function prunable()
+    {
+        // Keep only the last 90 days of logs for production performance
+        return static::where('created_at', '<=', now()->subDays(90));
+    }
+
     protected $fillable = [
         'user_id',
         'registration',

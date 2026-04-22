@@ -287,8 +287,18 @@
             </div>
         </div>
 
-        {{-- Fleet Cards Section --}}
-        @foreach($fleetByAirline as $airlineId => $airline)
+    @if(empty($fleetByAirline))
+        <div style="padding: 5rem 2rem; text-align: center; background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border-subtle); margin-top: 2rem;">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color: var(--text-muted); margin-bottom: 1.5rem; opacity: 0.5;">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>
+            </svg>
+            <h3 style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin: 0;">No Aircraft Found</h3>
+            <p style="color: var(--text-muted); margin-top: 0.5rem; max-width: 400px; margin-left: auto; margin-right: auto;">It looks like there are no aircraft registered in the system yet. Please contact an administrator to add your fleet.</p>
+        </div>
+    @endif
+
+    {{-- Fleet Cards Section --}}
+    @foreach($fleetByAirline as $airlineId => $airline)
             <section class="airline-section" data-airline="{{ $airline['name'] }}" style="margin-bottom: 2rem; display: none;">
             <div class="airline-header"
                 style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border);">
@@ -574,8 +584,9 @@
                 $subtitleText = 'Timeline kebutuhan penggantian life vest per ' . ($interval === 'weekly' ? 'minggu' : ($interval === 'monthly' ? 'bulan' : 'tahun'));
             @endphp
             
-            @if($isPlanVisible && count($plan) > 0)
-                <section class="replacement-section replacement-interval-section animate-view" data-interval="{{ $interval }}" id="replacement-{{ $interval }}-plan">
+            @if($isPlanVisible)
+                @if(count($plan) > 0)
+                    <section class="replacement-section replacement-interval-section animate-view" data-interval="{{ $interval }}" id="replacement-{{ $interval }}-plan">
                     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
                         <div style="display: flex; align-items: center; gap: 0.75rem;">
                             <h2>{{ $titleText }}</h2>
@@ -687,6 +698,15 @@
                         @endforeach
                     </div>
                 </section>
+                @else
+                    <section class="replacement-section replacement-interval-section animate-view" data-interval="{{ $interval }}" id="replacement-{{ $interval }}-plan" style="padding: 4rem 2rem; text-align: center; background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border-subtle); margin-top: 1rem;">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--success); margin-bottom: 1rem; opacity: 0.6;">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+                        </svg>
+                        <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary); margin: 0;">All Clear!</h3>
+                        <p style="color: var(--text-muted); margin-top: 0.5rem;">No life vests are scheduled for replacement in this period.</p>
+                    </section>
+                @endif
             @endif
         @endforeach
         

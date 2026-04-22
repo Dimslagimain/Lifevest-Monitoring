@@ -156,6 +156,21 @@ class AircraftController extends Controller
                 );
             }
 
+            // Determine all unique P/Ns affected by this update
+            $affectedPns = [];
+            $aircraft = Aircraft::where('registration', $registration)->first();
+            
+            foreach ($seatIds as $seatId) {
+                if (str_starts_with($seatId, 'inf-')) {
+                    $affectedPns[] = $aircraft->pn_infant;
+                } elseif (in_array($seatId, ['captain', 'fo', 'obs-1', 'obs-2']) || str_starts_with($seatId, 'att/')) {
+                    $affectedPns[] = $aircraft->pn_crew;
+                } else {
+                    $affectedPns[] = $aircraft->pn_adult;
+                }
+            }
+            $uniquePns = array_values(array_unique($affectedPns));
+
             // Log the activity
             ActivityLog::create([
                 'user_id' => Auth::id(),
@@ -164,7 +179,8 @@ class AircraftController extends Controller
                 'details' => [
                     'seat_count' => count($seatIds),
                     'expiry_date' => $expiryDate,
-                    'seats' => array_slice($seatIds, 0, 50) // Limit log size if massive
+                    'pns' => $uniquePns, // Changed from 'pn' to 'pns' (array)
+                    'seats' => array_slice($seatIds, 0, 50)
                 ]
             ]);
 

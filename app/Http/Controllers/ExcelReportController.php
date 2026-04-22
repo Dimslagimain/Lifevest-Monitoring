@@ -689,12 +689,14 @@ class ExcelReportController extends Controller
         foreach ($logs as $log) {
             $pn = '-';
             if ($log->action === 'update' || $log->action === 'batch') {
-                if (isset($log->details['seats'][0]) && $log->aircraft) {
+                $pns = $log->details['pns'] ?? (isset($log->details['pn']) ? [$log->details['pn']] : []);
+                if (empty($pns) && isset($log->details['seats'][0]) && $log->aircraft) {
                     $firstSeat = $log->details['seats'][0];
-                    if (str_starts_with($firstSeat, 'inf-')) { $pn = $log->aircraft->pn_infant; }
-                    elseif (in_array($firstSeat, ['captain', 'copilot', 'observer1', 'observer2']) || str_starts_with($firstSeat, 'att/')) { $pn = $log->aircraft->pn_crew; }
-                    else { $pn = $log->aircraft->pn_adult; }
+                    if (str_starts_with($firstSeat, 'inf-')) { $pns[] = $log->aircraft->pn_infant; }
+                    elseif (in_array($firstSeat, ['captain', 'fo', 'obs-1', 'obs-2']) || str_starts_with($firstSeat, 'att/')) { $pns[] = $log->aircraft->pn_crew; }
+                    else { $pns[] = $log->aircraft->pn_adult; }
                 }
+                $pn = !empty($pns) ? implode("\n", $pns) : '-';
             } elseif ($log->action === 'pn_update') {
                 $changes = [];
                 foreach(['adult', 'crew', 'infant'] as $t) {
@@ -725,6 +727,13 @@ class ExcelReportController extends Controller
             $sheet->setCellValue('F' . $rowIdx, $log->details['seat_count'] ?? (isset($log->details['seats']) ? count($log->details['seats']) : '-'));
             $sheet->setCellValue('G' . $rowIdx, $details);
             $sheet->setCellValue('H' . $rowIdx, isset($log->details['expiry_date']) ? Carbon::parse($log->details['expiry_date'])->format('d/m/Y') : '-');
+
+            // Apply Base Alignment (Center) to all cells in the row
+            $sheet->getStyle("A{$rowIdx}:H{$rowIdx}")->getAlignment()->setHorizontal('center')->setVertical('center');
+
+            // Override P/N (E) and Seats List (G) to Left Alignment for better readability
+            $sheet->getStyle('E' . $rowIdx)->getAlignment()->setHorizontal('left')->setWrapText(true);
+            $sheet->getStyle('G' . $rowIdx)->getAlignment()->setHorizontal('left')->setWrapText(true);
 
             // Zebra Stripping & Borders
             $range = "A{$rowIdx}:H{$rowIdx}";

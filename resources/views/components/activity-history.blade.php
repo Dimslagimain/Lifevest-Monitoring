@@ -47,20 +47,25 @@
                                         {{ $log->details['seat_count'] ?? 0 }} Seats Updated
                                     </div>
                                     @php
-                                        $pnDisplay = null;
-                                        if (isset($log->details['seats'][0]) && $log->aircraft) {
+                                        $pnsToDisplay = $log->details['pns'] ?? (isset($log->details['pn']) ? [$log->details['pn']] : []);
+                                        
+                                        // Fallback for old logs
+                                        if (empty($pnsToDisplay) && isset($log->details['seats'][0]) && $log->aircraft) {
                                             $firstSeat = $log->details['seats'][0];
-                                            if (str_starts_with($firstSeat, 'inf-')) { $pnDisplay = $log->aircraft->pn_infant; }
-                                            elseif (in_array($firstSeat, ['captain', 'copilot', 'observer1', 'observer2']) || str_starts_with($firstSeat, 'att/')) { $pnDisplay = $log->aircraft->pn_crew; }
-                                            else { $pnDisplay = $log->aircraft->pn_adult; }
+                                            if (str_starts_with($firstSeat, 'inf-')) { $pnsToDisplay[] = $log->aircraft->pn_infant; }
+                                            elseif (in_array($firstSeat, ['captain', 'fo', 'obs-1', 'obs-2']) || str_starts_with($firstSeat, 'att/')) { $pnsToDisplay[] = $log->aircraft->pn_crew; }
+                                            else { $pnsToDisplay[] = $log->aircraft->pn_adult; }
                                         }
                                     @endphp
-                                    @if($pnDisplay)
-                                        <div style="margin-top: 6px;">
-                                            <span style="font-size: 0.75rem; color: var(--primary); background: var(--bg-card); padding: 2px 8px; border-radius: 6px; border: 1.5px solid var(--primary-light); font-family: 'JetBrains Mono', monospace; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
-                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
-                                                {{ $pnDisplay }}
-                                            </span>
+
+                                    @if(!empty($pnsToDisplay))
+                                        <div style="margin-top: 6px; display: flex; flex-wrap: wrap; gap: 6px;">
+                                            @foreach($pnsToDisplay as $pn)
+                                                <span style="font-size: 0.75rem; color: var(--primary); background: var(--bg-card); padding: 2px 8px; border-radius: 6px; border: 1.5px solid var(--primary-light); font-family: 'JetBrains Mono', monospace; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+                                                    {{ $pn }}
+                                                </span>
+                                            @endforeach
                                         </div>
                                     @endif
                                     @if(isset($log->details['seats']))

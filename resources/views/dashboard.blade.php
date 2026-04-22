@@ -698,31 +698,34 @@
 
     <!-- Quick Stats -->
     <section class="stats-section" style="margin-top: 2rem; margin-bottom: 3rem;">
-        <h3 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; color: var(--text-primary);">Quick Stats</h3>
-        <div style="display: flex; gap: 1.5rem; justify-content: space-between;">
-            <div class="stat-item">
-                <div class="stat-value">{{ count($fleetByAirline) }}</div>
-                <div class="stat-label">Airlines</div>
+        <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.25rem; color: var(--text-primary); display: flex; align-items: center; gap: 0.5rem;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary);"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            Quick Stats
+        </h3>
+        <div style="display: flex; align-items: center; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 1.5rem; box-shadow: var(--shadow-sm); overflow: hidden;">
+            <div style="flex: 1; text-align: center; border-right: 1px solid var(--border-subtle); padding: 0 1rem;">
+                <div style="font-size: 1.75rem; font-weight: 800; color: var(--text-primary); line-height: 1;">{{ count($fleetByAirline) }}</div>
+                <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.5rem;">Airlines</div>
             </div>
-            <div class="stat-item">
-                <div class="stat-value">{{ count($fleet) }}</div>
-                <div class="stat-label">Aircraft</div>
+            <div style="flex: 1; text-align: center; border-right: 1px solid var(--border-subtle); padding: 0 1rem;">
+                <div style="font-size: 1.75rem; font-weight: 800; color: var(--text-primary); line-height: 1;">{{ count($fleet) }}</div>
+                <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.5rem;">Aircraft</div>
             </div>
-            <div class="stat-item">
-                <div class="stat-value">{{ array_sum($totalStats) }}</div>
-                <div class="stat-label">Total Seats Tracked</div>
+            <div style="flex: 1.5; text-align: center; border-right: 1px solid var(--border-subtle); padding: 0 1rem;">
+                <div style="font-size: 1.75rem; font-weight: 800; color: var(--text-primary); line-height: 1;">{{ number_format(array_sum($totalStats)) }}</div>
+                <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.5rem;">Total Seats Tracked</div>
             </div>
-            <div class="stat-item">
+            <div style="flex: 1; text-align: center; border-right: 1px solid var(--border-subtle); padding: 0 1rem;">
                 @php
                     $totalTracked = $totalStats['safe'] + $totalStats['warning'] + $totalStats['critical'] + $totalStats['expired'];
                     $healthScore = $totalTracked > 0 ? round(($totalStats['safe'] / $totalTracked) * 100) : 0;
                 @endphp
-                <div class="stat-value">{{ $healthScore }}%</div>
-                <div class="stat-label">Health Score</div>
+                <div style="font-size: 1.75rem; font-weight: 800; color: var(--success); line-height: 1;">{{ $healthScore }}%</div>
+                <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.5rem;">Health Score</div>
             </div>
-            <div class="stat-item">
-                <div class="stat-value">{{ $totalStats['critical'] + $totalStats['expired'] }}</div>
-                <div class="stat-label">Needs Attention</div>
+            <div style="flex: 1; text-align: center; padding: 0 1rem;">
+                <div style="font-size: 1.75rem; font-weight: 800; color: var(--danger); line-height: 1;">{{ $totalStats['critical'] + $totalStats['expired'] }}</div>
+                <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.5rem;">Needs Attention</div>
             </div>
         </div>
     </section>

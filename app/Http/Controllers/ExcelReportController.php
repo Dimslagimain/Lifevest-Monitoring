@@ -709,9 +709,21 @@ class ExcelReportController extends Controller
             $sheet->setCellValue('B' . $rowIdx, strtoupper($log->user->name ?? 'SYSTEM'));
             $sheet->setCellValue('C' . $rowIdx, $log->registration ?? '-');
             $sheet->setCellValue('D' . $rowIdx, strtoupper($log->action));
+            
+            $details = '-';
+            if ($log->action === 'suspend_user') {
+                $details = 'TARGET: ' . ($log->details['target_user_name'] ?? '-') . ' | REASON: ' . ($log->details['reason'] ?? '-');
+            } elseif ($log->action === 'unsuspend_user') {
+                $details = 'TARGET: ' . ($log->details['target_user_name'] ?? '-');
+            } elseif (isset($log->details['seats'])) {
+                $details = implode(', ', $log->details['seats']);
+            } elseif (isset($log->details['seat_id'])) {
+                $details = $log->details['seat_id'];
+            }
+
             $sheet->setCellValue('E' . $rowIdx, $pn);
             $sheet->setCellValue('F' . $rowIdx, $log->details['seat_count'] ?? (isset($log->details['seats']) ? count($log->details['seats']) : '-'));
-            $sheet->setCellValue('G' . $rowIdx, isset($log->details['seats']) ? implode(', ', $log->details['seats']) : ($log->details['seat_id'] ?? '-'));
+            $sheet->setCellValue('G' . $rowIdx, $details);
             $sheet->setCellValue('H' . $rowIdx, isset($log->details['expiry_date']) ? Carbon::parse($log->details['expiry_date'])->format('d/m/Y') : '-');
 
             // Zebra Stripping & Borders

@@ -78,5 +78,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/superadmin/users', [\App\Http\Controllers\UserManagementController::class, 'store'])->name('superadmin.users.store');
         Route::put('/superadmin/users/{user}', [\App\Http\Controllers\UserManagementController::class, 'update'])->name('superadmin.users.update');
         Route::delete('/superadmin/users/{user}', [\App\Http\Controllers\UserManagementController::class, 'destroy'])->name('superadmin.users.destroy');
+        Route::post('/superadmin/users/{user}/suspend', [\App\Http\Controllers\UserManagementController::class, 'suspend'])->name('superadmin.users.suspend');
+        Route::post('/superadmin/users/{user}/unsuspend', [\App\Http\Controllers\UserManagementController::class, 'unsuspend'])->name('superadmin.users.unsuspend');
     });
 });

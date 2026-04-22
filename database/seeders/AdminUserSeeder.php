@@ -27,7 +27,25 @@ class AdminUserSeeder extends Seeder
         User::updateOrCreate(
             ['email' => 'admin@tnp.com'],
             [
-                'name' => 'Admin TNP',
+                'name' => 'Admin TNP 1',
+                'password' => Hash::make('admintnp'),
+                'role' => User::ROLE_ADMIN,
+            ]
+        );
+
+        User::updateOrCreate(
+            ['email' => 'admin2@tnp.com'],
+            [
+                'name' => 'Admin TNP 2',
+                'password' => Hash::make('admintnp'),
+                'role' => User::ROLE_ADMIN,
+            ]
+        );
+
+        User::updateOrCreate(
+            ['email' => 'admin3@tnp.com'],
+            [
+                'name' => 'Admin TNP 3',
                 'password' => Hash::make('admintnp'),
                 'role' => User::ROLE_ADMIN,
             ]

@@ -29,6 +29,8 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'is_suspended',
+        'suspension_reason',
     ];
 
     /**

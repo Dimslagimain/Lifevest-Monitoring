@@ -30,6 +30,15 @@ class AuthController extends Controller
         ]);
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
+            $user = Auth::user();
+
+            if ($user->is_suspended) {
+                Auth::logout();
+                return back()->withErrors([
+                    'email' => 'Your account has been suspended. Reason: ' . $user->suspension_reason,
+                ])->onlyInput('email');
+            }
+
             $request->session()->regenerate();
 
             return redirect()->intended(route('dashboard'));

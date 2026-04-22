@@ -66,4 +66,53 @@ class UserManagementController extends Controller
 
         return redirect()->back()->with('success', 'User deleted successfully.');
     }
+
+    public function suspend(Request $request, \App\Models\User $user)
+    {
+        if (auth()->id() === $user->id) {
+            return redirect()->back()->with('error', "You cannot suspend your own account.");
+        }
+
+        $request->validate([
+            'reason' => 'required|string|max:255',
+        ]);
+
+        $user->update([
+            'is_suspended' => true,
+            'suspension_reason' => $request->reason,
+        ]);
+
+        // Log the activity
+        \App\Models\ActivityLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'suspend_user',
+            'details' => [
+                'target_user_id' => $user->id,
+                'target_user_name' => $user->name,
+                'reason' => $request->reason,
+            ]
+        ]);
+
+        return redirect()->back()->with('success', "User {$user->name} has been suspended.");
+    }
+
+    public function unsuspend(\App\Models\User $user)
+    {
+        $user->update([
+            'is_suspended' => false,
+            'suspension_reason' => null,
+        ]);
+
+        // Log the activity
+        \App\Models\ActivityLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'unsuspend_user',
+            'details' => [
+                'target_user_id' => $user->id,
+                'target_user_name' => $user->name,
+            ]
+        ]);
+
+        return redirect()->back()->with('success', "User {$user->name} has been unsuspended.");
+    }
 }

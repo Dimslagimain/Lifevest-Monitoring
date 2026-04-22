@@ -92,6 +92,19 @@
                                     <div style="font-size: 0.95rem; font-weight: 700; color: var(--text-primary);">
                                         Batch: {{ $log->details['seat_count'] ?? 0 }} Seats Updated
                                     </div>
+                                @elseif($log->action === 'suspend_user')
+                                    <div style="font-size: 0.95rem; font-weight: 700; color: #f59e0b;">
+                                        Suspended User: {{ $log->details['target_user_name'] ?? 'Account' }}
+                                    </div>
+                                    @if(isset($log->details['reason']))
+                                        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 6px; line-height: 1.4; padding: 4px 8px; background: rgba(245, 158, 11, 0.05); border-radius: 4px; border-left: 2px solid #f59e0b; font-style: italic;">
+                                            "{{ $log->details['reason'] }}"
+                                        </div>
+                                    @endif
+                                @elseif($log->action === 'unsuspend_user')
+                                    <div style="font-size: 0.95rem; font-weight: 700; color: #10b981;">
+                                        Unsuspended User: {{ $log->details['target_user_name'] ?? 'Account' }}
+                                    </div>
                                 @endif
                             </div>
                         </div>

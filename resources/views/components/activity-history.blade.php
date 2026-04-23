@@ -174,4 +174,15 @@
                     'ADMIN' => strtoupper($log->user->name ?? 'SYSTEM'),
                     'AIRCRAFT' => $log->registration ?? '-',
                     'ACTIVITY' => strtoupper($log->action === 'pn_update' ? 'P/N UPDATE' : ($log->action === 'batch' ? 'BATCH INPUT' : $log->action)),
-</div>
+                    'PN AFFECTED' => $pn,
+                ];
+            });
+        @endphp
+
+        const data = @json($exportData);
+        const ws = XLSX.utils.json_to_sheet(data);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Activity Log");
+        XLSX.writeFile(wb, `Activity_Log_{{ date('Ymd_His') }}.xlsx`);
+    }
+</script>

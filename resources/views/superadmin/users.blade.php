@@ -142,9 +142,9 @@
                 </select>
             </div>
 
-            <div style="margin-top: 2rem; display: flex; justify-content: flex-end; gap: 1rem;">
-                <button type="button" class="btn btn-secondary" onclick="closeModal()" style="min-width: 100px;">Cancel</button>
-                <button type="submit" class="btn btn-primary" id="submitBtn" style="min-width: 160px; font-weight: 700;">Create User Account</button>
+            <div style="margin-top: 2rem; display: flex; justify-content: flex-end; gap: 0.75rem;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal()" style="padding: 0.6rem 1.5rem; font-weight: 600;">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="submitBtn" style="padding: 0.6rem 2rem; font-weight: 700;">Save Changes</button>
             </div>
         </form>
     </div>
@@ -167,9 +167,9 @@
                 <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">This message will be recorded in the activity log and visible to other administrators.</p>
             </div>
 
-            <div style="margin-top: 2rem; display: flex; justify-content: flex-end; gap: 1rem;">
-                <button type="button" class="btn btn-secondary" onclick="closeSuspendModal()">Cancel</button>
-                <button type="submit" class="btn btn-primary" style="background: #f59e0b; border-color: #f59e0b; font-weight: 700;">Suspend Account</button>
+            <div style="margin-top: 2rem; display: flex; justify-content: flex-end; gap: 0.75rem;">
+                <button type="button" class="btn btn-secondary" onclick="closeSuspendModal()" style="padding: 0.6rem 1.5rem; font-weight: 600;">Cancel</button>
+                <button type="submit" class="btn btn-primary" style="background: #f59e0b; border-color: #f59e0b; padding: 0.6rem 2rem; font-weight: 700;">Suspend Account</button>
             </div>
         </form>
     </div>

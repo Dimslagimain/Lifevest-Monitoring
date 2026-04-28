@@ -91,6 +91,11 @@ class AircraftController extends Controller
             $seatIds = $request->input('seat_ids');
             $expiryDate = $request->input('expiry_date');
 
+            // Get layout for this aircraft once (fix N+1 query issue)
+            $aircraft = Aircraft::where('registration', $registration)->first();
+            $layout = $aircraft->layout ?? null;
+            $classRows = $layout ? config("aircraft_class_rows.{$layout}", []) : [];
+
             foreach ($seatIds as $seatId) {
                 // Determine class type based on seat ID format
                 $classType = 'economy'; // default
@@ -123,20 +128,12 @@ class AircraftController extends Controller
                     $row = $matches[1] ?: null;
                     $col = $matches[2] ?: $seatId;
 
-                    if ($row) {
-                        // Get layout for this aircraft (FROM DB)
-                        $aircraft = Aircraft::where('registration', $registration)->first();
-                        $layout = $aircraft->layout ?? null;
-
-                        if ($layout) {
-                            $classRows = config("aircraft_class_rows.{$layout}", []);
-                            $rowNum = (int) $row;
-
-                            foreach ($classRows as $class => $rows) {
-                                if (in_array($rowNum, $rows)) {
-                                    $classType = $class;
-                                    break;
-                                }
+                    if ($row && !empty($classRows)) {
+                        $rowNum = (int) $row;
+                        foreach ($classRows as $class => $rows) {
+                            if (in_array($rowNum, $rows)) {
+                                $classType = $class;
+                                break;
                             }
                         }
                     }
@@ -414,6 +411,8 @@ class AircraftController extends Controller
             return null;
 
         $formats = [
+            'Y-m-d',     // 2030-03-01
+            'Y/m/d',     // 2030/03/01
             'd/m/Y',     // 01/03/2030
             'd-m-Y',     // 01-03-2030
             'd/m/y',     // 01/03/30
@@ -439,6 +438,16 @@ class AircraftController extends Controller
             } catch (\Exception $e) {
                 continue;
             }
+        }
+
+        // Fallback to generic PHP strtotime parsing if all specific formats fail
+        try {
+            $parsed = strtotime($dateStr);
+            if ($parsed !== false) {
+                return \Carbon\Carbon::createFromTimestamp($parsed);
+            }
+        } catch (\Exception $e) {
+            // Do nothing, let it return null below
         }
 
         return null;

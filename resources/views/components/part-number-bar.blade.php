@@ -8,7 +8,7 @@
                 <span class="pn-value">{{ $aircraft->pn_adult }}</span>
                 <span class="pn-qty">{{ $qtyAdult }}</span>
                 @if($expAdult > 0)
-                    <span class="pn-expired">⚠️ {{ $expAdult }} expired</span>
+                    <span class="pn-expired">{{ $expAdult }} expired</span>
                 @endif
             </div>
         @endif
@@ -18,7 +18,7 @@
                 <span class="pn-value">{{ $aircraft->pn_crew }}</span>
                 <span class="pn-qty">{{ $qtyCrew }}</span>
                 @if($expCrew > 0)
-                    <span class="pn-expired">⚠️ {{ $expCrew }} expired</span>
+                    <span class="pn-expired">{{ $expCrew }} expired</span>
                 @endif
             </div>
         @endif
@@ -28,7 +28,7 @@
                 <span class="pn-value">{{ $aircraft->pn_infant }}</span>
                 <span class="pn-qty">{{ $qtyInfant }}</span>
                 @if($expInfant > 0)
-                    <span class="pn-expired">⚠️ {{ $expInfant }} expired</span>
+                    <span class="pn-expired">{{ $expInfant }} expired</span>
                 @endif
             </div>
         @endif

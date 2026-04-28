@@ -127,8 +127,8 @@ function setupEventListeners() {
             return;
         }
 
-        // Only clear if we have selections
-        if (state.selectedSeats.size > 0) {
+        // Only clear if we have selections and date modal is not open
+        if (state.selectedSeats.size > 0 && !(elements.dateModal && elements.dateModal.classList.contains('show'))) {
             clearSelection();
             // showToast('Selection cleared', 'info'); // Optional feedback
         }
@@ -370,7 +370,10 @@ async function applyDate() {
 
         if (data.success) {
             // Update UI
-            const formattedDate = new Date(dateValue).toLocaleDateString('en-GB', {
+            // Parse YYYY-MM-DD manually to avoid timezone shift issues (UTC vs Local)
+            const [year, month, day] = dateValue.split('-');
+            const dateObj = new Date(year, month - 1, day);
+            const formattedDate = dateObj.toLocaleDateString('en-GB', {
                 day: 'numeric',
                 month: 'short',
                 year: 'numeric'

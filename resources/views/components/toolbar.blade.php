@@ -35,12 +35,6 @@
                 Blank Form
             </a>
         @endif
-        @if(auth()->user() && auth()->user()->isAdmin())
-            @if($registration && Route::has('aircraft.batchInput'))
-                <a href="{{ route('aircraft.batchInput', $registration) }}" class="btn-premium btn-premium-warning">
-                    Batch Input
-                </a>
-            @endif
         @endif
     </div>
 </div>

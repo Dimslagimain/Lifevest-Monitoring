@@ -27,19 +27,18 @@ npm install
 cp .env.example .env
 php artisan key:generate
 
-# 3. Persiapan Basis Data
-# Sesuaikan poin berikut di dalam file .env Anda:
-# DB_DATABASE=lifevest_tracker
-# DB_USERNAME=root
-# DB_PASSWORD=
-php artisan migrate --seed
+# 3. Persiapan Basis Data (Sistem & Data Dummy)
+php artisan migrate:fresh --seed
 
-# 4. Menjalankan Aplikasi
+# 4. Kompilasi Aset Visual (Wajib sebelum production)
+npm run build
+
+# 5. Menjalankan Aplikasi
 # Buka dua jendela terminal berbeda dan jalankan:
 # Terminal 1:
 php artisan serve
 
-# Terminal 2:
+# Terminal 2 (Hanya untuk Development):
 npm run dev
 ```
 Akses aplikasi melalui: `http://localhost:8000`
@@ -52,16 +51,17 @@ Sistem ini diorganisir secara sistematis untuk memudahkan pemeliharaan jangka pa
 
 ```
 lifevest-laravel/
-├── app/Http/Controllers/              # Logika pengolah data, dashboard, & laporan
+├── app/Http/Controllers/              # Logika pengolah data, dashboard, manajemen user & log aktivitas
+├── app/Models/                        # Skema database (Aircraft, Seat, User, ActivityLog)
 ├── config/aircraft_class_rows.php      # Pusat pengaturan baris bisnis/ekonomi layout
-├── database/seeders/                  # Data awal registrasi pesawat & maskapai
+├── database/seeders/                  # Data awal registrasi pesawat, maskapai, & akses Role
 ├── resources/css/style.css            # Sistem desain utama (Premium UI & Dark Mode)
-├── resources/js/app.js                # Interaksi peta kursi & navigasi SPA
+├── resources/js/app.js                # Interaksi peta kursi, optimasi zona waktu & navigasi SPA
 ├── resources/views/
 │   ├── aircraft/                      # Template pembungkus tiap layout pesawat
 │   ├── aircraft/partials/             # Konfigurasi teknis 16+ layout kursi (Seat Map)
 │   ├── reports/                       # Template untuk Cetak PDF & Formulir Lapangan
-│   └── components/                    # Komponen visual (Toolbar, Modal, Legend)
+│   └── components/                    # Komponen visual (Toolbar, Modal, Legend, Global Log)
 └── dokumentasi/                       # Panduan manual lengkap (User & Developer)
 ```
 
@@ -71,7 +71,7 @@ lifevest-laravel/
 
 Life Vest Tracker adalah ekosistem digital mutakhir yang dirancang khusus untuk tim Engineering dan Maintenance GMF AeroAsia. Sistem ini mengubah data keselamatan pesawat yang kompleks menjadi informasi visual yang siap ditindaklanjuti, memastikan setiap pesawat dalam armada dilengkapi dengan peralatan keselamatan yang patuh (compliant) dan aman.
 
-Aplikasi ini menggantikan proses pencatatan manual di kertas yang memakan waktu dan rentan kesalahan, beralih ke sistem digital yang rapi, otomatis, dan dapat dipantau secara langsung oleh manajemen melalui antarmuka yang bersih dan modern.
+Pembaruan terbaru telah menghadirkan **Keamanan Berbasis Peran (RBAC)**, **Integritas Data Log Global**, dan **Input Massal (Batch Input)** yang mampu menangani ratusan data kursi secara instan dengan optimasi *query* tinggi, menggantikan proses pencatatan manual yang rentan kesalahan.
 
 ---
 
@@ -88,22 +88,33 @@ Layar pertama menampilkan Kartu Maskapai dalam ukuran besar. Setiap kartu dileng
 **Airline Fleet Profile (Level 2):**
 Mengklik kartu maskapai akan membawa Anda masuk ke daftar pesawat yang dimiliki maskapai tersebut. Pesawat dikelompokkan berdasarkan tipenya (A320, B737, dll.) dalam bentuk daftar yang bisa diciutkan (accordion) untuk kenyamanan pandangan.
 
-### 2. Peta Kursi Digital (Interactive Seat Map)
+### 2. Manajemen Akses & Aktivitas (RBAC & Logs)
+Sistem dilengkapi dengan hierarki akses yang ketat:
+- **Super Administrator**: Memiliki akses penuh, termasuk mengelola akun pengguna (menambah, membekukan/suspend, menghapus).
+- **Admin (TNP)**: Dapat memodifikasi data pesawat, mengatur tanggal kursi, dan menggunakan fitur cetak/ekspor.
+- **User (Viewer)**: Hanya dapat melihat status dan membaca laporan (akses *Read-Only*).
+
+Semua tindakan modifikasi (Update, Delete, Suspend User) dicatat secara permanen di **Global Activity Log** demi transparansi dan kebutuhan audit (*Audit Trail*).
+
+### 3. Peta Kursi Digital & Pembaruan Data
 Fitur ini adalah tempat utama untuk melihat dan memperbarui data pelampung di pesawat.
 
-**Cara Memilih Kursi:**
+**Cara Memilih Kursi (Multi-Select):**
 - **Klik Biasa**: Memilih satu kursi (menghilangkan pilihan sebelumnya).
 - **Ctrl + Klik**: Menambah kursi ke pilihan yang sudah ada (untuk banyak kursi sekaligus).
 - **Shift + Klik**: Memilih sederetan kursi dari titik awal ke titik akhir.
 - **Klik Header Baris/Kolom**: Memilih seluruh baris atau kolom secara instan.
 
-**Cara Mengisi Tanggal Kedaluwarsa:**
+**Cara Mengisi Tanggal Kedaluwarsa (Set Date):**
 1. Pilih kursi-kursi yang ingin diperbarui.
 2. Klik tombol "Set Date" di toolbar atas.
-3. Pilih tanggal dari kalender yang muncul.
-4. Klik "Apply". Data akan tersimpan secara massal untuk semua kursi terpilih.
+3. Pilih tanggal dari kalender yang muncul (wajib memiliki Role Admin/Superadmin).
+4. Klik "Apply". Data akan tersimpan secara massal secara merata ke seluruh kursi terpilih (menimpa data lama).
 
-### 3. Pintasan Keyboard (Shortcuts)
+**Input Massal (Bulk Import):**
+Fitur ini tersedia di menu samping (Sidebar) khusus untuk mengunggah file Excel dalam format besar. Sistem akan secara otomatis membaca dan memasangkan data ke armada yang sesuai.
+
+### 4. Pintasan Keyboard (Shortcuts)
 Untuk mempercepat pekerjaan, gunakan tombol keyboard berikut:
 - **Ctrl + A**: Memilih SEMUA kursi di pesawat tersebut.
 - **Enter**: Membuka kotak pengisian tanggal (jika ada kursi yang sedang dipilih).
@@ -129,12 +140,8 @@ Untuk mempercepat pekerjaan, gunakan tombol keyboard berikut:
 Aplikasi mendukung pengunduhan laporan dalam berbagai format resmi perusahaan:
 
 - **Export PDF**: Menghasilkan laporan peta kursi berwarna yang menunjukkan posisi pelampung dan tanggal kadaluwarsanya. Sangat berguna untuk arsip resmi.
-- **Formulir Kosong (Blank Form)**: Desain khusus dengan kotak yang lebih besar untuk pencatatan manual oleh teknisi di lapangan. Sistem secara otomatis menyesuaikan jumlah "Spare Boxes" (Cadangan PAX & INF) sesuai tipe pesawat:
-    - A320: 15 PAX, 20 INF
-    - A330: 15 PAX, 40 INF
-    - B737: 10 PAX, 25 INF
-    - B777: 35 PAX, 40 INF
-- **Export Excel**: Tersedia pada menu "Replacement Plans" untuk mengunduh daftar perencanaan kebutuhan suku cadang secara massal.
+- **Formulir Kosong (Blank Form)**: Desain khusus dengan kotak yang lebih besar untuk pencatatan manual oleh teknisi di lapangan. Sistem secara otomatis menyesuaikan jumlah "Spare Boxes" (Cadangan PAX & INF) sesuai tipe pesawat.
+- **Export Excel**: Tersedia di log aktivitas global untuk pengunduhan log audit atau perencanaan suku cadang massal.
 
 ---
 
@@ -143,7 +150,7 @@ Aplikasi mendukung pengunduhan laporan dalam berbagai format resmi perusahaan:
 Kelola data dasar melalui rute `/fleet` yang dibagi menjadi dua tab utama:
 
 - **Tab Aircraft**: Melihat, memfilter (berdasarkan maskapai atau tipe), menambah, mengubah, dan menghapus registrasi pesawat.
-- **Tab Airlines**: Mengelola daftar maskapai (seperti Garuda Indonesia - GA, Citilink - QG). Anda bisa menambah maskapai baru dengan mengisi Nama dan Kode IATA-nya.
+- **Tab Airlines**: Mengelola daftar maskapai. Anda bisa menambah maskapai baru dengan mengisi Nama dan Kode IATA-nya.
 
 ### Penambahan Pesawat/Layout Baru
 1. **Cara Utama**: Melalui Fleet Manager, pilih Maskapai, Registrasi, Tipe, dan Layout yang sudah tersedia di daftar pilihan.
@@ -162,4 +169,4 @@ Sistem saat ini mendukung berbagai tipe pesawat dengan cakupan luas:
 
 ---
 
-*© 2026 GMF AeroAsia — Sistem Pemantauan Life Vest | Engineering Excellence*
+*© 2026 GMF AeroAsia — Life Vest Tracker — Engineering Excellence*

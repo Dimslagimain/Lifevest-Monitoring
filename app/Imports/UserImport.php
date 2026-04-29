@@ -22,7 +22,7 @@ class UserImport implements ToModel, WithHeadingRow
         }
 
         // Skip empty rows and the warning/example row
-        if (empty($row['email']) || empty($row['name']) || str_contains((string)$row['name'], 'CONTOH PENGISIAN')) {
+        if (empty($row['email']) || empty($row['name']) || str_contains(strtoupper((string)$row['name']), 'CONTOH')) {
             return null;
         }
 

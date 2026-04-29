@@ -23,7 +23,7 @@ class SeatImport implements ToModel, WithHeadingRow
         }
 
         // Skip empty rows and the warning/example row
-        if (empty($row['registration']) || empty($row['seat_id']) || empty($row['expiry_date_yyyy_mm_dd']) || str_contains((string)$row['registration'], 'CONTOH PENGISIAN')) {
+        if (empty($row['registration']) || empty($row['seat_id']) || empty($row['expiry_date_yyyy_mm_dd']) || str_contains(strtoupper((string)$row['registration']), 'CONTOH')) {
             return null;
         }
 

@@ -51,45 +51,53 @@ class SeatImport implements ToModel, WithHeadingRow
             return null; // Don't process invalid dates or default 1970 dates
         }
 
-        // Determine class type based on SeatController logic
+        // Format seat_id agar seragam (case-insensitive)
+        $rawSeatId = trim($row['seat_id']);
+        $seatIdLower = strtolower($rawSeatId);
+        
         $classType = 'economy'; // default
         $rowNum = null;
         $col = null;
+        $finalSeatId = $rawSeatId;
 
         // Cockpit seats
-        if (in_array($seatId, ['captain', 'copilot', 'observer1', 'observer2'])) {
+        if (in_array($seatIdLower, ['captain', 'copilot', 'observer1', 'observer2'])) {
             $classType = 'cockpit';
-            $col = $seatId;
+            $finalSeatId = $seatIdLower; // standar huruf kecil
+            $col = $finalSeatId;
         }
         // PAX spare seats (pax-1, pax-2, etc.)
-        elseif (str_starts_with($seatId, 'pax-')) {
+        elseif (str_starts_with($seatIdLower, 'pax-')) {
             $classType = 'spare-pax';
-            $col = $seatId;
+            $finalSeatId = $seatIdLower;
+            $col = $finalSeatId;
         }
         // INF spare seats (inf-1, inf-2, etc.)
-        elseif (str_starts_with($seatId, 'inf-')) {
+        elseif (str_starts_with($seatIdLower, 'inf-')) {
             $classType = 'spare-inf';
-            $col = $seatId;
+            $finalSeatId = $seatIdLower;
+            $col = $finalSeatId;
         }
-        // Attendant seats (att/d11-A, att/d12-C, att/d22-H, etc.)
-        elseif (str_starts_with($seatId, 'att/')) {
+        // Attendant seats (att/d11-l, ATT/D11-L, d11-l, D11-L)
+        elseif (str_starts_with($seatIdLower, 'att/') || preg_match('/^d\d+-[a-z]+$/', $seatIdLower)) {
             $classType = 'attendant';
-            $col = $seatId;
+            // Ambil bagian pintunya saja (misal: d11-l) lalu jadikan huruf besar (D11-L), tambahkan att/ di depan
+            $doorPartRaw = preg_replace('/^att\//i', '', $rawSeatId);
+            $finalSeatId = 'att/' . strtoupper($doorPartRaw);
+            $col = $finalSeatId;
         }
-        // Regular seats (6A, 21B, etc.)
+        // Regular seats (6A, 21B, 6a, 21b)
         else {
-            preg_match('/^(\d+)?(.+)$/', $seatId, $matches);
+            $finalSeatId = strtoupper($rawSeatId); // 6a -> 6A
+            preg_match('/^(\d+)?(.+)$/', $finalSeatId, $matches);
             $rowNum = $matches[1] ?: null;
-            $col = $matches[2] ?: $seatId;
-
-            // We could try to detect class_type properly using layout config,
-            // but for bulk import 'economy' is a safe fallback or we leave it.
+            $col = $matches[2] ?: $finalSeatId;
         }
 
         return Seat::updateOrCreate(
             [
                 'registration' => $registration,
-                'seat_id'      => $seatId,
+                'seat_id'      => $finalSeatId,
             ],
             [
                 'row'          => $rowNum,

@@ -25,7 +25,7 @@ class BulkImportTemplateExport implements FromArray, WithHeadings, WithStyles, S
         if ($this->type === 'aircraft') {
             return ['Registration', 'Airline_ID', 'Type', 'Layout', 'Status', 'PN_Adult', 'PN_Crew', 'PN_Infant'];
         } elseif ($this->type === 'seat') {
-            return ['Registration', 'Seat_ID', 'Expiry_Date_YYYY_MM_DD'];
+            return ['Registration', 'Seat_ID', 'Expiry_Date'];
         } elseif ($this->type === 'user') {
             return ['Name', 'Email', 'Password', 'Role'];
         }

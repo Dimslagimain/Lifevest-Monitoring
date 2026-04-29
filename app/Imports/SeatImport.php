@@ -18,12 +18,12 @@ class SeatImport implements ToModel, WithHeadingRow
     public function model(array $row)
     {
         // Validasi format file
-        if (!array_key_exists('seat_id', $row) || !array_key_exists('expiry_date_yyyy_mm_dd', $row)) {
+        if (!array_key_exists('seat_id', $row) || !array_key_exists('expiry_date', $row)) {
             throw new \Exception("Format file salah! Pastikan Anda mengunggah template SEAT / LIFE VEST (kolom 'Seat_ID' atau 'Expiry_Date' tidak ditemukan).");
         }
 
         // Skip empty rows and the warning/example row
-        if (empty($row['registration']) || empty($row['seat_id']) || empty($row['expiry_date_yyyy_mm_dd']) || str_contains(strtoupper((string)$row['registration']), 'CONTOH')) {
+        if (empty($row['registration']) || empty($row['seat_id']) || empty($row['expiry_date']) || str_contains(strtoupper((string)$row['registration']), 'CONTOH')) {
             return null;
         }
 
@@ -32,7 +32,7 @@ class SeatImport implements ToModel, WithHeadingRow
         
         // Parse expiry date
         try {
-            $dateValue = $row['expiry_date_yyyy_mm_dd'];
+            $dateValue = $row['expiry_date'];
             
             if (is_numeric($dateValue)) {
                 // Jika formatnya terbaca sebagai Excel Serial Date Number (contoh: 46387)

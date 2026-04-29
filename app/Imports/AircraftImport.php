@@ -16,9 +16,10 @@ class AircraftImport implements ToModel, WithHeadingRow
      */
     public function model(array $row)
     {
-        // Validasi format file: Pastikan kolom utama ada di header
-        if (!array_key_exists('registration', $row)) {
-            throw new \Exception("Format file salah! Pastikan Anda mengunggah template AIRCRAFT (kolom 'Registration' tidak ditemukan).");
+        // Validasi format file: Pastikan kolom utama khusus Aircraft ada di header
+        // Seat template juga punya 'registration', jadi kita harus cek kolom lain seperti 'type' atau 'airline_id'
+        if (!array_key_exists('registration', $row) || !array_key_exists('type', $row) || !array_key_exists('airline_id', $row)) {
+            throw new \Exception("Format file salah! Pastikan Anda mengunggah template AIRCRAFT (kolom 'Type' atau 'Airline_ID' tidak ditemukan).");
         }
 
         // Skip empty rows and the warning/example row

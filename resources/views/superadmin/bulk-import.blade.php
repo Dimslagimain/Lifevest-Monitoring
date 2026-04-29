@@ -1,88 +1,113 @@
 @extends('layouts.app')
 
+@extends('layouts.app')
+
 @section('content')
-<div class="dashboard-container">
-    <div class="header-section" style="background: var(--bg-card); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm); display: flex; justify-content: space-between; align-items: center;">
-        <div>
-            <h1 class="page-title" style="margin: 0; font-weight: 800; letter-spacing: -0.03em;">Bulk Import Data</h1>
-            <p class="page-subtitle" style="margin-top: 0.5rem; opacity: 0.8;">Unggah file Excel atau CSV untuk memasukkan data dalam jumlah besar dengan cepat dan mudah.</p>
+<div style="max-width: 800px; margin: 2rem auto; padding: 0 1rem;">
+    <!-- Modern Header -->
+    <div style="text-align: center; margin-bottom: 3rem;">
+        <div style="display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: 20px; background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.2), rgba(var(--primary-rgb), 0.05)); border: 1px solid rgba(var(--primary-rgb), 0.1); margin-bottom: 1.5rem; box-shadow: 0 8px 16px -4px rgba(var(--primary-rgb), 0.1);">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--primary-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
         </div>
-        <div class="header-icon" style="background: rgba(var(--primary-rgb), 0.1); color: var(--primary-color); padding: 1rem; border-radius: 50%;">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-        </div>
+        <h1 style="font-size: 2rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.03em; margin: 0 0 0.75rem 0;">Bulk Import Data</h1>
+        <p style="font-size: 1.05rem; color: var(--text-muted); max-width: 500px; margin: 0 auto; line-height: 1.5;">Unggah file spreadsheet untuk memproses penambahan data atau pembaruan massal secara otomatis.</p>
     </div>
 
     @if(session('success'))
-        <div class="alert alert-success" style="margin-top: 1.5rem; background: rgba(34, 197, 94, 0.1); color: #22c55e; padding: 1rem; border-radius: 8px; border: 1px solid rgba(34, 197, 94, 0.2); display: flex; align-items: center; gap: 0.5rem;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-            {{ session('success') }}
+        <div style="margin-bottom: 2rem; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); padding: 1rem 1.5rem; border-radius: 12px; display: flex; align-items: center; gap: 1rem;">
+            <div style="background: #10b981; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <p style="margin: 0; color: #10b981; font-weight: 600;">{{ session('success') }}</p>
         </div>
     @endif
     
     @if(session('error'))
-        <div class="alert alert-danger" style="margin-top: 1.5rem; background: rgba(239, 68, 68, 0.1); color: #ef4444; padding: 1rem; border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.2); display: flex; align-items: center; gap: 0.5rem;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
-            {{ session('error') }}
+        <div style="margin-bottom: 2rem; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); padding: 1rem 1.5rem; border-radius: 12px; display: flex; align-items: center; gap: 1rem;">
+            <div style="background: #ef4444; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </div>
+            <p style="margin: 0; color: #ef4444; font-weight: 600;">{{ session('error') }}</p>
         </div>
     @endif
 
-    <div class="card" style="margin-top: 2rem; max-width: 700px; margin-left: auto; margin-right: auto; overflow: hidden; padding: 2.5rem; background: var(--bg-card); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); border: 1px solid var(--border-subtle);">
-        <form action="{{ route('superadmin.bulk-import.process') }}" method="POST" enctype="multipart/form-data">
+    <div style="background: var(--bg-card); border-radius: 24px; border: 1px solid var(--border-subtle); box-shadow: var(--shadow-lg); padding: 3rem; position: relative; overflow: hidden;">
+        <!-- Decorative blob background -->
+        <div style="position: absolute; top: -100px; right: -100px; width: 300px; height: 300px; background: radial-gradient(circle, var(--primary-glow) 0%, transparent 70%); border-radius: 50%; pointer-events: none;"></div>
+
+        <form action="{{ route('superadmin.bulk-import.process') }}" method="POST" enctype="multipart/form-data" style="position: relative; z-index: 1;">
             @csrf
             
-            <div class="form-group-premium" style="margin-bottom: 2rem;">
-                <label style="font-weight: 700; color: var(--text-primary); font-size: 0.95rem; display: block; margin-bottom: 0.75rem;">1. Pilih Tipe Data</label>
-                <div style="position: relative;">
-                    <select name="import_type" id="import_type" class="input-premium select-premium" style="width: 100%; appearance: none; cursor: pointer; padding-right: 2.5rem; color: var(--text-muted);" required>
-                        <option value="" disabled selected>Silahkan pilih apa yang ingin di Import.</option>
-                        <option value="aircraft" style="color: var(--text-primary);">Aircraft (Armada Pesawat)</option>
-                        <option value="seat" style="color: var(--text-primary);">Seat / Life Vest (Data Expiry Date)</option>
-                        <option value="user" style="color: var(--text-primary);">User Account (Akun Pengguna)</option>
-                    </select>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); pointer-events: none; color: var(--text-muted);"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            <div style="margin-bottom: 2.5rem;">
+                <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+                    <div style="width: 28px; height: 28px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem;">1</div>
+                    <h3 style="margin: 0; font-size: 1.1rem; font-weight: 700; color: var(--text-primary);">Pilih Kategori Data</h3>
                 </div>
-            </div>
-
-            <div class="form-group-premium" style="margin-bottom: 2.5rem;">
-                <label style="font-weight: 700; color: var(--text-primary); font-size: 0.95rem; display: block; margin-bottom: 0.75rem;">2. Unggah File (Excel / CSV)</label>
                 
-                <div class="upload-area" id="upload-area" style="border: 2px dashed var(--border-color); border-radius: var(--radius-md); padding: 3rem 2rem; text-align: center; cursor: pointer; transition: all 0.2s ease; background: rgba(var(--primary-rgb), 0.02);">
-                    <input type="file" name="file" id="file" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" style="display: none;" required>
+                <div style="padding-left: 2.5rem;">
+                    <div style="position: relative;">
+                        <select name="import_type" id="import_type" class="input-premium" style="width: 100%; appearance: none; cursor: pointer; padding: 1rem 1.25rem; font-size: 1rem; font-weight: 500; border-radius: 12px; border: 2px solid var(--border);" required>
+                            <option value="" disabled selected>-- Tentukan entitas yang akan di-import --</option>
+                            <option value="aircraft">Aircraft (Armada Pesawat)</option>
+                            <option value="seat">Seat / Life Vest (Data Expiry Date)</option>
+                            <option value="user">User Account (Akun Pengguna)</option>
+                        </select>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; right: 1.25rem; top: 50%; transform: translateY(-50%); pointer-events: none; color: var(--text-muted);"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </div>
                     
-                    <div id="upload-content">
-                        <div style="background: var(--bg-color); width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem auto; box-shadow: var(--shadow-sm);">
-                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--primary-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                        </div>
-                        <h3 style="margin: 0 0 0.5rem 0; font-weight: 700; font-size: 1.1rem; color: var(--text-primary);">Tarik & Lepas file Anda di sini</h3>
-                        <p style="margin: 0 0 1.25rem 0; color: var(--text-muted); font-size: 0.9rem;">atau</p>
-                        <button type="button" class="btn" style="background: var(--card-bg); border: 1px solid var(--border-color); font-weight: 600; padding: 0.5rem 1.5rem; pointer-events: none; border-radius: 0.375rem; color: var(--text-primary); box-shadow: var(--shadow-sm);">Cari File...</button>
-                        <p style="margin: 1.25rem 0 0 0; color: var(--text-muted); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Hanya mendukung .XLSX dan .CSV (Maks. 10MB)</p>
-                    </div>
-
-                    <div id="file-info" style="display: none; align-items: center; justify-content: center; gap: 1rem;">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-                        <div style="text-align: left;">
-                            <h4 id="file-name" style="margin: 0; font-weight: 700; color: var(--text-primary);">filename.xlsx</h4>
-                            <p id="file-size" style="margin: 0.25rem 0 0 0; color: var(--text-muted); font-size: 0.8rem;">1.2 MB</p>
-                        </div>
-                        <button type="button" id="remove-file" style="background: none; border: none; color: var(--danger); cursor: pointer; padding: 0.5rem; margin-left: 1rem; border-radius: 50%; display: flex; align-items: center; justify-content: center;" title="Remove File">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                        </button>
+                    <div id="template-container" style="margin-top: 1rem; opacity: 0.5; pointer-events: none; transition: all 0.3s ease; display: flex; align-items: center; gap: 0.75rem; background: var(--bg-dark); padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--border-subtle);">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                        <span style="font-size: 0.85rem; color: var(--text-muted); flex-grow: 1;">Belum punya formatnya? Unduh template Excel resmi kami.</span>
+                        <a href="#" id="download-template-btn" style="display: inline-flex; align-items: center; font-weight: 700; font-size: 0.85rem; color: var(--primary); text-decoration: none; padding: 0.5rem 1rem; background: var(--primary-glow); border-radius: 6px; transition: background 0.2s;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.5rem;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            Unduh Template
+                        </a>
                     </div>
                 </div>
             </div>
 
-            <div style="display: flex; gap: 1rem; justify-content: space-between; align-items: center; padding-top: 1.5rem; border-top: 1px solid var(--border-subtle);">
-                <div id="template-container" style="opacity: 0.5; pointer-events: none; transition: all 0.3s ease;">
-                    <a href="#" id="download-template-btn" class="btn btn-secondary" style="display: inline-flex; align-items: center; font-weight: 600; padding: 0.75rem 1.25rem;">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.5rem;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                        Download Template
-                    </a>
+            <div style="margin-bottom: 2.5rem;">
+                <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+                    <div style="width: 28px; height: 28px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem;">2</div>
+                    <h3 style="margin: 0; font-size: 1.1rem; font-weight: 700; color: var(--text-primary);">Unggah File Spreadsheet</h3>
                 </div>
                 
-                <button type="submit" id="submit-btn" class="btn btn-primary" style="display: inline-flex; align-items: center; padding: 0.75rem 2rem; font-weight: 700; opacity: 0.5; pointer-events: none; transition: all 0.3s ease;">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.5rem;"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/><polyline points="16 16 12 12 8 16"/></svg>
-                    Mulai Import Data
+                <div style="padding-left: 2.5rem;">
+                    <div class="upload-area" id="upload-area" style="border: 2px dashed var(--border); border-radius: 16px; padding: 3rem 2rem; text-align: center; cursor: pointer; transition: all 0.2s ease; background: var(--bg-dark); position: relative;">
+                        <input type="file" name="file" id="file" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" style="display: none;" required>
+                        
+                        <div id="upload-content">
+                            <div style="background: var(--primary-glow); width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem auto;">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/><path d="M12 18v-6"/><path d="M9 15l3-3 3 3"/></svg>
+                            </div>
+                            <h3 style="margin: 0 0 0.5rem 0; font-weight: 700; font-size: 1.2rem; color: var(--text-primary);">Tarik & Lepas file Anda di sini</h3>
+                            <p style="margin: 0 0 1.5rem 0; color: var(--text-muted); font-size: 0.95rem;">atau</p>
+                            <button type="button" class="btn btn-secondary" style="pointer-events: none; padding: 0.75rem 2rem; border-radius: 8px;">Telusuri File...</button>
+                            <p style="margin: 1.5rem 0 0 0; color: var(--text-muted); font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Mendukung .XLSX dan .CSV (Maks. 10MB)</p>
+                        </div>
+
+                        <div id="file-info" style="display: none; align-items: center; justify-content: space-between; background: var(--bg-card); border: 1px solid var(--border-subtle); padding: 1.5rem; border-radius: 12px; box-shadow: var(--shadow-sm);">
+                            <div style="display: flex; align-items: center; gap: 1.25rem;">
+                                <div style="background: rgba(16, 185, 129, 0.1); color: var(--success); width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+                                </div>
+                                <div style="text-align: left;">
+                                    <h4 id="file-name" style="margin: 0 0 0.25rem 0; font-weight: 700; color: var(--text-primary); font-size: 1.05rem;">filename.xlsx</h4>
+                                    <p id="file-size" style="margin: 0; color: var(--text-muted); font-size: 0.85rem; font-weight: 500;">1.2 MB</p>
+                                </div>
+                            </div>
+                            <button type="button" id="remove-file" class="btn-icon" style="color: var(--danger); border-color: transparent;" title="Ganti File">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="padding-left: 2.5rem; margin-top: 3rem; border-top: 1px solid var(--border-subtle); padding-top: 2rem;">
+                <button type="submit" id="submit-btn" class="btn btn-primary" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.75rem; padding: 1.25rem; font-size: 1.1rem; font-weight: 700; border-radius: 12px; opacity: 0.5; pointer-events: none;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    Mulai Proses Import Data
                 </button>
             </div>
         </form>
@@ -102,9 +127,6 @@
     /* Make the select placeholder text gray */
     select:invalid {
         color: var(--text-muted);
-    }
-    select option {
-        color: var(--text-primary);
     }
     select option[value=""][disabled] {
         display: none;
@@ -129,9 +151,6 @@
 
         // Handle Type Selection
         typeSelect.addEventListener('change', function() {
-            // Remove gray color once selected
-            this.style.color = 'var(--text-primary)';
-            
             if (this.value) {
                 templateContainer.style.opacity = '1';
                 templateContainer.style.pointerEvents = 'auto';

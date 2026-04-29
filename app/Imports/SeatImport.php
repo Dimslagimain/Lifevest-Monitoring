@@ -32,14 +32,23 @@ class SeatImport implements ToModel, WithHeadingRow
         
         // Parse expiry date
         try {
-            // Excel dates might come as strings or numbers, we assume YYYY-MM-DD for simplicity
-            $expiryDate = Carbon::parse($row['expiry_date_yyyy_mm_dd']);
+            $dateValue = $row['expiry_date_yyyy_mm_dd'];
+            
+            if (is_numeric($dateValue)) {
+                // Jika formatnya terbaca sebagai Excel Serial Date Number (contoh: 46387)
+                $expiryDate = \Carbon\Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($dateValue));
+            } else {
+                // Jika formatnya teks (contoh: 31/12/2026 atau 2026-12-31)
+                // Ubah '/' menjadi '-' agar Carbon memahaminya sebagai format DD-MM-YYYY (European) bukan MM/DD/YYYY (US)
+                $dateValue = str_replace('/', '-', $dateValue);
+                $expiryDate = \Carbon\Carbon::parse($dateValue);
+            }
         } catch (\Exception $e) {
             $expiryDate = null;
         }
 
-        if (!$expiryDate) {
-            return null; // Don't process invalid dates
+        if (!$expiryDate || $expiryDate->year < 2000) {
+            return null; // Don't process invalid dates or default 1970 dates
         }
 
         // Determine class type based on SeatController logic

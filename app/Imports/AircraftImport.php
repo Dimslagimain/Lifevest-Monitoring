@@ -16,8 +16,8 @@ class AircraftImport implements ToModel, WithHeadingRow
      */
     public function model(array $row)
     {
-        // Skip empty rows
-        if (!isset($row['registration'])) {
+        // Skip empty rows and the warning/example row
+        if (!isset($row['registration']) || str_contains($row['registration'], 'CONTOH PENGISIAN')) {
             return null;
         }
 

@@ -16,8 +16,8 @@ class UserImport implements ToModel, WithHeadingRow
      */
     public function model(array $row)
     {
-        // Skip empty rows
-        if (!isset($row['email']) || !isset($row['name'])) {
+        // Skip empty rows and the warning/example row
+        if (!isset($row['email']) || !isset($row['name']) || str_contains($row['name'], 'CONTOH PENGISIAN')) {
             return null;
         }
 

@@ -43,7 +43,7 @@ class SeatImport implements ToModel, WithHeadingRow
                 $dateValue = str_replace('/', '-', $dateValue);
                 $expiryDate = \Carbon\Carbon::parse($dateValue);
             }
-        } catch (\Exception $e) {
+        } catch (\Exception $e){
             $expiryDate = null;
         }
 

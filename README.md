@@ -111,8 +111,24 @@ Fitur ini adalah tempat utama untuk melihat dan memperbarui data pelampung di pe
 3. Pilih tanggal dari kalender yang muncul (wajib memiliki Role Admin/Superadmin).
 4. Klik "Apply". Data akan tersimpan secara massal secara merata ke seluruh kursi terpilih (menimpa data lama).
 
-**Input Massal (Bulk Import):**
-Fitur ini tersedia di menu samping (Sidebar) khusus untuk mengunggah file Excel dalam format besar. Sistem akan secara otomatis membaca dan memasangkan data ke armada yang sesuai.
+**Input Massal (Bulk Import Data):**
+Fitur ini tersedia di menu samping (Sidebar) khusus untuk mengunggah file Excel dalam format besar. Sangat berguna saat inisialisasi awal atau pembaruan database secara masif.
+
+*Cara Menggunakan Bulk Import:*
+1. Buka menu **Bulk Import** di Sidebar.
+2. Pilih Kategori Data yang ingin diimpor (Aircraft, Seat/Life Vest, atau User Account).
+3. Unduh **Template Excel Resmi** yang disediakan sistem (tombol akan muncul otomatis).
+4. Isi data Anda mulai dari baris berikutnya. *Catatan: Baris contoh yang di-highlight merah bertuliskan `[CONTOH (DIABAIKAN)]` tidak perlu Anda hapus, karena sistem akan secara otomatis mengabaikannya.*
+5. Unggah kembali file tersebut ke area Dropzone dan klik **Mulai Proses Import Data**.
+
+*Penulisan Seat ID Fleksibel (Case-Insensitive & Auto-Format):*
+Khusus untuk import template **Seat/Life Vest**, sistem dilengkapi dengan kecerdasan pembersihan data. Anda **Bebas** menggunakan gaya huruf besar/kecil sesukanya, karena sistem akan merapikannya secara otomatis sebelum disimpan ke database:
+- **Kursi Biasa**: Tulis `6a` atau `6A` bebas saja, sistem otomatis menyimpannya dengan rapi menjadi huruf besar `6A`.
+- **PAX / INF**: Mau tulis `PAX-1`, `Pax-1`, atau `pax-1` bebas, akan otomatis menjadi standar huruf kecil `pax-1`.
+- **Attendant (Pramugari)**: Tidak perlu repot mengetik awalan `att/`.
+  - Tulis `d11-ll` otomatis disempurnakan jadi `att/D11-LL`
+  - Tulis `ATT/D11-LL` otomatis dirapikan jadi `att/D11-LL`
+  - Tulis `d11-L` otomatis jadi `att/D11-L`
 
 ### 4. Pintasan Keyboard (Shortcuts)
 Untuk mempercepat pekerjaan, gunakan tombol keyboard berikut:

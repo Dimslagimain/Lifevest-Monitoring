@@ -1,7 +1,5 @@
 @extends('layouts.app')
 
-@extends('layouts.app')
-
 @section('content')
 <div style="max-width: 800px; margin: 2rem auto; padding: 0 1rem;">
     <!-- Modern Header -->

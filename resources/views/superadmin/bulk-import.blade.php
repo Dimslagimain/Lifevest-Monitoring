@@ -34,10 +34,10 @@
                 <label style="font-weight: 700; color: var(--text-primary); font-size: 0.95rem; display: block; margin-bottom: 0.75rem;">1. Pilih Tipe Data</label>
                 <div style="position: relative;">
                     <select name="import_type" id="import_type" class="input-premium select-premium" style="width: 100%; appearance: none; cursor: pointer; padding-right: 2.5rem;" required>
-                        <option value="" disabled selected>-- Tentukan entitas yang akan di-import --</option>
-                        <option value="aircraft">✈️ Aircraft (Armada Pesawat)</option>
-                        <option value="seat">💺 Seat / Life Vest (Data Expiry Date)</option>
-                        <option value="user">👤 User Account (Akun Pengguna)</option>
+                        <option value="" disabled selected>Silahkan pilih apa yang ingin di Import.</option>
+                        <option value="aircraft">Aircraft (Armada Pesawat)</option>
+                        <option value="seat">Seat / Life Vest (Data Expiry Date)</option>
+                        <option value="user">User Account (Akun Pengguna)</option>
                     </select>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); pointer-events: none; color: var(--text-muted);"><polyline points="6 9 12 15 18 9"></polyline></svg>
                 </div>
@@ -50,10 +50,13 @@
                     <input type="file" name="file" id="file" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" style="display: none;" required>
                     
                     <div id="upload-content">
-                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--primary-color)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 1rem; opacity: 0.8;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="3" x2="9" y2="21"/><path d="M13 8h4"/><path d="M13 12h4"/><path d="M13 16h4"/></svg>
-                        <h3 style="margin: 0 0 0.5rem 0; font-weight: 700; font-size: 1.1rem; color: var(--text-primary);">Klik untuk memilih file</h3>
-                        <p style="margin: 0; color: var(--text-muted); font-size: 0.85rem;">atau seret dan lepas file Anda ke area ini.</p>
-                        <p style="margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.75rem; font-weight: 600;">Maksimal ukuran file: 10MB (.xlsx, .csv)</p>
+                        <div style="background: var(--bg-color); width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem auto; box-shadow: var(--shadow-sm);">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--primary-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                        </div>
+                        <h3 style="margin: 0 0 0.5rem 0; font-weight: 700; font-size: 1.1rem; color: var(--text-primary);">Tarik & Lepas file Anda di sini</h3>
+                        <p style="margin: 0 0 1.25rem 0; color: var(--text-muted); font-size: 0.9rem;">atau</p>
+                        <button type="button" class="btn" style="background: var(--card-bg); border: 1px solid var(--border-color); font-weight: 600; padding: 0.5rem 1.5rem; pointer-events: none; border-radius: 0.375rem; color: var(--text-primary); box-shadow: var(--shadow-sm);">Cari File...</button>
+                        <p style="margin: 1.25rem 0 0 0; color: var(--text-muted); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Hanya mendukung .XLSX dan .CSV (Maks. 10MB)</p>
                     </div>
 
                     <div id="file-info" style="display: none; align-items: center; justify-content: center; gap: 1rem;">

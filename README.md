@@ -91,7 +91,7 @@ Mengklik kartu maskapai akan membawa Anda masuk ke daftar pesawat yang dimiliki 
 ### 2. Manajemen Akses & Aktivitas (RBAC & Logs)
 Sistem dilengkapi dengan hierarki akses yang ketat:
 - **Super Administrator**: Memiliki akses penuh, termasuk mengelola akun pengguna (menambah, membekukan/suspend, menghapus).
-- **Admin (TNP)**: Dapat memodifikasi data pesawat, mengatur tanggal kursi, dan menggunakan fitur cetak/ekspor.
+- **Admin (TNP)**: Akses terbatas hanya dapat memodifikasi data pesawat, mengatur tanggal kursi, dan menggunakan fitur cetak/ekspor.
 - **User (Viewer)**: Hanya dapat melihat status dan membaca laporan (akses *Read-Only*).
 
 Semua tindakan modifikasi (Update, Delete, Suspend User) dicatat secara permanen di **Global Activity Log** demi transparansi dan kebutuhan audit (*Audit Trail*).
@@ -123,8 +123,8 @@ Fitur ini tersedia di menu samping (Sidebar) khusus untuk mengunggah file Excel 
 
 *Penulisan Seat ID Fleksibel (Case-Insensitive & Auto-Format):*
 Khusus untuk import template **Seat/Life Vest**, sistem dilengkapi dengan kecerdasan pembersihan data. Anda **Bebas** menggunakan gaya huruf besar/kecil sesukanya, karena sistem akan merapikannya secara otomatis sebelum disimpan ke database:
-- **Kursi Biasa**: Tulis `6a` atau `6A` bebas saja, sistem otomatis menyimpannya dengan rapi menjadi huruf besar `6A`.
-- **PAX / INF**: Mau tulis `PAX-1`, `Pax-1`, atau `pax-1` bebas, akan otomatis menjadi standar huruf kecil `pax-1`.
+- **Kursi Biasa**: User bisa menulis row id `6a` atau `6A` bebas saja, sistem otomatis menyimpannya dengan rapi menjadi huruf besar `6A`.
+- **PAX / INF**: User bisa mengetik `PAX-1`, `Pax-1`, atau `pax-1` bebas, akan otomatis menjadi standar huruf kecil `pax-1`.
 - **Attendant (Pramugari)**: Tidak perlu repot mengetik awalan `att/`.
   - Tulis `d11-ll` otomatis disempurnakan jadi `att/D11-LL`
   - Tulis `ATT/D11-LL` otomatis dirapikan jadi `att/D11-LL`

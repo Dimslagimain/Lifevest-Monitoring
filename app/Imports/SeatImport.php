@@ -17,8 +17,13 @@ class SeatImport implements ToModel, WithHeadingRow
      */
     public function model(array $row)
     {
+        // Validasi format file
+        if (!array_key_exists('seat_id', $row) || !array_key_exists('expiry_date_yyyy_mm_dd', $row)) {
+            throw new \Exception("Format file salah! Pastikan Anda mengunggah template SEAT / LIFE VEST (kolom 'Seat_ID' atau 'Expiry_Date' tidak ditemukan).");
+        }
+
         // Skip empty rows and the warning/example row
-        if (!isset($row['registration']) || !isset($row['seat_id']) || !isset($row['expiry_date_yyyy_mm_dd']) || str_contains($row['registration'], 'CONTOH PENGISIAN')) {
+        if (empty($row['registration']) || empty($row['seat_id']) || empty($row['expiry_date_yyyy_mm_dd']) || str_contains((string)$row['registration'], 'CONTOH PENGISIAN')) {
             return null;
         }
 

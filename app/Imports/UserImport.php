@@ -16,8 +16,13 @@ class UserImport implements ToModel, WithHeadingRow
      */
     public function model(array $row)
     {
+        // Validasi format file
+        if (!array_key_exists('email', $row) || !array_key_exists('name', $row)) {
+            throw new \Exception("Format file salah! Pastikan Anda mengunggah template USER ACCOUNT (kolom 'Email' atau 'Name' tidak ditemukan).");
+        }
+
         // Skip empty rows and the warning/example row
-        if (!isset($row['email']) || !isset($row['name']) || str_contains($row['name'], 'CONTOH PENGISIAN')) {
+        if (empty($row['email']) || empty($row['name']) || str_contains((string)$row['name'], 'CONTOH PENGISIAN')) {
             return null;
         }
 

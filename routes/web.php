@@ -80,5 +80,10 @@ Route::middleware('auth')->group(function () {
         Route::delete('/superadmin/users/{user}', [\App\Http\Controllers\UserManagementController::class, 'destroy'])->name('superadmin.users.destroy');
         Route::post('/superadmin/users/{user}/suspend', [\App\Http\Controllers\UserManagementController::class, 'suspend'])->name('superadmin.users.suspend');
         Route::post('/superadmin/users/{user}/unsuspend', [\App\Http\Controllers\UserManagementController::class, 'unsuspend'])->name('superadmin.users.unsuspend');
+        
+        // Bulk Import
+        Route::get('/superadmin/bulk-import', [\App\Http\Controllers\BulkImportController::class, 'index'])->name('superadmin.bulk-import');
+        Route::post('/superadmin/bulk-import', [\App\Http\Controllers\BulkImportController::class, 'import'])->name('superadmin.bulk-import.process');
+        Route::get('/superadmin/bulk-import/template/{type}', [\App\Http\Controllers\BulkImportController::class, 'downloadTemplate'])->name('superadmin.bulk-import.template');
     });
 });

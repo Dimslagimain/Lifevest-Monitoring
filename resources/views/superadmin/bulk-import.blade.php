@@ -33,11 +33,11 @@
             <div class="form-group-premium" style="margin-bottom: 2rem;">
                 <label style="font-weight: 700; color: var(--text-primary); font-size: 0.95rem; display: block; margin-bottom: 0.75rem;">1. Pilih Tipe Data</label>
                 <div style="position: relative;">
-                    <select name="import_type" id="import_type" class="input-premium select-premium" style="width: 100%; appearance: none; cursor: pointer; padding-right: 2.5rem;" required>
+                    <select name="import_type" id="import_type" class="input-premium select-premium" style="width: 100%; appearance: none; cursor: pointer; padding-right: 2.5rem; color: var(--text-muted);" required>
                         <option value="" disabled selected>Silahkan pilih apa yang ingin di Import.</option>
-                        <option value="aircraft">Aircraft (Armada Pesawat)</option>
-                        <option value="seat">Seat / Life Vest (Data Expiry Date)</option>
-                        <option value="user">User Account (Akun Pengguna)</option>
+                        <option value="aircraft" style="color: var(--text-primary);">Aircraft (Armada Pesawat)</option>
+                        <option value="seat" style="color: var(--text-primary);">Seat / Life Vest (Data Expiry Date)</option>
+                        <option value="user" style="color: var(--text-primary);">User Account (Akun Pengguna)</option>
                     </select>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); pointer-events: none; color: var(--text-muted);"><polyline points="6 9 12 15 18 9"></polyline></svg>
                 </div>
@@ -99,6 +99,16 @@
         background: rgba(var(--primary-rgb), 0.1) !important;
         transform: scale(1.02);
     }
+    /* Make the select placeholder text gray */
+    select:invalid {
+        color: var(--text-muted);
+    }
+    select option {
+        color: var(--text-primary);
+    }
+    select option[value=""][disabled] {
+        display: none;
+    }
 </style>
 
 @push('scripts')
@@ -119,6 +129,9 @@
 
         // Handle Type Selection
         typeSelect.addEventListener('change', function() {
+            // Remove gray color once selected
+            this.style.color = 'var(--text-primary)';
+            
             if (this.value) {
                 templateContainer.style.opacity = '1';
                 templateContainer.style.pointerEvents = 'auto';

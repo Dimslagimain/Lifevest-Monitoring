@@ -74,7 +74,7 @@
                                 </button>
                                 @if(Auth::id() !== $user->id)
                                     @if($user->is_suspended)
-                                        <form action="{{ route('superadmin.users.unsuspend', $user->id) }}" method="POST" style="display:inline;">
+                                        <form action="{{ route('superadmin.users.unsuspend', $user->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to reactivate (unsuspend) this user account?')">
                                             @csrf
                                             <button type="submit" class="btn btn-icon" style="color: #10b981;" title="Unsuspend User">
                                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>

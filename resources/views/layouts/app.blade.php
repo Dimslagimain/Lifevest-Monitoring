@@ -30,6 +30,8 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
@@ -93,6 +95,11 @@
                                     <span class="navbar-role-badge navbar-role-{{ Auth::user()->role }}">{{ ucfirst(Auth::user()->role) }}</span>
                                 </div>
                             </div>
+                            <div class="navbar-user-dropdown-divider"></div>
+                            <a href="{{ route('profile.settings') }}" class="navbar-user-dropdown-item">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                Account Settings
+                            </a>
                             <div class="navbar-user-dropdown-divider"></div>
                             <form method="POST" action="{{ route('logout') }}" style="margin: 0;">
                                 @csrf

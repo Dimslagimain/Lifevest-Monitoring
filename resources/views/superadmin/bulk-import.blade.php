@@ -33,7 +33,7 @@
         <!-- Decorative blob background -->
         <div style="position: absolute; top: -100px; right: -100px; width: 300px; height: 300px; background: radial-gradient(circle, var(--primary-glow) 0%, transparent 70%); border-radius: 50%; pointer-events: none;"></div>
 
-        <form action="{{ route('superadmin.bulk-import.process') }}" method="POST" enctype="multipart/form-data" style="position: relative; z-index: 1;">
+        <form action="{{ route('superadmin.bulk-import.process') }}" method="POST" enctype="multipart/form-data" style="position: relative; z-index: 1;" onsubmit="return confirm('Mulai proses import data? Pastikan format file sudah sesuai dengan template.')">
             @csrf
             
             <div style="margin-bottom: 2.5rem;">

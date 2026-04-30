@@ -25,6 +25,10 @@ Route::middleware('auth')->group(function () {
     // Dashboard (homepage)
     Route::get('/', DashboardController::class)->name('dashboard');
 
+    // Profile Settings
+    Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'index'])->name('profile.settings');
+    Route::put('/profile/password', [\App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('profile.password');
+
     // Export — semua role bisa download
     Route::get('/export/replacement-plan', [\App\Http\Controllers\ExcelReportController::class, 'exportReplacementPlan'])->name('reports.excel');
     Route::get('/export/summary', [\App\Http\Controllers\ExcelReportController::class, 'exportSummaryDashboard'])->name('reports.summary');

@@ -5,8 +5,7 @@
 html, body {
     margin: 0;
     padding: 0;
-    height: 100%;
-    overflow: hidden;
+    min-height: 100%;
     font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
@@ -361,32 +360,59 @@ html, body {
 }
 
 /* --- Mobile Stack (Optional but good to have) --- */
+/* --- Mobile Stack --- */
 @media (max-width: 1024px) {
     .auth-split-container {
         flex-direction: column;
+        background: var(--bg-form); /* Match the form background */
     }
     
     .auth-image-side {
         flex: none;
-        height: 300px;
-        padding: 2rem;
+        height: 280px; /* Reduced height */
+        padding: 1.5rem;
+        justify-content: flex-start; /* Move badge up */
+        background-position: center;
     }
     
     .auth-logo-overlay {
-        top: 2rem;
-        left: 2rem;
+        top: 1.5rem;
+        left: 1.5rem;
+        right: 1.5rem; /* Center logo container on mobile */
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.2);
     }
     
     .auth-large-logo {
-        width: 200px;
+        width: 180px;
+    }
+    
+    .auth-image-content {
+        margin-top: auto; /* Push badge to bottom of image */
+        margin-bottom: 2rem; /* Keep it above the overlap */
+        text-align: center;
     }
     
     .auth-form-side {
         flex: 1;
-        padding: 3rem 2rem;
+        padding: 2.5rem 1.5rem;
+        margin-top: -30px; /* Overlap the image for a premium look */
+        border-radius: 30px 30px 0 0; /* Rounded top corners */
+        background: var(--bg-form);
+        z-index: 20; /* Ensure it stays above the image */
+        box-shadow: 0 -10px 20px rgba(0,0,0,0.05); /* Slight shadow */
     }
     
     .auth-form-container {
         max-width: 100%;
+        margin-top: 1rem;
+    }
+
+    .theme-toggle {
+        top: 1.5rem;
+        right: 1.5rem;
+        background: var(--bg-form);
     }
 }

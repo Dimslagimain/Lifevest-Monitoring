@@ -120,11 +120,16 @@
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                                     </a>
                                     <form action="{{ route('fleet.destroy', $aircraft->id) }}" method="POST"
-                                        style="display: inline-block;"
-                                        onsubmit="return confirm('Type DELETE to confirm removal of {{ $aircraft->registration }}?');">
+                                        style="display: inline-block;">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn-icon" style="color: var(--danger);" title="Delete Aircraft">
+                                        <button type="submit" class="btn-icon confirm-submit" 
+                                            data-confirm-title="Remove Aircraft?" 
+                                            data-confirm-text="Are you sure you want to delete aircraft {{ $aircraft->registration }}?"
+                                            data-confirm-icon="warning"
+                                            data-confirm-button-text="Yes, Delete"
+                                            data-confirm-variant="danger"
+                                            style="color: var(--danger);" title="Delete Aircraft">
                                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                                         </button>
                                     </form>
@@ -176,11 +181,16 @@
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                                     </a>
                                     <form action="{{ route('airlines.destroy', $airline->id) }}" method="POST"
-                                        style="display: inline-block;"
-                                        onsubmit="return confirm('Type DELETE to confirm removal of {{ $airline->name }}?');">
+                                        style="display: inline-block;">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-icon" style="color: var(--danger);" title="Delete Airline">
+                                        <button type="submit" class="btn btn-icon confirm-submit" 
+                                            data-confirm-title="Remove Airline?" 
+                                            data-confirm-text="Are you sure you want to delete {{ $airline->name }}?"
+                                            data-confirm-icon="warning"
+                                            data-confirm-button-text="Yes, Delete"
+                                            data-confirm-variant="danger"
+                                            style="color: var(--danger);" title="Delete Airline">
                                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                                         </button>
                                     </form>

@@ -314,7 +314,114 @@
                 });
             }
         });
+
+        // SweetAlert2 Global Confirmation Handler
+        document.addEventListener('click', function(e) {
+            const button = e.target.closest('.confirm-submit');
+            if (button) {
+                e.preventDefault();
+                const form = button.closest('form');
+                const title = button.dataset.confirmTitle || 'Are you sure?';
+                const text = button.dataset.confirmText || "You won't be able to revert this!";
+                const icon = button.dataset.confirmIcon || 'warning';
+                const confirmButtonText = button.dataset.confirmButtonText || 'Yes, proceed!';
+                const confirmVariant = button.dataset.confirmVariant || 'primary'; // primary, success, danger
+
+                Swal.fire({
+                    title: title,
+                    text: text,
+                    icon: icon,
+                    showCancelButton: true,
+                    confirmButtonText: confirmButtonText,
+                    background: getComputedStyle(document.documentElement).getPropertyValue('--bg-card-solid').trim() || (document.documentElement.getAttribute('data-theme') === 'dark' ? '#162238' : '#ffffff'),
+                    color: getComputedStyle(document.documentElement).getPropertyValue('--text-primary').trim() || (document.documentElement.getAttribute('data-theme') === 'dark' ? '#ffffff' : '#1e293b'),
+                    reverseButtons: true,
+                    padding: '2rem',
+                    customClass: {
+                        popup: 'swal2-premium-popup',
+                        title: 'swal2-premium-title',
+                        htmlContainer: 'swal2-premium-text',
+                        confirmButton: `swal2-premium-confirm swal2-variant-${confirmVariant}`,
+                        cancelButton: 'swal2-premium-cancel',
+                        icon: 'swal2-premium-icon'
+                    },
+                    buttonsStyling: false,
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            }
+        });
     </script>
+    <style>
+        .swal2-premium-popup {
+            border-radius: var(--radius-lg) !important;
+            border: 1px solid var(--border-subtle) !important;
+            box-shadow: var(--shadow-xl) !important;
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
+        }
+        .swal2-premium-title {
+            font-size: 1.5rem !important;
+            font-weight: 800 !important;
+            letter-spacing: -0.03em !important;
+            margin-bottom: 0.5rem !important;
+            padding-top: 1rem !important;
+        }
+        .swal2-premium-text {
+            font-size: 1rem !important;
+            color: var(--text-muted) !important;
+            line-height: 1.6 !important;
+        }
+        .swal2-premium-confirm, .swal2-premium-cancel {
+            padding: 0.8rem 2.2rem !important;
+            font-weight: 700 !important;
+            border-radius: 12px !important;
+            margin: 0.5rem !important;
+            cursor: pointer !important;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            font-size: 0.9rem !important;
+            border: none !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.03em !important;
+        }
+        
+        /* Variants */
+        .swal2-variant-primary {
+            background-color: var(--primary) !important;
+            color: white !important;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
+        }
+        .swal2-variant-success {
+            background-color: var(--success) !important;
+            color: white !important;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3) !important;
+        }
+        .swal2-variant-danger {
+            background-color: var(--danger) !important;
+            color: white !important;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3) !important;
+        }
+        
+        .swal2-premium-confirm:hover {
+            transform: translateY(-2px) !important;
+            filter: brightness(1.1) !important;
+        }
+        
+        .swal2-premium-cancel {
+            background-color: rgba(148, 163, 184, 0.1) !important;
+            color: var(--text-secondary) !important;
+            border: 1px solid var(--border-subtle) !important;
+        }
+        .swal2-premium-cancel:hover {
+            background-color: rgba(148, 163, 184, 0.2) !important;
+            color: var(--text-primary) !important;
+        }
+        .swal2-premium-icon {
+            border-width: 3px !important;
+            margin-top: 1.5rem !important;
+        }
+    </style>
 </body>
 
 </html>

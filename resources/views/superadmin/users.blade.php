@@ -74,9 +74,15 @@
                                 </button>
                                 @if(Auth::id() !== $user->id)
                                     @if($user->is_suspended)
-                                        <form action="{{ route('superadmin.users.unsuspend', $user->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to reactivate (unsuspend) this user account?')">
+                                        <form action="{{ route('superadmin.users.unsuspend', $user->id) }}" method="POST" style="display:inline;">
                                             @csrf
-                                            <button type="submit" class="btn btn-icon" style="color: #10b981;" title="Unsuspend User">
+                                            <button type="submit" class="btn btn-icon confirm-submit" 
+                                                data-confirm-title="Unsuspend User Account?" 
+                                                data-confirm-text="Are you sure you want to unsuspend {{ $user->name }}?"
+                                                data-confirm-icon="warning"
+                                                data-confirm-button-text="Yes, Unsuspend"
+                                                data-confirm-variant="success"
+                                                style="color: #10b981;" title="Unsuspend User">
                                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
                                             </button>
                                         </form>
@@ -87,10 +93,16 @@
                                         </button>
                                     @endif
                                     
-                                    <form action="{{ route('superadmin.users.destroy', $user->id) }}" method="POST" onsubmit="return confirm('Type DELETE to confirm removal of this user?')" style="display:inline;">
+                                    <form action="{{ route('superadmin.users.destroy', $user->id) }}" method="POST" style="display:inline;">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-icon" style="color: var(--danger);" title="Delete User">
+                                        <button type="submit" class="btn btn-icon confirm-submit" 
+                                            data-confirm-title="Permanently Delete User?" 
+                                            data-confirm-text="Are you sure you want to delete {{ $user->name }}? This action cannot be undone."
+                                            data-confirm-icon="warning"
+                                            data-confirm-button-text="Yes, Delete"
+                                            data-confirm-variant="danger"
+                                            style="color: var(--danger);" title="Delete User">
                                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                                         </button>
                                     </form>

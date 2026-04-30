@@ -33,7 +33,7 @@
         <!-- Decorative blob background -->
         <div style="position: absolute; top: -100px; right: -100px; width: 300px; height: 300px; background: radial-gradient(circle, var(--primary-glow) 0%, transparent 70%); border-radius: 50%; pointer-events: none;"></div>
 
-        <form action="{{ route('superadmin.bulk-import.process') }}" method="POST" enctype="multipart/form-data" style="position: relative; z-index: 1;" onsubmit="return confirm('Mulai proses import data? Pastikan format file sudah sesuai dengan template.')">
+        <form action="{{ route('superadmin.bulk-import.process') }}" method="POST" enctype="multipart/form-data" style="position: relative; z-index: 1;">
             @csrf
             
             <div style="margin-bottom: 2.5rem;">
@@ -103,7 +103,13 @@
             </div>
 
             <div style="padding-left: 2.5rem; margin-top: 3rem; border-top: 1px solid var(--border-subtle); padding-top: 2rem;">
-                <button type="submit" id="submit-btn" class="btn btn-primary" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.75rem; padding: 1.25rem; font-size: 1.1rem; font-weight: 700; border-radius: 12px; opacity: 0.5; pointer-events: none;">
+                <button type="submit" id="submit-btn" class="btn btn-primary confirm-submit" 
+                    data-confirm-title="Mulai Import Data?"
+                    data-confirm-text="Pastikan format file sudah sesuai dengan template yang diunduh."
+                    data-confirm-icon="warning"
+                    data-confirm-button-text="Ya, Mulai Import"
+                    data-confirm-variant="primary"
+                    style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.75rem; padding: 1.25rem; font-size: 1.1rem; font-weight: 700; border-radius: 12px; opacity: 0.5; pointer-events: none;">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                     Mulai Proses Import Data
                 </button>

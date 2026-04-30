@@ -662,7 +662,20 @@ async function handleDeleteSpare(e) {
     const type = seatId.startsWith('pax-') ? 'PAX' : 'INF';
     const num = seatId.replace(/^(pax|inf)-/, '');
 
-    if (!confirm(`Delete ${type}-${num}?`)) {
+    const result = await Swal.fire({
+        title: `Delete ${type}-${num}?`,
+        text: "This spare seat will be removed from the records.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#64748b',
+        confirmButtonText: 'Yes, delete it!',
+        background: document.documentElement.getAttribute('data-theme') === 'dark' ? '#1e293b' : '#ffffff',
+        color: document.documentElement.getAttribute('data-theme') === 'dark' ? '#f1f5f9' : '#1e293b',
+        reverseButtons: true
+    });
+
+    if (!result.isConfirmed) {
         return;
     }
 

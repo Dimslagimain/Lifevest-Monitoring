@@ -56,7 +56,7 @@
                 Update Password
             </h3>
 
-            <form action="{{ route('profile.password') }}" method="POST" onsubmit="return confirm('Update your account password?')">
+            <form action="{{ route('profile.password') }}" method="POST">
                 @csrf
                 @method('PUT')
 
@@ -77,7 +77,13 @@
                     </div>
 
                     <div style="margin-top: 1rem;">
-                        <button type="submit" class="btn btn-primary" style="padding: 0.8rem 2.5rem; font-weight: 700;">
+                        <button type="submit" class="btn btn-primary confirm-submit" 
+                            data-confirm-title="Update Password?"
+                            data-confirm-text="Your session will remain active, but you must use the new password for future logins."
+                            data-confirm-icon="info"
+                            data-confirm-button-text="Yes, Update Password"
+                            data-confirm-variant="primary"
+                            style="padding: 0.8rem 2.5rem; font-weight: 700;">
                             Change Password
                         </button>
                     </div>

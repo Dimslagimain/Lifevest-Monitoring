@@ -9,7 +9,7 @@ class UserManagementController extends Controller
 {
     public function index()
     {
-        $users = \App\Models\User::orderBy('role')->orderBy('name')->get();
+        $users = \App\Models\User::query()->orderBy('role')->orderBy('name')->get();
         return view('superadmin.users', compact('users'));
     }
 
@@ -22,7 +22,7 @@ class UserManagementController extends Controller
             'role' => 'required|string|in:superadmin,admin,user',
         ]);
 
-        \App\Models\User::create([
+        \App\Models\User::query()->create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => \Illuminate\Support\Facades\Hash::make($request->password),
@@ -58,7 +58,7 @@ class UserManagementController extends Controller
 
     public function destroy(\App\Models\User $user)
     {
-        if (auth()->id() === $user->id) {
+        if (\Illuminate\Support\Facades\Auth::id() === $user->id) {
             return redirect()->back()->with('error', "You cannot delete your own account.");
         }
 
@@ -69,7 +69,7 @@ class UserManagementController extends Controller
 
     public function suspend(Request $request, \App\Models\User $user)
     {
-        if (auth()->id() === $user->id) {
+        if (\Illuminate\Support\Facades\Auth::id() === $user->id) {
             return redirect()->back()->with('error', "You cannot suspend your own account.");
         }
 
@@ -83,8 +83,8 @@ class UserManagementController extends Controller
         ]);
 
         // Log the activity
-        \App\Models\ActivityLog::create([
-            'user_id' => auth()->id(),
+        \App\Models\ActivityLog::query()->create([
+            'user_id' => \Illuminate\Support\Facades\Auth::id(),
             'action' => 'suspend_user',
             'details' => [
                 'target_user_id' => $user->id,
@@ -104,8 +104,8 @@ class UserManagementController extends Controller
         ]);
 
         // Log the activity
-        \App\Models\ActivityLog::create([
-            'user_id' => auth()->id(),
+        \App\Models\ActivityLog::query()->create([
+            'user_id' => \Illuminate\Support\Facades\Auth::id(),
             'action' => 'unsuspend_user',
             'details' => [
                 'target_user_id' => $user->id,

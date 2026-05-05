@@ -627,7 +627,7 @@ class ExcelReportController extends Controller
     public function exportActivityLog(Request $request)
     {
         $logs = \App\Models\ActivityLog::with(['user', 'aircraft'])
-            ->whereIn('action', ['update', 'batch', 'pn_update', 'delete'])
+            ->whereIn('action', ['update', 'batch', 'pn_update', 'delete', 'import'])
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -689,7 +689,7 @@ class ExcelReportController extends Controller
         $rowIdx = 6;
         foreach ($logs as $log) {
             $pn = '-';
-            if ($log->action === 'update' || $log->action === 'batch') {
+            if ($log->action === 'update' || $log->action === 'batch' || $log->action === 'import') {
                 $pns = $log->details['pns'] ?? (isset($log->details['pn']) ? [$log->details['pn']] : []);
                 if (empty($pns) && isset($log->details['seats'][0]) && $log->aircraft) {
                     $firstSeat = $log->details['seats'][0];
@@ -719,7 +719,9 @@ class ExcelReportController extends Controller
             } elseif ($log->action === 'unsuspend_user') {
                 $details = 'TARGET: ' . ($log->details['target_user_name'] ?? '-');
             } elseif (isset($log->details['seats'])) {
-                $details = implode(', ', $log->details['seats']);
+                $details = implode(', ', (array)$log->details['seats']);
+            } elseif ($log->action === 'import') {
+                $details = $log->details['message'] ?? 'BULK IMPORT';
             } elseif (isset($log->details['seat_id'])) {
                 $details = $log->details['seat_id'];
             }
@@ -727,7 +729,16 @@ class ExcelReportController extends Controller
             $sheet->setCellValue('E' . $rowIdx, $pn);
             $sheet->setCellValue('F' . $rowIdx, $log->details['seat_count'] ?? (isset($log->details['seats']) ? count($log->details['seats']) : '-'));
             $sheet->setCellValue('G' . $rowIdx, $details);
-            $sheet->setCellValue('H' . $rowIdx, isset($log->details['expiry_date']) ? Carbon::parse($log->details['expiry_date'])->format('d/m/Y') : '-');
+            
+            $expiryDateStr = '-';
+            if (isset($log->details['expiry_date']) && $log->details['expiry_date'] !== null) {
+                try {
+                    $expiryDateStr = Carbon::parse($log->details['expiry_date'])->format('d/m/Y');
+                } catch (\Exception $e) {
+                    $expiryDateStr = $log->details['expiry_date'];
+                }
+            }
+            $sheet->setCellValue('H' . $rowIdx, $expiryDateStr);
 
             // Apply Base Alignment (Center) to all cells in the row
             $sheet->getStyle("A{$rowIdx}:H{$rowIdx}")->getAlignment()->setHorizontal('center')->setVertical('center');

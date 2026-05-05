@@ -124,6 +124,11 @@
                                             @endforeach
                                         </div>
                                     @endif
+                                    @if(isset($log->details['seats']))
+                                        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 6px; line-height: 1.4; padding: 4px 8px; background: rgba(0,0,0,0.015); border-radius: 4px; border-left: 2px solid var(--border-subtle);">
+                                            {{ implode(', ', array_slice((array)$log->details['seats'], 0, 15)) }}{{ count((array)$log->details['seats']) > 15 ? '...' : '' }}
+                                        </div>
+                                    @endif
                                 @elseif($log->action === 'unsuspend_user')
 
                                     <div style="font-size: 0.95rem; font-weight: 700; color: #10b981;">
@@ -171,7 +176,7 @@
             $exportData = $logs->map(function($log) {
                 // Determine Part Number for the log
                 $pn = '-';
-                if ($log->action === 'update' || $log->action === 'batch') {
+                if ($log->action === 'update' || $log->action === 'batch' || $log->action === 'import') {
                     if (isset($log->details['seats'][0]) && $log->aircraft) {
                         $firstSeat = $log->details['seats'][0];
                         if (str_starts_with($firstSeat, 'inf-')) { $pn = $log->aircraft->pn_infant; }

@@ -10,10 +10,11 @@ use Carbon\Carbon;
 
 class SeatImport implements ToModel, WithHeadingRow
 {
-    // Array of [registration => [class_type1, class_type2, ...]]
+    // Array of [registration => [['seat_id' => '...', 'class_type' => '...', 'expiry_date' => '...'], ...]]
     public array $affectedData = [];
 
     /**
+
 
 
      * @param array $row
@@ -102,7 +103,11 @@ class SeatImport implements ToModel, WithHeadingRow
         if (!isset($this->affectedData[$registration])) {
             $this->affectedData[$registration] = [];
         }
-        $this->affectedData[$registration][] = $classType;
+        $this->affectedData[$registration][] = [
+            'seat_id' => $finalSeatId,
+            'class_type' => $classType,
+            'expiry_date' => $expiryDate ? $expiryDate->toDateString() : null,
+        ];
 
         return Seat::updateOrCreate(
 

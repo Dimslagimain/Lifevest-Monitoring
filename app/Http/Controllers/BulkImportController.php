@@ -56,13 +56,16 @@ class BulkImportController extends Controller
                 $import = new SeatImport;
                 Excel::import($import, $file);
                 
-                foreach ($import->affectedData as $reg => $classTypes) {
-                    $uniqueTypes = array_unique($classTypes);
-                    $count = count($classTypes);
+                foreach ($import->affectedData as $reg => $items) {
+                    $seatIds = array_column($items, 'seat_id');
+                    $classTypes = array_column($items, 'class_type');
+                    $dates = array_filter(array_unique(array_column($items, 'expiry_date')));
+                    $count = count($items);
                     
                     // Fetch P/Ns for this aircraft based on affected types
                     $aircraft = \App\Models\Aircraft::where('registration', $reg)->first();
                     $pns = [];
+                    $uniqueTypes = array_unique($classTypes);
                     if ($aircraft) {
                         foreach ($uniqueTypes as $classType) {
                             if (in_array($classType, ['economy', 'business', 'spare-pax']) && $aircraft->pn_adult) {
@@ -83,6 +86,8 @@ class BulkImportController extends Controller
                             'type' => 'seat',
                             'seat_count' => $count,
                             'pns' => array_values(array_unique($pns)),
+                            'seats' => array_slice($seatIds, 0, 100), // Cap to 100 for log readability
+                            'expiry_date' => count($dates) === 1 ? reset($dates) : null, // If all same date, show it
                             'message' => "Bulk imported/updated $count seats"
                         ]
                     ]);

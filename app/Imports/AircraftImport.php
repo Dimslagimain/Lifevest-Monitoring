@@ -9,7 +9,10 @@ use Illuminate\Support\Str;
 
 class AircraftImport implements ToModel, WithHeadingRow
 {
+    public array $registrations = [];
+
     /**
+
      * @param array $row
      *
      * @return \Illuminate\Database\Eloquent\Model|null
@@ -27,10 +30,14 @@ class AircraftImport implements ToModel, WithHeadingRow
             return null;
         }
 
+        $reg = strtoupper($row['registration']);
+        $this->registrations[] = $reg;
+
         return Aircraft::updateOrCreate(
             [
-                'registration' => strtoupper($row['registration']),
+                'registration' => $reg,
             ],
+
             [
                 'airline_id' => $row['airline_id'] ?? 1,
                 'type'       => strtoupper($row['type'] ?? 'B737'),

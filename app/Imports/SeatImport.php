@@ -10,7 +10,12 @@ use Carbon\Carbon;
 
 class SeatImport implements ToModel, WithHeadingRow
 {
+    // Array of [registration => [class_type1, class_type2, ...]]
+    public array $affectedData = [];
+
     /**
+
+
      * @param array $row
      *
      * @return \Illuminate\Database\Eloquent\Model|null
@@ -94,7 +99,13 @@ class SeatImport implements ToModel, WithHeadingRow
             $col = $matches[2] ?: $finalSeatId;
         }
 
+        if (!isset($this->affectedData[$registration])) {
+            $this->affectedData[$registration] = [];
+        }
+        $this->affectedData[$registration][] = $classType;
+
         return Seat::updateOrCreate(
+
             [
                 'registration' => $registration,
                 'seat_id'      => $finalSeatId,

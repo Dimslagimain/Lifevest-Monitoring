@@ -384,10 +384,9 @@ class DashboardController extends Controller
         $user = Auth::user();
 
         // Fetch non-cached data (real-time logs for admins)
-        // Filter: only show technical/operational actions related to aircraft maintenance
         $data['recentLogs'] = $user && $user->isAdmin() 
             ? ActivityLog::with(['user', 'aircraft'])
-                ->whereIn('action', ['update', 'batch', 'pn_update', 'delete'])
+                ->whereIn('action', ['update', 'batch', 'pn_update', 'delete', 'import'])
                 ->latest()
                 ->take(10)
                 ->get() 

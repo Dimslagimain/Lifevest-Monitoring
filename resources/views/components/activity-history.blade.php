@@ -37,7 +37,7 @@
                             <div style="font-weight: 700; color: var(--text-primary); font-size: 0.85rem; margin-bottom: 0.35rem; display: flex; align-items: center; gap: 0.4rem;">
                                 {{ $log->user->name }}
                                 <span style="font-weight: 500; color: var(--text-muted); font-size: 0.8rem; opacity: 0.8;">
-                                    @if($log->action === 'update') updated seats @elseif($log->action === 'delete') deleted seat @elseif($log->action === 'batch') batch input @elseif($log->action === 'pn_update') updated P/N @else {{ $log->action }} @endif
+                                    @if($log->action === 'update') updated seats @elseif($log->action === 'delete') deleted seat @elseif($log->action === 'batch') batch input @elseif($log->action === 'pn_update') updated P/N @elseif($log->action === 'import') bulk import @else {{ $log->action }} @endif
                                 </span>
                             </div>
 
@@ -106,7 +106,26 @@
                                             "{{ $log->details['reason'] }}"
                                         </div>
                                     @endif
+                                @elseif($log->action === 'import')
+                                    <div style="font-size: 0.95rem; font-weight: 700; color: var(--text-primary);">
+                                        Bulk {{ ucfirst($log->details['type'] ?? 'data') }}: {{ $log->details['seat_count'] ?? 0 }} {{ ($log->details['type'] ?? '') === 'seat' ? 'Seats' : 'Records' }}
+                                    </div>
+                                    @php
+                                        $pnsToDisplay = $log->details['pns'] ?? [];
+                                    @endphp
+
+                                    @if(!empty($pnsToDisplay))
+                                        <div style="margin-top: 6px; display: flex; flex-wrap: wrap; gap: 6px;">
+                                            @foreach($pnsToDisplay as $pn)
+                                                <span style="font-size: 0.75rem; color: var(--primary); background: var(--bg-card); padding: 2px 8px; border-radius: 6px; border: 1.5px solid var(--primary-light); font-family: 'JetBrains Mono', monospace; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+                                                    {{ $pn }}
+                                                </span>
+                                            @endforeach
+                                        </div>
+                                    @endif
                                 @elseif($log->action === 'unsuspend_user')
+
                                     <div style="font-size: 0.95rem; font-weight: 700; color: #10b981;">
                                         Unsuspended User: {{ $log->details['target_user_name'] ?? 'Account' }}
                                     </div>

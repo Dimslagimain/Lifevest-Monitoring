@@ -828,7 +828,7 @@ class ExcelReportController extends Controller
 
         $summaryFields = [
             ['Date & Time', $log->created_at->format('d M Y, H:i:s')],
-            ['Admin', strtoupper($log->user->name ?? 'SYSTEM')],
+            ['User', strtoupper($log->user->name ?? 'SYSTEM')],
             ['Aircraft', $log->registration ?? '-'],
             ['Activity', $actionLabel],
             ['Qty Seats', $log->details['seat_count'] ?? (isset($log->details['seats']) ? count($log->details['seats']) : '-')],
@@ -858,6 +858,7 @@ class ExcelReportController extends Controller
             ]);
             $sheet->getStyle("B{$row}:D{$row}")->applyFromArray([
                 'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['argb' => 'FFE0E0E0']]],
+                'alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT],
             ]);
             $row++;
         }

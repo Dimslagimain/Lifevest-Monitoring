@@ -337,19 +337,19 @@
                                     </div>
                                 </div>
                                 <div class="fleet-card-stats">
-                                    <div class="fleet-stat safe">
+                                    <div class="fleet-stat safe fleet-stat-clickable" onclick="openSeatStatusModal('{{ $registration }}', 'safe', event)" title="Klik untuk detail">
                                         <div class="fleet-stat-value">{{ $aircraft['stats']['safe'] }}</div>
                                         <div class="fleet-stat-label">Safe</div>
                                     </div>
-                                    <div class="fleet-stat warning">
+                                    <div class="fleet-stat warning fleet-stat-clickable" onclick="openSeatStatusModal('{{ $registration }}', 'warning', event)" title="Klik untuk detail">
                                         <div class="fleet-stat-value">{{ $aircraft['stats']['warning'] }}</div>
                                         <div class="fleet-stat-label">Warning</div>
                                     </div>
-                                    <div class="fleet-stat critical">
+                                    <div class="fleet-stat critical fleet-stat-clickable" onclick="openSeatStatusModal('{{ $registration }}', 'critical', event)" title="Klik untuk detail">
                                         <div class="fleet-stat-value">{{ $aircraft['stats']['critical'] }}</div>
                                         <div class="fleet-stat-label">Critical</div>
                                     </div>
-                                    <div class="fleet-stat expired">
+                                    <div class="fleet-stat expired fleet-stat-clickable" onclick="openSeatStatusModal('{{ $registration }}', 'expired', event)" title="Klik untuk detail">
                                         <div class="fleet-stat-value">{{ $aircraft['stats']['expired'] }}</div>
                                         <div class="fleet-stat-label">Expired</div>
                                     </div>
@@ -394,6 +394,22 @@
         <p style="color: var(--text-muted); font-size: 1rem; max-width: 400px; margin: 0 auto 1.5rem;">Maaf, tidak ada pesawat atau maskapai yang cocok dengan kriteria pencarian Anda. Silakan coba kata kunci lain atau bersihkan filter.</p>
         <button type="button" onclick="document.getElementById('clearFilters').click();" class="btn-premium" style="padding: 0.6rem 1.5rem;">Bersihkan Semua Filter</button>
     </div>
+
+    <!-- Seat Status Detail Modal -->
+    <div id="seatStatusModal" class="seat-status-modal-overlay" style="display: none;" onclick="if(event.target===this) closeSeatStatusModal()">
+        <div class="seat-status-modal">
+            <div class="seat-status-modal-header">
+                <div>
+                    <h3 id="seatModalTitle" style="margin: 0; font-size: 1.25rem; font-weight: 800; color: var(--text-primary);"></h3>
+                    <p id="seatModalSubtitle" style="margin: 0.25rem 0 0; font-size: 0.85rem; color: var(--text-muted);"></p>
+                </div>
+                <button type="button" onclick="closeSeatStatusModal()" class="seat-status-modal-close" title="Tutup">&times;</button>
+            </div>
+            <div id="seatModalBody" class="seat-status-modal-body">
+                <!-- Content loaded via JS -->
+            </div>
+        </div>
+    </div>
     
     </div>
     @endif
@@ -436,7 +452,7 @@
                                     data-tab="warning" data-card="{{ $idx }}">🟡 {{ $item['warning'] }} warning</span>
                             @endif
                             @if(!$hasAttention)
-                                <span class="replacement-ok">✅ All safe</span>
+                                <span class="replacement-ok">All safe</span>
                             @endif
                         </div>
 
@@ -756,6 +772,119 @@
 @endsection
 
 @push('scripts')
+    <script>
+        // ============================================
+        // Seat Status Detail Modal (Fleet Card Stat Boxes)
+        // ============================================
+        const statusLabels = { safe: 'Safe', warning: 'Warning', critical: 'Critical', expired: 'Expired' };
+        const statusEmojis = { safe: '🟢', warning: '🟡', critical: '🔴', expired: '🟣' };
+        const statusColors = { safe: 'var(--success)', warning: 'var(--warning)', critical: 'var(--danger)', expired: 'var(--expired)' };
+
+        function openSeatStatusModal(registration, status, event) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            const modal = document.getElementById('seatStatusModal');
+            const title = document.getElementById('seatModalTitle');
+            const subtitle = document.getElementById('seatModalSubtitle');
+            const body = document.getElementById('seatModalBody');
+
+            title.innerHTML = `${statusEmojis[status] || ''} ${registration} — <span style="color: ${statusColors[status]}">${statusLabels[status] || status}</span>`;
+            subtitle.textContent = 'Memuat data...';
+            body.innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: center; padding: 3rem; gap: 0.75rem;">
+                    <div class="seat-modal-spinner"></div>
+                    <span style="color: var(--text-muted); font-weight: 500;">Memuat detail seat...</span>
+                </div>`;
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+
+            fetch(`/aircraft/${registration}/seat-status/${status}`)
+                .then(res => {
+                    if (!res.ok) throw new Error('Gagal memuat data');
+                    return res.json();
+                })
+                .then(data => {
+                    subtitle.textContent = `${data.type} • ${data.total} seats berstatus ${statusLabels[status]}`;
+
+                    if (data.groups.length === 0) {
+                        body.innerHTML = `
+                            <div style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                                <div style="font-size: 2.5rem; margin-bottom: 0.75rem; opacity: 0.5;"></div>
+                                <p style="font-weight: 600;">Tidak ada seat dengan status ${statusLabels[status]}</p>
+                            </div>`;
+                        return;
+                    }
+
+                    let html = '';
+                    data.groups.forEach(group => {
+                        html += `
+                        <div class="seat-modal-pn-group">
+                            <div class="seat-modal-pn-header">
+                                <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                                    <span style="font-weight: 800; font-size: 0.95rem; color: var(--text-primary);">P/N: ${group.pn}</span>
+                                    <span class="seat-modal-pn-badge">${group.category}</span>
+                                </div>
+                                <span style="font-weight: 700; font-size: 0.85rem; color: ${statusColors[status]};">${group.count} seats</span>
+                            </div>
+                            <div class="seat-modal-table-wrapper">
+                                <table class="seat-modal-table">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 50px;">#</th>
+                                            <th>Seat ID</th>
+                                            <th>Expiry Date</th>
+                                            <th style="text-align: right;">Sisa Hari</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>`;
+
+                        group.seats.forEach((seat, idx) => {
+                            const daysColor = seat.days_remaining === null ? 'var(--text-muted)' 
+                                : seat.days_remaining < 0 ? 'var(--expired)' 
+                                : seat.days_remaining < 90 ? 'var(--danger)' 
+                                : seat.days_remaining < 180 ? 'var(--warning)' 
+                                : 'var(--success)';
+                            const daysText = seat.days_remaining === null ? '-' : 
+                                (seat.days_remaining < 0 ? `${Math.abs(seat.days_remaining)}d overdue` : `${seat.days_remaining}d`);
+
+                            html += `
+                                        <tr>
+                                            <td style="color: var(--text-muted); font-size: 0.8rem;">${idx + 1}</td>
+                                            <td style="font-weight: 600;">${seat.seat_id}</td>
+                                            <td>${seat.expiry_date}</td>
+                                            <td style="text-align: right; font-weight: 600; color: ${daysColor}; font-size: 0.85rem;">${daysText}</td>
+                                        </tr>`;
+                        });
+
+                        html += `
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>`;
+                    });
+
+                    body.innerHTML = html;
+                })
+                .catch(err => {
+                    body.innerHTML = `
+                        <div style="text-align: center; padding: 3rem; color: var(--danger);">
+                            <div style="font-size: 2rem; margin-bottom: 0.5rem;">⚠️</div>
+                            <p style="font-weight: 600;">${err.message}</p>
+                        </div>`;
+                });
+        }
+
+        function closeSeatStatusModal() {
+            document.getElementById('seatStatusModal').style.display = 'none';
+            document.body.style.overflow = '';
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeSeatStatusModal();
+        });
+    </script>
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
 

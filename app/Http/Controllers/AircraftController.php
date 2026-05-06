@@ -77,6 +77,59 @@ class AircraftController extends Controller
     }
 
     /**
+     * Get seat details for a specific status (AJAX endpoint for fleet overview modal)
+     */
+    public function seatStatus(string $registration, string $status)
+    {
+        $aircraft = Aircraft::where('registration', $registration)->first();
+        if (!$aircraft) {
+            return response()->json(['error' => 'Aircraft not found'], 404);
+        }
+
+        $seats = Seat::where('registration', $registration)->get();
+        $today = now()->startOfDay();
+
+        // Filter seats by status
+        $filtered = $seats->filter(function ($seat) use ($status, $today) {
+            return $seat->status === $status;
+        });
+
+        // Group by P/N category
+        $pnMap = [
+            'adult'  => ['pn' => $aircraft->pn_adult, 'label' => 'Adult', 'types' => ['business', 'economy', 'first', 'spare-pax']],
+            'crew'   => ['pn' => $aircraft->pn_crew, 'label' => 'Crew', 'types' => ['cockpit', 'attendant']],
+            'infant' => ['pn' => $aircraft->pn_infant, 'label' => 'Infant', 'types' => ['spare-inf']],
+        ];
+
+        $groups = [];
+        foreach ($pnMap as $category => $info) {
+            if (empty($info['pn'])) continue;
+
+            $catSeats = $filtered->filter(fn($s) => in_array($s->class_type, $info['types']));
+            if ($catSeats->isEmpty()) continue;
+
+            $groups[] = [
+                'pn' => $info['pn'],
+                'category' => $info['label'],
+                'count' => $catSeats->count(),
+                'seats' => $catSeats->sortBy('seat_id')->values()->map(fn($s) => [
+                    'seat_id' => $s->seat_id,
+                    'expiry_date' => $s->expiry_date ? $s->expiry_date->format('j M Y') : '-',
+                    'days_remaining' => $s->days_remaining,
+                ])->toArray(),
+            ];
+        }
+
+        return response()->json([
+            'registration' => $registration,
+            'type' => $aircraft->type,
+            'status' => $status,
+            'total' => $filtered->count(),
+            'groups' => $groups,
+        ]);
+    }
+
+    /**
      * Update seat expiry dates
      */
     public function updateSeats(Request $request, string $registration)

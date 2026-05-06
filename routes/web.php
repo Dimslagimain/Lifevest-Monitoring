@@ -36,6 +36,7 @@ Route::middleware('auth')->group(function () {
 
     // Aircraft view — semua role bisa lihat
     Route::get('/aircraft/{registration}', [AircraftController::class, 'show'])->name('aircraft.show');
+    Route::get('/aircraft/{registration}/seat-status/{status}', [AircraftController::class, 'seatStatus'])->name('aircraft.seatStatus');
 
     // PDF Report & Blank Form — semua role bisa download
     Route::get('/aircraft/{registration}/report', [\App\Http\Controllers\ReportController::class, 'exportPdf'])->name('reports.pdf');

@@ -27,7 +27,7 @@ class ExcelReportController extends Controller
     public function exportReplacementPlan()
     {
         $today = now()->startOfDay();
-        $cutoff = Carbon::createFromDate(2027, 3, 31)->endOfDay();
+        $cutoff = Carbon::createFromDate(2027, 4, 30)->endOfDay();
         $threeMonthsBoundary = $today->copy()->addDays(89);
 
         $aircrafts = Aircraft::with('airline')->get();

@@ -18,7 +18,7 @@ class DashboardController extends Controller
         $lastAircraftUpdate = Aircraft::max('updated_at');
         $lastAirlineUpdate = Airline::max('updated_at');
         
-        $cacheKey = 'dashboard_data_v2_' . md5($lastSeatUpdate . $lastAircraftUpdate . $lastAirlineUpdate);
+        $cacheKey = 'dashboard_data_v5_' . md5($lastSeatUpdate . $lastAircraftUpdate . $lastAirlineUpdate);
 
         $data = Cache::rememberForever($cacheKey, function () use ($lastSeatUpdate) {
             // Load from Database (All status: active & prolong) with airline relationship
@@ -222,7 +222,52 @@ class DashboardController extends Controller
             'monthly' => [],
             'yearly' => [],
         ];
-        $cutoff = \Carbon\Carbon::createFromDate(2027, 3, 31)->endOfDay(); // Include all data up to end of March 2027
+        $cutoff = \Carbon\Carbon::createFromDate(2027, 4, 30)->endOfDay(); // Include all data up to end of April 2027
+
+        // Pre-populate Weekly buckets for 52 weeks (~12 months)
+        $weekStart = \Carbon\Carbon::createFromDate(2026, 5, 4)->startOfWeek(); // Starting week of the period
+        for ($i = 0; $i < 52; $i++) {
+            $curr = $weekStart->copy()->addWeeks($i);
+            $key = $curr->format('o-\WW');
+            $replacementPlans['weekly'][$key] = [
+                'key' => $key,
+                'label' => $curr->format('d M') . ' - ' . $curr->copy()->endOfWeek()->format('d M Y'),
+                'sort' => $curr->format('o-W'),
+                'start_date' => $curr->copy(),
+                'total' => 0,
+                'pn_breakdown' => [],
+                'aircraft_breakdown' => [],
+            ];
+        }
+
+        // Pre-populate Monthly buckets for 12 months (May 2026 - April 2027)
+        $monthStart = \Carbon\Carbon::createFromDate(2026, 5, 1)->startOfMonth();
+        for ($i = 0; $i < 12; $i++) {
+            $curr = $monthStart->copy()->addMonths($i);
+            $key = $curr->format('Y-m');
+            $replacementPlans['monthly'][$key] = [
+                'key' => $key,
+                'label' => $curr->format('F Y'),
+                'sort' => $key,
+                'start_date' => $curr->copy(),
+                'total' => 0,
+                'pn_breakdown' => [],
+                'aircraft_breakdown' => [],
+            ];
+        }
+
+        // Pre-populate Yearly buckets
+        foreach (['2026', '2027'] as $year) {
+            $replacementPlans['yearly'][$year] = [
+                'key' => $year,
+                'label' => $year,
+                'sort' => $year,
+                'start_date' => \Carbon\Carbon::createFromDate((int)$year, 1, 1)->startOfYear(),
+                'total' => 0,
+                'pn_breakdown' => [],
+                'aircraft_breakdown' => [],
+            ];
+        }
 
         foreach ($aircrafts as $aircraft) {
             $reg = $aircraft->registration;

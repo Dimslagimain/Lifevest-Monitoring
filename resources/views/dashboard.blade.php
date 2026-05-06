@@ -139,9 +139,11 @@
     @endif
 
     <!-- Header & Quick Navigation -->
+    @if($currentView === 'fleet-overview' || $currentView === 'all')
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
         <h1 style="margin: 0; font-size: 2rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.02em;">Fleet Overview</h1>
     </div>
+    @endif
 
 
 
@@ -616,7 +618,7 @@
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                                 Export Schedule
                             </a>
-                            <button type="button" class="btn-premium toggleAllPlanBtn" data-interval="{{ $interval }}" style="cursor: pointer; height: 100%; border-radius: 8px;">Expand All</button>
+                            <button type="button" class="btn-premium" id="toggleAllPlanBtn-{{ $interval }}" onclick="toggleAllPlan('{{ $interval }}')" style="cursor: pointer; height: 100%; border-radius: 8px;">Expand All</button>
                         </div>
                     </div>
 
@@ -1158,30 +1160,7 @@
                 });
             });
 
-            // Replacement Plan - Toggle All
-            document.querySelectorAll('.toggleAllPlanBtn').forEach(toggleBtn => {
-                let allExpanded = false;
-                toggleBtn.addEventListener('click', function() {
-                    const interval = this.dataset.interval;
-                    const section = document.getElementById(`timeline-${interval}`);
-                    
-                    allExpanded = !allExpanded;
-                    section.querySelectorAll('.monthly-card-body').forEach(body => {
-                        body.style.display = allExpanded ? 'block' : 'none';
-                    });
-                    section.querySelectorAll('.monthly-card-arrow').forEach(arrow => {
-                        arrow.style.transform = allExpanded ? 'rotate(180deg)' : 'rotate(0deg)';
-                    });
-                    section.querySelectorAll('.monthly-card').forEach(card => {
-                        if (allExpanded) {
-                            card.classList.add('expanded');
-                        } else {
-                            card.classList.remove('expanded');
-                        }
-                    });
-                    this.textContent = allExpanded ? 'Collapse All' : 'Expand All';
-                });
-            });
+            // Replacement Plan - Toggle All (now handled by global function toggleAllPlan)
 
             // SPA-like tab switching for instantaneous load times between Dashboard views
             const sidebarLinks = document.querySelectorAll('.sidebar-nav-item');
@@ -1316,6 +1295,32 @@
             });
             */
         });
+
+        // Monthly Plan - Toggle All (global function for onclick)
+        const _planExpandState = {};
+        function toggleAllPlan(interval) {
+            _planExpandState[interval] = !_planExpandState[interval];
+            const allExpanded = _planExpandState[interval];
+            const section = document.getElementById('timeline-' + interval);
+            const btn = document.getElementById('toggleAllPlanBtn-' + interval);
+
+            if (!section) return;
+
+            section.querySelectorAll('.monthly-card-body').forEach(body => {
+                body.style.display = allExpanded ? 'block' : 'none';
+            });
+            section.querySelectorAll('.monthly-card-arrow').forEach(arrow => {
+                arrow.style.transform = allExpanded ? 'rotate(180deg)' : 'rotate(0deg)';
+            });
+            section.querySelectorAll('.monthly-card').forEach(card => {
+                if (allExpanded) {
+                    card.classList.add('expanded');
+                } else {
+                    card.classList.remove('expanded');
+                }
+            });
+            if (btn) btn.textContent = allExpanded ? 'Collapse All' : 'Expand All';
+        }
 
         // Monthly Plan - Toggle individual month (must be global function for onclick)
         function toggleMonth(monthKey) {

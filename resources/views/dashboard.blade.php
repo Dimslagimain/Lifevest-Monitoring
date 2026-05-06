@@ -816,53 +816,47 @@
                         return;
                     }
 
-                    let html = '';
+                    // Flatten all seats from all groups into one list
+                    let allSeats = [];
                     data.groups.forEach(group => {
-                        html += `
-                        <div class="seat-modal-pn-group">
-                            <div class="seat-modal-pn-header">
-                                <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-                                    <span style="font-weight: 800; font-size: 0.95rem; color: var(--text-primary);">P/N: ${group.pn}</span>
-                                    <span class="seat-modal-pn-badge">${group.category}</span>
-                                </div>
-                                <span style="font-weight: 700; font-size: 0.85rem; color: ${statusColors[status]};">${group.count} seats</span>
-                            </div>
-                            <div class="seat-modal-table-wrapper">
-                                <table class="seat-modal-table">
-                                    <thead>
-                                        <tr>
-                                            <th style="width: 50px;">#</th>
-                                            <th>Seat ID</th>
-                                            <th>Expiry Date</th>
-                                            <th style="text-align: right;">Sisa Hari</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>`;
-
-                        group.seats.forEach((seat, idx) => {
-                            const daysColor = seat.days_remaining === null ? 'var(--text-muted)' 
-                                : seat.days_remaining < 0 ? 'var(--expired)' 
-                                : seat.days_remaining < 90 ? 'var(--danger)' 
-                                : seat.days_remaining < 180 ? 'var(--warning)' 
-                                : 'var(--success)';
-                            const daysText = seat.days_remaining === null ? '-' : 
-                                (seat.days_remaining < 0 ? `${Math.abs(seat.days_remaining)}d overdue` : `${seat.days_remaining}d`);
-
-                            html += `
-                                        <tr>
-                                            <td style="color: var(--text-muted); font-size: 0.8rem;">${idx + 1}</td>
-                                            <td style="font-weight: 600;">${seat.seat_id}</td>
-                                            <td>${seat.expiry_date}</td>
-                                            <td style="text-align: right; font-weight: 600; color: ${daysColor}; font-size: 0.85rem;">${daysText}</td>
-                                        </tr>`;
-                        });
-
-                        html += `
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>`;
+                        group.seats.forEach(seat => allSeats.push(seat));
                     });
+
+                    let html = `
+                    <div class="seat-modal-table-wrapper" style="max-height: none;">
+                        <table class="seat-modal-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px;">#</th>
+                                    <th>Seat ID</th>
+                                    <th>Expiry Date</th>
+                                    <th style="text-align: right;">Sisa Hari</th>
+                                </tr>
+                            </thead>
+                            <tbody>`;
+
+                    allSeats.forEach((seat, idx) => {
+                        const daysColor = seat.days_remaining === null ? 'var(--text-muted)' 
+                            : seat.days_remaining < 0 ? 'var(--expired)' 
+                            : seat.days_remaining < 90 ? 'var(--danger)' 
+                            : seat.days_remaining < 180 ? 'var(--warning)' 
+                            : 'var(--success)';
+                        const daysText = seat.days_remaining === null ? '-' : 
+                            (seat.days_remaining < 0 ? `${Math.abs(seat.days_remaining)}d overdue` : `${seat.days_remaining}d`);
+
+                        html += `
+                                <tr>
+                                    <td style="color: var(--text-muted); font-size: 0.8rem;">${idx + 1}</td>
+                                    <td style="font-weight: 600;">${seat.seat_id}</td>
+                                    <td>${seat.expiry_date}</td>
+                                    <td style="text-align: right; font-weight: 600; color: ${daysColor}; font-size: 0.85rem;">${daysText}</td>
+                                </tr>`;
+                    });
+
+                    html += `
+                            </tbody>
+                        </table>
+                    </div>`;
 
                     body.innerHTML = html;
                 })

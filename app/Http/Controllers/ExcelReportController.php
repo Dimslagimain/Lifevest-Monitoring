@@ -772,4 +772,282 @@ class ExcelReportController extends Controller
 
         return response()->download($tempPath, $filename)->deleteFileAfterSend(true);
     }
+
+    /**
+     * Export a single activity log entry with its detailed seat data
+     */
+    public function exportSingleActivity(int $id)
+    {
+        $log = \App\Models\ActivityLog::with(['user', 'aircraft'])->findOrFail($id);
+        $today = now()->startOfDay();
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Activity Detail');
+
+        // ---- HEADER ----
+        $sheet->mergeCells("A1:H1");
+        $sheet->setCellValue('A1', 'GMF AEROASIA - CABIN MAINTENANCE');
+        $sheet->getStyle('A1')->applyFromArray([
+            'font' => ['bold' => true, 'size' => 14, 'color' => ['argb' => $this->colorWhite]],
+            'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => $this->colorHeader]],
+            'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER, 'vertical' => Alignment::VERTICAL_CENTER],
+        ]);
+        $sheet->getRowDimension(1)->setRowHeight(35);
+
+        $sheet->mergeCells("A2:H2");
+        $sheet->setCellValue('A2', 'LIFE VEST TRACKER - ACTIVITY DETAIL REPORT');
+        $sheet->getStyle('A2')->applyFromArray([
+            'font' => ['bold' => true, 'size' => 11, 'color' => ['argb' => $this->colorWhite]],
+            'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => $this->colorSubHeader]],
+            'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
+        ]);
+        $sheet->getRowDimension(2)->setRowHeight(22);
+
+        $sheet->mergeCells("A3:H3");
+        $sheet->setCellValue('A3', 'Generated on: ' . now()->format('d M Y, H:i'));
+        $sheet->getStyle('A3')->applyFromArray([
+            'font' => ['italic' => true, 'size' => 9],
+            'alignment' => ['horizontal' => Alignment::HORIZONTAL_RIGHT],
+        ]);
+
+        // ---- ACTIVITY SUMMARY ----
+        $row = 5;
+        $sheet->setCellValue("A{$row}", 'ACTIVITY SUMMARY');
+        $sheet->getStyle("A{$row}")->getFont()->setBold(true)->setSize(12);
+        $row++;
+
+        $actionLabel = strtoupper(match($log->action) {
+            'update' => 'Seats Updated',
+            'batch' => 'Batch Input',
+            'pn_update' => 'P/N Update',
+            'delete' => 'Seat Deleted',
+            'import' => 'Bulk Import',
+            default => $log->action,
+        });
+
+        $summaryFields = [
+            ['Date & Time', $log->created_at->format('d M Y, H:i:s')],
+            ['Admin', strtoupper($log->user->name ?? 'SYSTEM')],
+            ['Aircraft', $log->registration ?? '-'],
+            ['Activity', $actionLabel],
+            ['Qty Seats', $log->details['seat_count'] ?? (isset($log->details['seats']) ? count($log->details['seats']) : '-')],
+            ['Expiry Date Set', isset($log->details['expiry_date']) ? Carbon::parse($log->details['expiry_date'])->format('d M Y') : '-'],
+        ];
+
+        // P/N info
+        $pns = $log->details['pns'] ?? (isset($log->details['pn']) ? [$log->details['pn']] : []);
+        if (empty($pns) && isset($log->details['seats'][0]) && $log->aircraft) {
+            $firstSeat = $log->details['seats'][0];
+            if (str_starts_with($firstSeat, 'inf-')) { $pns[] = $log->aircraft->pn_infant; }
+            elseif (in_array($firstSeat, ['captain', 'fo', 'obs-1', 'obs-2']) || str_starts_with($firstSeat, 'att/')) { $pns[] = $log->aircraft->pn_crew; }
+            else { $pns[] = $log->aircraft->pn_adult; }
+        }
+        if (!empty($pns)) {
+            $summaryFields[] = ['Part Number(s)', implode(', ', $pns)];
+        }
+
+        foreach ($summaryFields as $field) {
+            $sheet->setCellValue("A{$row}", $field[0]);
+            $sheet->mergeCells("B{$row}:D{$row}");
+            $sheet->setCellValue("B{$row}", $field[1]);
+            $sheet->getStyle("A{$row}")->applyFromArray([
+                'font' => ['bold' => true, 'size' => 10],
+                'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => $this->colorLightGray]],
+                'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['argb' => 'FFE0E0E0']]],
+            ]);
+            $sheet->getStyle("B{$row}:D{$row}")->applyFromArray([
+                'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['argb' => 'FFE0E0E0']]],
+            ]);
+            $row++;
+        }
+
+        // Column widths
+        $sheet->getColumnDimension('A')->setWidth(18);
+        $sheet->getColumnDimension('B')->setWidth(15);
+        $sheet->getColumnDimension('C')->setWidth(15);
+        $sheet->getColumnDimension('D')->setWidth(15);
+        $sheet->getColumnDimension('E')->setWidth(18);
+        $sheet->getColumnDimension('F')->setWidth(15);
+        $sheet->getColumnDimension('G')->setWidth(14);
+        $sheet->getColumnDimension('H')->setWidth(14);
+
+        // ---- SEAT DETAIL TABLE ----
+        if (in_array($log->action, ['update', 'batch', 'import']) && !empty($log->details['seats'])) {
+            $row += 2;
+            $sheet->setCellValue("A{$row}", 'SEAT DETAIL');
+            $sheet->getStyle("A{$row}")->getFont()->setBold(true)->setSize(12);
+            $row++;
+
+            $seatHeaders = ['No', 'Seat ID', 'Class Type', 'Part Number', 'Current Expiry', 'Days Remaining', 'Status'];
+            foreach ($seatHeaders as $i => $h) {
+                $col = chr(65 + $i);
+                $sheet->setCellValue("{$col}{$row}", $h);
+            }
+            $sheet->getStyle("A{$row}:G{$row}")->applyFromArray([
+                'font' => ['bold' => true, 'color' => ['argb' => $this->colorWhite], 'size' => 10],
+                'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => $this->colorHeader]],
+                'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER, 'vertical' => Alignment::VERTICAL_CENTER],
+                'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['argb' => 'FF424242']]],
+            ]);
+            $sheet->getRowDimension($row)->setRowHeight(25);
+            $row++;
+
+            // Fetch current seat data from DB
+            $seatIds = (array) $log->details['seats'];
+            $registration = $log->registration;
+            $aircraft = $log->aircraft;
+
+            $pnMap = [];
+            if ($aircraft) {
+                $pnMap = [
+                    'adult'  => ['pn' => $aircraft->pn_adult, 'types' => ['business', 'economy', 'first', 'spare-pax']],
+                    'crew'   => ['pn' => $aircraft->pn_crew, 'types' => ['cockpit', 'attendant']],
+                    'infant' => ['pn' => $aircraft->pn_infant, 'types' => ['spare-inf']],
+                ];
+            }
+
+            $seats = Seat::where('registration', $registration)
+                ->whereIn('seat_id', $seatIds)
+                ->get()
+                ->keyBy('seat_id');
+
+            $idx = 1;
+            foreach ($seatIds as $seatId) {
+                $seat = $seats->get($seatId);
+                $classType = $seat ? strtoupper($seat->class_type) : '-';
+                
+                // Determine P/N
+                $seatPn = '-';
+                if ($seat && $aircraft) {
+                    foreach ($pnMap as $cat => $info) {
+                        if (in_array($seat->class_type, $info['types'])) {
+                            $seatPn = $info['pn'] ?? '-';
+                            break;
+                        }
+                    }
+                }
+
+                $expiryStr = '-';
+                $daysStr = '-';
+                $statusStr = '-';
+                $statusColor = $this->colorLightGray;
+
+                if ($seat && $seat->expiry_date) {
+                    $expiry = Carbon::parse($seat->expiry_date);
+                    $expiryStr = $expiry->format('d-M-Y');
+                    $days = (int) $today->diffInDays($expiry, false);
+                    $daysStr = $days;
+
+                    if ($days < 0) {
+                        $statusStr = 'EXPIRED';
+                        $statusColor = $this->colorExpired;
+                    } elseif ($days < 90) {
+                        $statusStr = 'CRITICAL';
+                        $statusColor = $this->colorCritical;
+                    } elseif ($days < 180) {
+                        $statusStr = 'WARNING';
+                        $statusColor = $this->colorWarning;
+                    } else {
+                        $statusStr = 'SAFE';
+                        $statusColor = $this->colorSafe;
+                    }
+                }
+
+                $sheet->setCellValue("A{$row}", $idx);
+                $sheet->setCellValue("B{$row}", $seatId);
+                $sheet->setCellValue("C{$row}", $classType);
+                $sheet->setCellValue("D{$row}", $seatPn);
+                $sheet->setCellValue("E{$row}", $expiryStr);
+                $sheet->setCellValue("F{$row}", $daysStr);
+                $sheet->setCellValue("G{$row}", $statusStr);
+
+                $sheet->getStyle("A{$row}:G{$row}")->applyFromArray([
+                    'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['argb' => 'FFE0E0E0']]],
+                    'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER, 'vertical' => Alignment::VERTICAL_CENTER],
+                ]);
+
+                // Status row coloring
+                $sheet->getStyle("G{$row}")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB($statusColor);
+                $sheet->getStyle("G{$row}")->getFont()->setBold(true);
+
+                // Zebra striping
+                if ($idx % 2 === 0) {
+                    $sheet->getStyle("A{$row}:F{$row}")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB($this->colorLightGray);
+                }
+
+                $idx++;
+                $row++;
+            }
+
+            // Auto-filter
+            $headerRow = $row - count($seatIds) - 1;
+            $lastRow = $row - 1;
+            $sheet->setAutoFilter("A{$headerRow}:G{$lastRow}");
+
+        } elseif ($log->action === 'pn_update') {
+            // P/N Update detail
+            $row += 2;
+            $sheet->setCellValue("A{$row}", 'PART NUMBER CHANGES');
+            $sheet->getStyle("A{$row}")->getFont()->setBold(true)->setSize(12);
+            $row++;
+
+            $pnHeaders = ['Category', 'Previous P/N', 'New P/N'];
+            foreach ($pnHeaders as $i => $h) {
+                $col = chr(65 + $i);
+                $sheet->setCellValue("{$col}{$row}", $h);
+            }
+            $sheet->getStyle("A{$row}:C{$row}")->applyFromArray([
+                'font' => ['bold' => true, 'color' => ['argb' => $this->colorWhite], 'size' => 10],
+                'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => $this->colorHeader]],
+                'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
+                'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['argb' => 'FF424242']]],
+            ]);
+            $row++;
+
+            foreach (['adult', 'crew', 'infant'] as $type) {
+                $oldVal = $log->details['old'][$type] ?? '';
+                $newVal = $log->details['new'][$type] ?? '';
+                if ($oldVal !== $newVal) {
+                    $sheet->setCellValue("A{$row}", strtoupper($type));
+                    $sheet->setCellValue("B{$row}", $oldVal ?: '---');
+                    $sheet->setCellValue("C{$row}", $newVal ?: '---');
+                    $sheet->getStyle("A{$row}:C{$row}")->applyFromArray([
+                        'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['argb' => 'FFE0E0E0']]],
+                        'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
+                    ]);
+                    // Highlight changes
+                    $sheet->getStyle("C{$row}")->getFont()->setBold(true)->getColor()->setARGB('FF1565C0');
+                    $sheet->getStyle("B{$row}")->getFont()->getColor()->setARGB('FF9E9E9E');
+                    $row++;
+                }
+            }
+        } elseif ($log->action === 'delete') {
+            $row += 2;
+            $sheet->setCellValue("A{$row}", 'DELETED SEAT');
+            $sheet->getStyle("A{$row}")->getFont()->setBold(true)->setSize(12);
+            $row++;
+            $sheet->setCellValue("A{$row}", 'Seat ID');
+            $sheet->setCellValue("B{$row}", $log->details['seat_id'] ?? '-');
+            $sheet->setCellValue("C{$row}", 'Type');
+            $sheet->setCellValue("D{$row}", strtoupper($log->details['type'] ?? '-'));
+            $sheet->getStyle("A{$row}:D{$row}")->applyFromArray([
+                'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['argb' => 'FFE0E0E0']]],
+            ]);
+            $sheet->getStyle("A{$row}")->getFont()->setBold(true);
+            $sheet->getStyle("C{$row}")->getFont()->setBold(true);
+        }
+
+        // Build filename
+        $regPart = $log->registration ? "_{$log->registration}" : '';
+        $actionPart = str_replace(' ', '', $actionLabel);
+        $datePart = $log->created_at->format('Ymd_Hi');
+        $filename = "Activity_{$actionPart}{$regPart}_{$datePart}.xlsx";
+
+        $tempPath = storage_path('app/' . $filename);
+        $writer = new Xlsx($spreadsheet);
+        $writer->save($tempPath);
+
+        return response()->download($tempPath, $filename)->deleteFileAfterSend(true);
+    }
 }

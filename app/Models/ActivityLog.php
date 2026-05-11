@@ -15,8 +15,8 @@ class ActivityLog extends Model
      */
     public function prunable()
     {
-        // Keep only the last 90 days of logs for production performance
-        return static::where('created_at', '<=', now()->subDays(90));
+        // Keep only the last 30 days of logs for production performance
+        return static::where('created_at', '<=', now()->subDays(30));
     }
 
     protected $fillable = [

@@ -16,6 +16,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'superadmin' => \App\Http\Middleware\EnsureUserIsSuperAdmin::class,
         ]);
     })
+    ->withSchedule(function (Illuminate\Console\Scheduling\Schedule $schedule) {
+        $schedule->command('model:prune')->daily();
+    })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create();

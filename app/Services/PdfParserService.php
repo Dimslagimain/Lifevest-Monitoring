@@ -104,6 +104,7 @@ You MUST extract data in this EXACT ORDER:
 4. Spare / Infant Section
 
 STRICT MAPPING LOGIC (B777-200 Layout):
+- COCKPIT: Extract seats as 'captain', 'observer1', 'observer2', and 'copilot'.
 - BUSINESS CLASS (Rows 6-12):
   * Even Rows (6, 8, 10): Seats C, E, F, H.
   * Odd Rows (7, 9, 11): Seats A, D, G, K.

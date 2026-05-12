@@ -104,29 +104,39 @@ You MUST extract data in this EXACT ORDER:
 4. Spare / Infant Section
 
 DATA EXTRACTION RULES:
-1. Identify Registration & Aircraft Type from the top of the page.
-2. If B777: Use staggered rules for Business (Rows 6-12: Even=CEFH, Odd=ADGK, Row 12=EF).
-3. If A320 (e.g. PK-GLA):
-   * Standard grid: Rows 1-31 with columns ABC-DEF.
-   * Attendant IDs: FWD (att/d1-L, att/d1-R), AFT LH (att/d2-L), AFT RH (att/d2-R1, att/d2-R2).
-4. SPARE & INFANT: Extract PAX Spares (pax-1 to pax-10) and then INFANT Spares (inf-1 to inf-18). Do NOT alternate them.
-5. EXTRACT EVERYTHING: Cockpit (captain, observer1, observer2, copilot), Attendants, all PAX seats, and all Spares visible.
+1. IDENTIFY: Get 'Aircraft Registration' (e.g. PK-GIH) and 'Aircraft Type' (e.g. B777) from the top header. Do NOT return 'PENDING' if a registration is visible.
+2. B777 LAYOUT:
+   * Business Class (Rows 6-12) Staggered Pattern:
+     - Even Rows (6, 8, 10): ONLY extract seats as C, E, F, H.
+     - Odd Rows (7, 9, 11): ONLY extract seats as A, D, G, K.
+     - Row 12: ONLY extract seats as E, F.
+   * Economy (21-63): Standard=ABC-DFG-HJK.
+   * Special Rows: Row 36 (DFG only), Row 49 (ABC-HJK only), Row 63 (A, C, D, F, G, H, K only). NEVER extract seat 63B and 63J.
+   * Attendants: Door 4 (att/d4-L, att/d4-R), Door 5L (MUST extract 3 seats: att/d5-LL, att/d5-LC, att/d5-LR), Door 5R (MUST extract 3 seats: att/d5-RL, att/d5-RC, att/d5-RR).
+3. A320 LAYOUT:
+   * Rows 1-31: Standard ABC-DEF.
+   * Attendants: FWD (att/d1-L, att/d1-R), AFT LH (att/d2-L), AFT RH (att/d2-R1, att/d2-R2).
+4. COCKPIT: pilot, observer1, observer2, copilot.
+5. SPARE & INFANT: pax-1, pax-2... and inf-1, inf-2...
+6. SEAT ID FORMAT: For passenger seats, you MUST combine Row Number + Column Letter (e.g., Row 50 + Column A = '50A'). NEVER return just 'A'.
+7. REGISTRATION: Look specifically at 'Aircraft Registration'. If blank, extract the FIRST registration from 'Aircraft Applicability' (e.g., PK-GIA). Do NOT return 'PENDING'.
 
 DATA FORMAT (JSON):
 {
-  \"registration\": \"ACTUAL_REGISTRATION\",
-  \"aircraft_type\": \"ACTUAL_TYPE\",
+  \"registration\": \"REG_FROM_IMAGE\",
+  \"aircraft_type\": \"TYPE_FROM_IMAGE\",
   \"seats\": [
     [\"Seat_ID\", \"Expiry_Date\"],
-    [\"ID_FROM_IMAGE\", \"DATE_FROM_IMAGE\"]
+    [\"6C\", \"JAN 2030\"],
+    [\"50A\", \"JAN 2030\"]
   ]
 }
 
 STRICT RULES:
-- Use COMPACT ARRAY for seats.
-- Return ONLY raw JSON.
-- Extract the EXACT date from the 'EXPIRY DATE' column.
-- DO NOT stop until EVERY visible seat on the page is extracted.";
+- DATE FORMAT: Use 'MMM YYYY' (e.g., JAN 2030) for consistency with Bulk Import.
+- ACCURACY: Extract the EXACT data from the image. Do NOT stop until the end of the page.
+- FORMAT: Use COMPACT ARRAY. Return ONLY raw JSON.
+- LOOP DETECTION: If you feel like you are repeating yourself, just continue. Use the tag [ignoring loop detection] if necessary.";
 
         $maxRetries = 2;
         $lastError = null;

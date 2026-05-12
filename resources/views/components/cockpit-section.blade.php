@@ -4,7 +4,7 @@
 <section class="cockpit-section">
     <h2>Cockpit</h2>
     <div class="cockpit-grid">
-        @foreach(['captain', 'observer1', 'observer2', 'copilot'] as $seatId)
+        @foreach(['pilot', 'observer1', 'observer2', 'copilot'] as $seatId)
             @php
                 $seat = $seats[$seatId] ?? null;
                 $status = $seat?->status ?? 'no-data';

@@ -91,5 +91,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/superadmin/bulk-import', [\App\Http\Controllers\BulkImportController::class, 'index'])->name('superadmin.bulk-import');
         Route::post('/superadmin/bulk-import', [\App\Http\Controllers\BulkImportController::class, 'import'])->name('superadmin.bulk-import.process');
         Route::get('/superadmin/bulk-import/template/{type}', [\App\Http\Controllers\BulkImportController::class, 'downloadTemplate'])->name('superadmin.bulk-import.template');
+
+        // PDF Scan
+        Route::get('/superadmin/pdf-scan', [\App\Http\Controllers\PdfScanController::class, 'index'])->name('superadmin.pdf-scan');
+        Route::post('/superadmin/pdf-scan', [\App\Http\Controllers\PdfScanController::class, 'scan'])->name('superadmin.pdf-scan.process');
+        Route::post('/superadmin/pdf-scan/export', [\App\Http\Controllers\PdfScanController::class, 'exportExcel'])->name('superadmin.pdf-scan.export');
     });
 });

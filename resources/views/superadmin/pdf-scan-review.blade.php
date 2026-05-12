@@ -1,0 +1,135 @@
+@extends('layouts.app')
+
+@section('content')
+<div style="max-width: 1200px; margin: 2rem auto; padding: 0 1rem;">
+    <!-- Modern Header -->
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 2.5rem; gap: 2rem;">
+        <div>
+            <h1 style="font-size: 2rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.03em; margin: 0 0 0.5rem 0;">Review Hasil Ekstraksi</h1>
+            <p style="margin: 0; color: var(--text-muted); font-size: 1.05rem;">
+                Terdeteksi: <strong style="color: var(--primary);">{{ $registration }}</strong> ({{ $aircraftType }})
+            </p>
+        </div>
+        <div style="display: flex; gap: 1rem;">
+            <a href="{{ route('superadmin.pdf-scan') }}" class="btn btn-secondary" style="padding: 0.75rem 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 17l-5-5 5-5M18 17l-5-5 5-5"></path></svg>
+                Ulangi Scan
+            </a>
+            <button form="export-form" type="submit" class="btn btn-primary" style="padding: 0.75rem 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                Download Excel (Bulk Import)
+            </button>
+        </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 300px; gap: 2rem;">
+        <!-- Data Table -->
+        <div style="background: var(--bg-card); border-radius: 20px; border: 1px solid var(--border-subtle); overflow: hidden; box-shadow: var(--shadow-md);">
+            <form id="export-form" action="{{ route('superadmin.pdf-scan.export') }}" method="POST">
+                @csrf
+                <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                    <thead>
+                        <tr style="background: var(--bg-dark); border-bottom: 1px solid var(--border-subtle);">
+                            <th style="padding: 1.25rem 1.5rem; width: 25%; font-weight: 700; color: var(--text-primary); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em;">Registration</th>
+                            <th style="padding: 1.25rem 1.5rem; width: 35%; font-weight: 700; color: var(--text-primary); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em;">Seat ID</th>
+                            <th style="padding: 1.25rem 1.5rem; width: 35%; font-weight: 700; color: var(--text-primary); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em;">Expiry Date</th>
+                            <th style="padding: 1.25rem 1.5rem; width: 50px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="data-rows">
+                        @forelse($extractedData as $index => $item)
+                            <tr style="border-bottom: 1px solid var(--border-subtle); transition: background 0.2s;">
+                                <td style="padding: 0.8rem 1rem;">
+                                    <input type="text" name="data[{{ $index }}][registration]" value="{{ $item['registration'] }}" class="input-premium" style="width: 100%; padding: 0.7rem 1rem; border-radius: 8px;">
+                                </td>
+                                <td style="padding: 0.8rem 1rem;">
+                                    <input type="text" name="data[{{ $index }}][seat_id]" value="{{ $item['seat_id'] }}" class="input-premium" style="width: 100%; padding: 0.7rem 1rem; border-radius: 8px;">
+                                </td>
+                                <td style="padding: 0.8rem 1rem;">
+                                    <input type="text" name="data[{{ $index }}][expiry_date]" value="{{ $item['expiry_date'] }}" class="input-premium" style="width: 100%; padding: 0.7rem 1rem; border-radius: 8px;">
+                                </td>
+                                <td style="padding: 1rem 1.5rem;">
+                                    <button type="button" class="btn-delete-row" style="color: var(--danger); border: none; background: none; cursor: pointer; padding: 0.5rem;">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                    </button>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="4" style="padding: 4rem 1.5rem; text-align: center; color: var(--text-muted);">
+                                    <div style="font-size: 3rem; margin-bottom: 1rem;">🔍</div>
+                                    Tidak ada data yang terdeteksi secara otomatis. Silakan tambah baris manual atau ulangi scan.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </form>
+            <div style="padding: 1.5rem; background: var(--bg-dark); border-top: 1px solid var(--border-subtle);">
+                <button type="button" id="add-row" class="btn btn-secondary" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem; font-weight: 700;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    Tambah Baris Baru
+                </button>
+            </div>
+        </div>
+
+        <!-- Raw Text Preview -->
+        <div>
+            <div style="background: var(--bg-card); border-radius: 20px; border: 1px solid var(--border-subtle); padding: 1.5rem; box-shadow: var(--shadow-sm); position: sticky; top: 2rem;">
+                <h3 style="margin: 0 0 1rem 0; font-size: 1rem; font-weight: 700; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 0.5rem;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    Raw OCR Output
+                </h3>
+                <div style="background: var(--bg-dark); padding: 1rem; border-radius: 12px; font-family: monospace; font-size: 0.85rem; color: var(--text-muted); height: 500px; overflow-y: auto; line-height: 1.6; white-space: pre-wrap;">
+                    {{ $rawText }}
+                </div>
+                <p style="margin: 1rem 0 0 0; font-size: 0.8rem; color: var(--text-muted); font-style: italic;">Gunakan teks asli di atas sebagai referensi jika hasil deteksi di tabel sebelah kiri kurang akurat.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const addRowBtn = document.getElementById('add-row');
+        const dataRows = document.getElementById('data-rows');
+        let rowCount = {{ count($extractedData) }};
+
+        addRowBtn.addEventListener('click', function() {
+            const tr = document.createElement('tr');
+            tr.style.borderBottom = '1px solid var(--border-subtle)';
+            tr.innerHTML = `
+                <td style="padding: 1rem 1.5rem;">
+                    <input type="text" name="data[${rowCount}][registration]" placeholder="PK-..." class="input-premium" style="width: 100%; padding: 0.6rem 0.8rem; border-radius: 8px;">
+                </td>
+                <td style="padding: 1rem 1.5rem;">
+                    <input type="text" name="data[${rowCount}][seat_id]" placeholder="21A, pax-1, dll" class="input-premium" style="width: 100%; padding: 0.6rem 0.8rem; border-radius: 8px;">
+                </td>
+                <td style="padding: 1rem 1.5rem;">
+                    <input type="text" name="data[${rowCount}][expiry_date]" placeholder="JAN 2030" class="input-premium" style="width: 100%; padding: 0.6rem 0.8rem; border-radius: 8px;">
+                </td>
+                <td style="padding: 1rem 1.5rem;">
+                    <button type="button" class="btn-delete-row" style="color: var(--danger); border: none; background: none; cursor: pointer; padding: 0.5rem;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    </button>
+                </td>
+            `;
+            dataRows.appendChild(tr);
+            rowCount++;
+            
+            // Check if we need to remove "No data" message
+            const emptyMsg = dataRows.querySelector('td[colspan="4"]');
+            if (emptyMsg) emptyMsg.parentElement.remove();
+        });
+
+        dataRows.addEventListener('click', function(e) {
+            const deleteBtn = e.target.closest('.btn-delete-row');
+            if (deleteBtn) {
+                deleteBtn.closest('tr').remove();
+            }
+        });
+    });
+</script>
+@endpush
+@endsection

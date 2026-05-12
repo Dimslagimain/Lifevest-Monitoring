@@ -6,9 +6,18 @@
     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 2.5rem; gap: 2rem;">
         <div>
             <h1 style="font-size: 2rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.03em; margin: 0 0 0.5rem 0;">Review Hasil Ekstraksi</h1>
-            <p style="margin: 0; color: var(--text-muted); font-size: 1.05rem;">
-                Terdeteksi: <strong style="color: var(--primary);">{{ $registration }}</strong> ({{ $aircraftType }})
-            </p>
+            <div style="display: flex; align-items: center; gap: 0.75rem; color: var(--text-muted); font-size: 1.05rem;">
+                <span>Terdeteksi:</span>
+                <div style="display: flex; align-items: center; gap: 0.5rem; background: var(--bg-dark); padding: 0.25rem 0.75rem; border-radius: 10px; border: 1px solid var(--border-subtle);">
+                    <input type="text" id="master-registration" value="{{ $registration }}" 
+                        style="background: transparent; border: none; color: var(--primary); font-weight: 800; width: 120px; outline: none; font-size: 1.05rem;"
+                        title="Edit Master Registration">
+                    <span style="color: var(--border-subtle)">|</span>
+                    <input type="text" name="aircraft_type" value="{{ $aircraftType }}" 
+                        style="background: transparent; border: none; color: var(--text-muted); font-weight: 600; width: 100px; outline: none; font-size: 0.95rem;"
+                        form="export-form" title="Edit Aircraft Type">
+                </div>
+            </div>
         </div>
         <div style="display: flex; gap: 1rem;">
             <a href="{{ route('superadmin.pdf-scan') }}" class="btn btn-secondary" style="padding: 0.75rem 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
@@ -40,7 +49,7 @@
                         @forelse($extractedData as $index => $item)
                             <tr style="border-bottom: 1px solid var(--border-subtle); transition: background 0.2s;">
                                 <td style="padding: 0.8rem 1rem;">
-                                    <input type="text" name="data[{{ $index }}][registration]" value="{{ $item['registration'] }}" class="input-premium" style="width: 100%; padding: 0.7rem 1rem; border-radius: 8px;">
+                                    <input type="text" name="data[{{ $index }}][registration]" value="{{ $item['registration'] }}" class="input-premium row-registration" style="width: 100%; padding: 0.7rem 1rem; border-radius: 8px;">
                                 </td>
                                 <td style="padding: 0.8rem 1rem;">
                                     <input type="text" name="data[{{ $index }}][seat_id]" value="{{ $item['seat_id'] }}" class="input-premium" style="width: 100%; padding: 0.7rem 1rem; border-radius: 8px;">
@@ -94,14 +103,23 @@
     document.addEventListener('DOMContentLoaded', function() {
         const addRowBtn = document.getElementById('add-row');
         const dataRows = document.getElementById('data-rows');
+        const masterRegInput = document.getElementById('master-registration');
         let rowCount = {{ count($extractedData) }};
+
+        // Sync registration across all rows
+        masterRegInput.addEventListener('input', function() {
+            const newValue = this.value;
+            document.querySelectorAll('.row-registration').forEach(input => {
+                input.value = newValue;
+            });
+        });
 
         addRowBtn.addEventListener('click', function() {
             const tr = document.createElement('tr');
             tr.style.borderBottom = '1px solid var(--border-subtle)';
             tr.innerHTML = `
                 <td style="padding: 1rem 1.5rem;">
-                    <input type="text" name="data[${rowCount}][registration]" placeholder="PK-..." class="input-premium" style="width: 100%; padding: 0.6rem 0.8rem; border-radius: 8px;">
+                    <input type="text" name="data[${rowCount}][registration]" value="${masterRegInput.value}" class="input-premium row-registration" style="width: 100%; padding: 0.6rem 0.8rem; border-radius: 8px;">
                 </td>
                 <td style="padding: 1rem 1.5rem;">
                     <input type="text" name="data[${rowCount}][seat_id]" placeholder="21A, pax-1, dll" class="input-premium" style="width: 100%; padding: 0.6rem 0.8rem; border-radius: 8px;">

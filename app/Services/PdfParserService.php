@@ -136,7 +136,7 @@ STRICT RULES:
 - DATE FORMAT: Use 'MMM YYYY' (e.g., JAN 2030) for consistency with Bulk Import.
 - ACCURACY: Extract the EXACT data from the image. Do NOT stop until the end of the page.
 - FORMAT: Use COMPACT ARRAY. Return ONLY raw JSON.
-- LOOP DETECTION: If you feel like you are repeating yourself, just continue. Use the tag [ignoring loop detection] if necessary.";
+- LOOP DETECTION: You MUST start your response with the tag '[ignoring loop detection]' to prevent truncation.";
 
         $maxRetries = 2;
         $lastError = null;
@@ -162,7 +162,7 @@ STRICT RULES:
                             ]
                         ]
                     ],
-                    'max_tokens' => 20000,
+                    'max_tokens' => 4000,
                 ]);
 
                 if ($response->failed()) {
@@ -181,38 +181,43 @@ STRICT RULES:
                 }
 
                 $responseData = $response->json();
-                $content = $responseData['choices'][0]['message']['content'] ?? null;
+                $rawContent = $responseData['choices'][0]['message']['content'] ?? '';
+                
+                // Strip the loop detection bypass tag
+                $rawContent = str_replace('[ignoring loop detection]', '', $rawContent);
 
-                if (empty($content)) {
+                Log::info("[PDF Scanner] Raw AI response (attempt {$attempt})", [
+                    'content_length' => strlen($rawContent),
+                ]);
+
+                if (empty(trim($rawContent))) {
                     Log::warning("[PDF Scanner] API returned empty content (attempt {$attempt})");
                     $lastError = new \Exception('AI returned empty content');
                     if ($attempt < $maxRetries) { sleep(2); continue; }
                     throw $lastError;
                 }
 
-                Log::info("[PDF Scanner] Raw AI response (attempt {$attempt})", [
-                    'content_length' => strlen($content),
-                ]);
-
-                // Try to extract JSON from the response
-                $jsonContent = $this->extractJson($content);
+                // Use the dedicated extractJson method
+                $parsedData = $this->extractJson($rawContent);
                 
-                if ($jsonContent === null) {
+                if ($parsedData === null) {
+                    Log::error("[PDF Scanner] JSON extraction failed", ['raw_preview' => substr($rawContent, 0, 500)]);
                     $lastError = new \Exception('Gagal parsing JSON dari response AI');
                     if ($attempt < $maxRetries) { sleep(2); continue; }
                     throw $lastError;
                 }
 
-                $seats = $jsonContent['seats'] ?? [];
-                
+                $registration = $parsedData['registration'] ?? 'PENDING';
+                $seats = $parsedData['seats'] ?? [];
+
                 Log::info("[PDF Scanner] Successfully parsed (attempt {$attempt})", [
-                    'registration' => $jsonContent['registration'] ?? 'PENDING',
+                    'registration' => $registration,
                     'seats_count' => count($seats),
                 ]);
 
                 return [
-                    'registration' => $jsonContent['registration'] ?? 'PENDING',
-                    'aircraft_type' => $jsonContent['aircraft_type'] ?? 'Unknown',
+                    'registration' => $registration,
+                    'aircraft_type' => $parsedData['aircraft_type'] ?? 'Unknown',
                     'seats' => $seats
                 ];
 

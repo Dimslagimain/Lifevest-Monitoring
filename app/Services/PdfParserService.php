@@ -103,9 +103,21 @@ You MUST extract data in this EXACT ORDER:
 3. Passenger Seats (Row by Row, from front to back)
 4. Spare / Infant Section
 
-STRICT MAPPING LOGIC:
-- PASSENGER SEATS: Combine Row Number (column 'NO') + Column Letter. Example: Row 50 + Column K = '50K'.
-- NEVER return just 'A' or 'B' as Seat ID. It MUST have the number (e.g., '50A').
+STRICT MAPPING LOGIC (B777-200 Layout):
+- BUSINESS CLASS (Rows 6-12):
+  * Even Rows (6, 8, 10): Seats C, E, F, H.
+  * Odd Rows (7, 9, 11): Seats A, D, G, K.
+  * Row 12: Seats E, F only.
+- ECONOMY CLASS (Rows 21-63):
+  * Standard Layout: ABC - DFG - HJK (Row Number + Letter).
+  * Row 36: D, F, G only.
+  * Row 49: A, B, C and H, J, K only (No center).
+  * Row 63: A, B, D, F, G, J, K.
+- EXTRACT EVERYTHING: You MUST extract every single seat, attendant seat, and cockpit seat visible on the page. Do NOT stop after Business Class.
+
+DATE EXTRACTION:
+- Extract the EXACT date from the 'EXPIRY DATE' column in the image.
+- DO NOT use the example date \"JAN 2030\" if the image shows something else.
 
 DATA FORMAT (JSON):
 {
@@ -113,14 +125,15 @@ DATA FORMAT (JSON):
   \"aircraft_type\": \"B777\",
   \"seats\": [
     [\"Seat_ID\", \"Expiry_Date\"],
-    [\"50A\", \"JAN 2030\"],
-    [\"50B\", \"JAN 2030\"]
+    [\"6C\", \"DATA_FROM_IMAGE\"],
+    [\"50A\", \"DATA_FROM_IMAGE\"]
   ]
 }
 
 STRICT RULES:
-- Use the COMPACT ARRAY format for seats to save space: [\"SeatID\", \"Date\"].
-- Return ONLY raw JSON. No markdown, no explanation.";
+- Use the COMPACT ARRAY format for seats to save space.
+- Return ONLY raw JSON. No markdown, no explanation.
+- If the data is long, CONTINUE until all seats are listed.";
 
         $maxRetries = 2;
         $lastError = null;
@@ -337,18 +350,6 @@ STRICT RULES:
             'seats' => $seats
         ];
     }
-
-    private function cleanTempDir($dir)
-    {
-        if (is_dir($dir)) {
-            foreach (glob($dir . '/*') as $file) @unlink($file);
-            @rmdir($dir);
-        }
-    }
-
-    public function parseText($text) { return $text; }
-}
-
 
     private function cleanTempDir($dir)
     {

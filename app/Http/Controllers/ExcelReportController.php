@@ -662,7 +662,7 @@ class ExcelReportController extends Controller
         ]);
 
         // Table Header
-        $headers = ['DATE & TIME', 'ADMIN', 'AIRCRAFT', 'ACTIVITY', 'PART NUMBER', 'QTY', 'SEATS LIST', 'EXPIRY DATE'];
+        $headers = ['DATE & TIME', 'USER', 'AIRCRAFT', 'ACTIVITY', 'PART NUMBER', 'QTY', 'SEATS LIST', 'EXPIRY DATE'];
         $colIdx = 1;
         foreach ($headers as $header) {
             $colStr = Coordinate::stringFromColumnIndex($colIdx);
@@ -678,13 +678,13 @@ class ExcelReportController extends Controller
 
         // Column Widths
         $sheet->getColumnDimension('A')->setWidth(18);
-        $sheet->getColumnDimension('B')->setWidth(15);
+        $sheet->getColumnDimension('B')->setWidth(12);
         $sheet->getColumnDimension('C')->setWidth(12);
         $sheet->getColumnDimension('D')->setWidth(15);
         $sheet->getColumnDimension('E')->setWidth(20);
         $sheet->getColumnDimension('F')->setWidth(8);
-        $sheet->getColumnDimension('G')->setWidth(50);
-        $sheet->getColumnDimension('H')->setWidth(15);
+        $sheet->getColumnDimension('G')->setWidth(80);
+        $sheet->getColumnDimension('H')->setWidth(25);
 
         $rowIdx = 6;
         foreach ($logs as $log) {
@@ -730,22 +730,18 @@ class ExcelReportController extends Controller
             $sheet->setCellValue('F' . $rowIdx, $log->details['seat_count'] ?? (isset($log->details['seats']) ? count($log->details['seats']) : '-'));
             $sheet->setCellValue('G' . $rowIdx, $details);
             
-            $expiryDateStr = '-';
-            if (isset($log->details['expiry_date']) && $log->details['expiry_date'] !== null) {
-                try {
-                    $expiryDateStr = Carbon::parse($log->details['expiry_date'])->format('d/m/Y');
-                } catch (\Exception $e) {
-                    $expiryDateStr = $log->details['expiry_date'];
-                }
-            }
+            $expiryDateStr = $log->details['expiry_date'] ?? '-';
             $sheet->setCellValue('H' . $rowIdx, $expiryDateStr);
 
-            // Apply Base Alignment (Center) to all cells in the row
-            $sheet->getStyle("A{$rowIdx}:H{$rowIdx}")->getAlignment()->setHorizontal('center')->setVertical('center');
-
+            // Apply Alignment & Wrap Text to all columns in the row
+            $sheet->getStyle("A{$rowIdx}:H{$rowIdx}")->getAlignment()
+                ->setHorizontal('center')
+                ->setVertical(Alignment::VERTICAL_CENTER)
+                ->setWrapText(true);
+            
             // Override P/N (E) and Seats List (G) to Left Alignment for better readability
-            $sheet->getStyle('E' . $rowIdx)->getAlignment()->setHorizontal('left')->setWrapText(true);
-            $sheet->getStyle('G' . $rowIdx)->getAlignment()->setHorizontal('left')->setWrapText(true);
+            $sheet->getStyle('E' . $rowIdx)->getAlignment()->setHorizontal('left');
+            $sheet->getStyle('G' . $rowIdx)->getAlignment()->setHorizontal('left');
 
             // Zebra Stripping & Borders
             $range = "A{$rowIdx}:H{$rowIdx}";
@@ -826,14 +822,19 @@ class ExcelReportController extends Controller
             default => $log->action,
         });
 
-        $summaryFields = [
-            ['Date & Time', $log->created_at->format('d M Y, H:i:s')],
-            ['User', strtoupper($log->user->name ?? 'SYSTEM')],
-            ['Aircraft', $log->registration ?? '-'],
-            ['Activity', $actionLabel],
-            ['Qty Seats', $log->details['seat_count'] ?? (isset($log->details['seats']) ? count($log->details['seats']) : '-')],
-            ['Expiry Date Set', isset($log->details['expiry_date']) ? Carbon::parse($log->details['expiry_date'])->format('d M Y') : '-'],
-        ];
+            $expiry_val = $log->details['expiry_date'] ?? '-';
+            // Jika formatnya YYYY-MM-DD, ubah ke d M Y
+            if ($expiry_val !== '-' && preg_match('/^\d{4}-\d{2}-\d{2}$/', $expiry_val)) {
+                $expiry_val = Carbon::parse($expiry_val)->format('d M Y');
+            }
+            $summaryFields = [
+                ['Date & Time', $log->created_at->format('d/m/Y H:i:s')],
+                ['User Account', strtoupper($log->user->name ?? 'SYSTEM')],
+                ['Aircraft Reg', $log->registration ?? '-'],
+                ['Activity Type', $actionLabel],
+                ['Qty Seats', $log->details['seat_count'] ?? (isset($log->details['seats']) ? count($log->details['seats']) : '-')],
+                ['Expiry Date Set', $expiry_val],
+            ];
 
         // P/N info
         $pns = $log->details['pns'] ?? (isset($log->details['pn']) ? [$log->details['pn']] : []);

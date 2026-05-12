@@ -7,8 +7,8 @@ use Illuminate\Support\Facades\Log;
 
 class PdfParserService
 {
-    protected $ghostscriptPath;
-    protected $apiKey;
+    protected string $ghostscriptPath;
+    protected ?string $apiKey;
 
     public function __construct()
     {
@@ -16,7 +16,7 @@ class PdfParserService
         $this->apiKey = env('OPENROUTER_API_KEY');
     }
 
-    public function processFile($filePath)
+    public function processFile(string $filePath): array
     {
         $extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
         if ($extension === 'pdf') {
@@ -25,7 +25,7 @@ class PdfParserService
         return $this->analyzeWithAI($filePath);
     }
 
-    public function processPdf($pdfPath)
+    public function processPdf(string $pdfPath): array
     {
         $tempDir = storage_path('app/private/temp_pdf_pages');
         if (is_dir($tempDir)) {
@@ -39,6 +39,7 @@ class PdfParserService
         
         Log::info('[PDF Scanner] Running Ghostscript command', ['cmd' => $gsCmd]);
         $gsOutput = [];
+        $gsReturnCode = 0;
         exec($gsCmd, $gsOutput, $gsReturnCode);
         Log::info('[PDF Scanner] Ghostscript result', ['return_code' => $gsReturnCode, 'output_lines' => count($gsOutput)]);
 
@@ -89,7 +90,7 @@ class PdfParserService
         return $allResults;
     }
 
-    public function analyzeWithAI($imagePath)
+    public function analyzeWithAI(string $imagePath): array
     {
         if (empty($this->apiKey)) throw new \Exception('API Key OpenRouter belum disetting.');
 
@@ -234,12 +235,7 @@ STRICT RULES:
         throw $lastError ?? new \Exception('Gagal menganalisis gambar setelah beberapa percobaan.');
     }
 
-    /**
-     * Extract and parse JSON from AI response content.
-     * Handles multiple formats: raw JSON, markdown code blocks, etc.
-     * Also cleans up common AI JSON issues (trailing commas, truncated output).
-     */
-    private function extractJson($content)
+    private function extractJson(string $content): ?array
     {
         $content = trim($content);
         $candidates = [];
@@ -269,17 +265,14 @@ STRICT RULES:
             $fixed = $this->fixTruncatedJson($json);
             $decoded = json_decode($fixed, true);
             if ($decoded !== null && is_array($decoded)) {
-                return $this->normalizeResult($fixed_decoded = $decoded);
+                return $this->normalizeResult($decoded);
             }
         }
 
         return null;
     }
 
-    /**
-     * Clean common JSON syntax issues from AI output.
-     */
-    private function cleanJson($json)
+    private function cleanJson(string $json): string
     {
         $json = preg_replace('/[\x{FEFF}\x{200B}\x{200C}\x{200D}]/u', '', $json);
         $json = preg_replace('/\/\/[^\n]*/', '', $json);
@@ -290,10 +283,7 @@ STRICT RULES:
         return trim($json);
     }
 
-    /**
-     * Attempt to fix truncated JSON by adding missing closing brackets.
-     */
-    private function fixTruncatedJson($json)
+    private function fixTruncatedJson(string $json): string
     {
         $json = $this->cleanJson($json);
         $openBraces = substr_count($json, '{');
@@ -302,10 +292,8 @@ STRICT RULES:
         $closeBrackets = substr_count($json, ']');
 
         if ($openBraces > $closeBraces || $openBrackets > $closeBrackets) {
-            // Find the last complete object or array element
             $lastCompletePos = max(strrpos($json, '}'), strrpos($json, ']'));
             if ($lastCompletePos !== false) {
-                // If it looks like it's inside an array, find the last comma before truncation
                 $lastComma = strrpos($json, ',');
                 if ($lastComma > $lastCompletePos) {
                     $json = substr($json, 0, $lastComma);
@@ -322,32 +310,22 @@ STRICT RULES:
         return $json;
     }
 
-    /**
-     * Normalize the parsed result to ensure consistent structure.
-     * Supports:
-     * 1. Flat array of objects: [{seat_id, expiry_date}, ...]
-     * 2. Full object with seats array of objects: {seats: [{seat_id, expiry_date}, ...]}
-     * 3. Compact array format: {seats: [["50A", "JAN 2030"], ...]}
-     */
-    private function normalizeResult($data)
+    private function normalizeResult(array $data): ?array
     {
-        if (!is_array($data)) return null;
+        if (empty($data)) return null;
 
         $seats = [];
         $rawSeats = $data['seats'] ?? (isset($data[0]) ? $data : []);
 
         foreach ($rawSeats as $item) {
-            // Skip header if AI included it
-            if (isset($item[0]) && str_contains(strtolower($item[0]), 'seat')) continue;
+            if (isset($item[0]) && str_contains(strtolower((string)$item[0]), 'seat')) continue;
 
             if (isset($item['seat_id'])) {
-                // Format: {seat_id: "...", expiry_date: "..."}
                 $seats[] = [
                     'seat_id' => $item['seat_id'],
                     'expiry_date' => $item['expiry_date'] ?? ''
                 ];
             } elseif (is_array($item) && count($item) >= 2) {
-                // Format: ["50A", "JAN 2030"]
                 $seats[] = [
                     'seat_id' => $item[0],
                     'expiry_date' => $item[1] ?? ''
@@ -362,7 +340,7 @@ STRICT RULES:
         ];
     }
 
-    private function cleanTempDir($dir)
+    private function cleanTempDir(string $dir): void
     {
         if (is_dir($dir)) {
             foreach (glob($dir . '/*') as $file) @unlink($file);
@@ -370,5 +348,5 @@ STRICT RULES:
         }
     }
 
-    public function parseText($text) { return $text; }
+    public function parseText(string $text): string { return $text; }
 }

@@ -9,7 +9,10 @@ use App\Imports\SeatImport;
 use App\Imports\UserImport;
 use Illuminate\Support\Facades\Log;
 use App\Models\ActivityLog;
+use App\Models\Aircraft;
+use App\Models\Seat;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 
 class BulkImportController extends Controller
@@ -63,7 +66,7 @@ class BulkImportController extends Controller
                     $count = count($items);
                     
                     // Fetch P/Ns for this aircraft based on affected types
-                    $aircraft = \App\Models\Aircraft::where('registration', $reg)->first();
+                    $aircraft = Aircraft::where('registration', $reg)->first();
                     $pns = [];
                     $uniqueTypes = array_unique($classTypes);
                     if ($aircraft) {
@@ -78,6 +81,15 @@ class BulkImportController extends Controller
                         }
                     }
 
+                    $expiry_display = null;
+                    if (count($dates) === 1) {
+                        $expiry_display = Carbon::parse(reset($dates))->format('d-m-Y');
+                    } elseif (count($dates) > 1) {
+                        $minDate = Carbon::parse(min($dates))->format('d-m-Y');
+                        $maxDate = Carbon::parse(max($dates))->format('d-m-Y');
+                        $expiry_display = $minDate . "\nto\n" . $maxDate;
+                    }
+
                     ActivityLog::create([
                         'user_id' => Auth::id(),
                         'registration' => $reg,
@@ -86,8 +98,8 @@ class BulkImportController extends Controller
                             'type' => 'seat',
                             'seat_count' => $count,
                             'pns' => array_values(array_unique($pns)),
-                            'seats' => array_slice($seatIds, 0, 100), // Cap to 100 for log readability
-                            'expiry_date' => count($dates) === 1 ? reset($dates) : null, // If all same date, show it
+                            'seats' => array_slice($seatIds, 0, 1000), 
+                            'expiry_date' => $expiry_display,
                             'message' => "Bulk imported/updated $count seats"
                         ]
                     ]);
@@ -116,7 +128,7 @@ class BulkImportController extends Controller
     /**
      * Download template Excel beserta data contoh
      */
-    public function downloadTemplate($type)
+    public function downloadTemplate(string $type)
     {
         if (!in_array($type, ['aircraft', 'seat', 'user'])) {
             abort(404);

@@ -129,6 +129,13 @@
                                             {{ implode(', ', array_slice((array)$log->details['seats'], 0, 15)) }}{{ count((array)$log->details['seats']) > 15 ? '...' : '' }}
                                         </div>
                                     @endif
+
+                                    @if(isset($log->details['expiry_date']) && $log->details['expiry_date'])
+                                        <div style="margin-top: 6px; font-size: 0.75rem; display: flex; align-items: center; gap: 6px; color: var(--primary); font-weight: 600;">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                            Exp: {{ $log->details['expiry_date'] }}
+                                        </div>
+                                    @endif
                                 @elseif($log->action === 'unsuspend_user')
 
                                     <div style="font-size: 0.95rem; font-weight: 700; color: #10b981;">
@@ -205,6 +212,7 @@
                     'AIRCRAFT' => $log->registration ?? '-',
                     'ACTIVITY' => strtoupper($log->action === 'pn_update' ? 'P/N UPDATE' : ($log->action === 'batch' ? 'BATCH INPUT' : $log->action)),
                     'PN AFFECTED' => $pn,
+                    'EXPIRY DATE' => $log->details['expiry_date'] ?? '-',
                 ];
             });
         @endphp

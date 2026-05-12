@@ -7,6 +7,7 @@ use App\Models\Aircraft;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class SeatImport implements ToModel, WithHeadingRow
 {
@@ -14,11 +15,7 @@ class SeatImport implements ToModel, WithHeadingRow
     public array $affectedData = [];
 
     /**
-
-
-
      * @param array $row
-     *
      * @return \Illuminate\Database\Eloquent\Model|null
      */
     public function model(array $row)
@@ -41,28 +38,29 @@ class SeatImport implements ToModel, WithHeadingRow
                     ->first();
         
         if (!$aircraft) {
-            \Log::warning("[PDF Import] Pesawat TIDAK ditemukan!", ['registration_di_excel' => $rawReg]);
+            Log::warning("[PDF Import] Pesawat TIDAK ditemukan!", ['registration_di_excel' => $rawReg]);
             return null;
         }
         $registration = $aircraft->registration;
 
         // 2. Normalisasi Tanggal (JAN 28 -> Jan 2028)
+        $dateValue = '';
         try {
             $dateValue = strtoupper(trim((string)$row['expiry_date']));
             if (is_numeric($dateValue)) {
-                $expiryDate = \Carbon\Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($dateValue));
+                $expiryDate = Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($dateValue));
             } else {
                 $dateValue = str_replace(['/', '.', ' '], '-', $dateValue);
                 if (preg_match('/^([A-Z]{3})-(\d{2,4})$/', $dateValue, $matches)) {
                     $year = $matches[2];
                     if (strlen($year) == 2) $year = '20' . $year;
-                    $expiryDate = \Carbon\Carbon::parse("01-" . $matches[1] . "-$year");
+                    $expiryDate = Carbon::parse("01-" . $matches[1] . "-$year");
                 } else {
-                    $expiryDate = \Carbon\Carbon::parse($dateValue);
+                    $expiryDate = Carbon::parse($dateValue);
                 }
             }
         } catch (\Exception $e) {
-            \Log::error("[PDF Import] Gagal baca tanggal!", ['value' => $dateValue, 'error' => $e->getMessage()]);
+            Log::error("[PDF Import] Gagal baca tanggal!", ['value' => $dateValue, 'error' => $e->getMessage()]);
             return null;
         }
 
@@ -122,14 +120,14 @@ class SeatImport implements ToModel, WithHeadingRow
             }
         }
 
-        \Log::info("[PDF Import] Memproses Seat:", [
+        Log::info("[PDF Import] Memproses Seat:", [
             'registration' => $registration,
             'excel_seat_id' => $rawSeatId,
             'db_seat_id' => $finalSeatId,
             'expiry_date' => $expiryDate->toDateString()
         ]);
 
-        return Seat::updateOrCreate(
+        $seat = Seat::updateOrCreate(
             ['registration' => $registration, 'seat_id' => $finalSeatId],
             [
                 'row' => $rowNum,
@@ -138,5 +136,14 @@ class SeatImport implements ToModel, WithHeadingRow
                 'expiry_date' => $expiryDate->toDateString()
             ]
         );
+
+        // Catat data yang terpengaruh agar bisa dilog oleh Controller
+        $this->affectedData[$registration][] = [
+            'seat_id'    => $finalSeatId,
+            'class_type' => $classType,
+            'expiry_date' => $expiryDate->toDateString()
+        ];
+
+        return $seat;
     }
 }

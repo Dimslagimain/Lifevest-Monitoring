@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Log;
 
 class PdfScanController extends Controller
 {
-    protected $pdfParser;
+    protected PdfParserService $pdfParser;
 
     public function __construct(PdfParserService $pdfParser)
     {

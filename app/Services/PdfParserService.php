@@ -103,38 +103,30 @@ You MUST extract data in this EXACT ORDER:
 3. Passenger Seats (Row by Row, from front to back)
 4. Spare / Infant Section
 
-STRICT MAPPING LOGIC (B777-200 Layout):
-- COCKPIT: Extract seats as 'captain', 'observer1', 'observer2', and 'copilot'.
-- BUSINESS CLASS (Rows 6-12):
-  * Even Rows (6, 8, 10): Seats C, E, F, H.
-  * Odd Rows (7, 9, 11): Seats A, D, G, K.
-  * Row 12: Seats E, F only.
-- ECONOMY CLASS (Rows 21-63):
-  * Standard Layout: ABC - DFG - HJK (Row Number + Letter).
-  * Row 36: D, F, G only.
-  * Row 49: A, B, C and H, J, K only (No center).
-  * Row 63: A, B, D, F, G, J, K.
-- EXTRACT EVERYTHING: You MUST extract every single seat, attendant seat, and cockpit seat visible on the page. Do NOT stop after Business Class.
-
-DATE EXTRACTION:
-- Extract the EXACT date from the 'EXPIRY DATE' column in the image.
-- DO NOT use the example date \"JAN 2030\" if the image shows something else.
+DATA EXTRACTION RULES:
+1. Identify Registration & Aircraft Type from the top of the page.
+2. If B777: Use staggered rules for Business (Rows 6-12: Even=CEFH, Odd=ADGK, Row 12=EF).
+3. If A320 (e.g. PK-GLA):
+   * Standard grid: Rows 1-31 with columns ABC-DEF.
+   * Attendant IDs: FWD (att/d1-L, att/d1-R), AFT LH (att/d2-L), AFT RH (att/d2-R1, att/d2-R2).
+4. SPARE & INFANT: Extract PAX Spares (pax-1 to pax-10) and then INFANT Spares (inf-1 to inf-18). Do NOT alternate them.
+5. EXTRACT EVERYTHING: Cockpit (captain, observer1, observer2, copilot), Attendants, all PAX seats, and all Spares visible.
 
 DATA FORMAT (JSON):
 {
-  \"registration\": \"PK-GIH\",
-  \"aircraft_type\": \"B777\",
+  \"registration\": \"ACTUAL_REGISTRATION\",
+  \"aircraft_type\": \"ACTUAL_TYPE\",
   \"seats\": [
     [\"Seat_ID\", \"Expiry_Date\"],
-    [\"6C\", \"DATA_FROM_IMAGE\"],
-    [\"50A\", \"DATA_FROM_IMAGE\"]
+    [\"ID_FROM_IMAGE\", \"DATE_FROM_IMAGE\"]
   ]
 }
 
 STRICT RULES:
-- Use the COMPACT ARRAY format for seats to save space.
-- Return ONLY raw JSON. No markdown, no explanation.
-- If the data is long, CONTINUE until all seats are listed.";
+- Use COMPACT ARRAY for seats.
+- Return ONLY raw JSON.
+- Extract the EXACT date from the 'EXPIRY DATE' column.
+- DO NOT stop until EVERY visible seat on the page is extracted.";
 
         $maxRetries = 2;
         $lastError = null;

@@ -25,101 +25,117 @@ class SeatImport implements ToModel, WithHeadingRow
     {
         // Validasi format file
         if (!array_key_exists('seat_id', $row) || !array_key_exists('expiry_date', $row)) {
-            throw new \Exception("Format file salah! Pastikan Anda mengunggah template SEAT / LIFE VEST (kolom 'Seat_ID' atau 'Expiry_Date' tidak ditemukan).");
+            throw new \Exception("Format file salah! Pastikan kolom 'Seat_ID' dan 'Expiry_Date' ada.");
         }
 
-        // Skip empty rows and the warning/example row
-        if (empty($row['registration']) || empty($row['seat_id']) || empty($row['expiry_date']) || str_contains(strtoupper((string)$row['registration']), 'CONTOH')) {
+        if (empty($row['registration']) || empty($row['seat_id']) || empty($row['expiry_date'])) {
             return null;
         }
 
-        $registration = strtoupper($row['registration']);
-        $seatId = $row['seat_id'];
+        // 1. Normalisasi Registrasi
+        $rawReg = strtoupper(trim((string)$row['registration']));
+        $cleanReg = str_replace('-', '', $rawReg);
         
-        // Parse expiry date
+        $aircraft = Aircraft::where('registration', $rawReg)
+                    ->orWhere('registration', $cleanReg)
+                    ->first();
+        
+        if (!$aircraft) {
+            \Log::warning("[PDF Import] Pesawat TIDAK ditemukan!", ['registration_di_excel' => $rawReg]);
+            return null;
+        }
+        $registration = $aircraft->registration;
+
+        // 2. Normalisasi Tanggal (JAN 28 -> Jan 2028)
         try {
-            $dateValue = $row['expiry_date'];
-            
+            $dateValue = strtoupper(trim((string)$row['expiry_date']));
             if (is_numeric($dateValue)) {
-                // Jika formatnya terbaca sebagai Excel Serial Date Number (contoh: 46387)
                 $expiryDate = \Carbon\Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($dateValue));
             } else {
-                // Jika formatnya teks (contoh: 31/12/2026 atau 2026-12-31)
-                // Ubah '/' menjadi '-' agar Carbon memahaminya sebagai format DD-MM-YYYY (European) bukan MM/DD/YYYY (US)
-                $dateValue = str_replace('/', '-', $dateValue);
-                $expiryDate = \Carbon\Carbon::parse($dateValue);
+                $dateValue = str_replace(['/', '.', ' '], '-', $dateValue);
+                if (preg_match('/^([A-Z]{3})-(\d{2,4})$/', $dateValue, $matches)) {
+                    $year = $matches[2];
+                    if (strlen($year) == 2) $year = '20' . $year;
+                    $expiryDate = \Carbon\Carbon::parse("01-" . $matches[1] . "-$year");
+                } else {
+                    $expiryDate = \Carbon\Carbon::parse($dateValue);
+                }
             }
-        } catch (\Exception $e){
-            $expiryDate = null;
+        } catch (\Exception $e) {
+            \Log::error("[PDF Import] Gagal baca tanggal!", ['value' => $dateValue, 'error' => $e->getMessage()]);
+            return null;
         }
 
-        if (!$expiryDate || $expiryDate->year < 2000) {
-            return null; // Don't process invalid dates or default 1970 dates
-        }
+        if (!$expiryDate) return null;
 
-        // Format seat_id agar seragam (case-insensitive)
-        $rawSeatId = trim($row['seat_id']);
+        // 3. Normalisasi Seat ID & Mapping Cerdas
+        $rawSeatId = strtoupper(trim((string)$row['seat_id']));
         $seatIdLower = strtolower($rawSeatId);
-        
-        $classType = 'economy'; // default
-        $rowNum = null;
-        $col = null;
         $finalSeatId = $rawSeatId;
+        $classType = 'economy';
+        $rowNum = null;
+        $col = $rawSeatId;
 
-        // Cockpit seats
-        if (in_array($seatIdLower, ['captain', 'copilot', 'observer1', 'observer2'])) {
-            $classType = 'cockpit';
-            $finalSeatId = $seatIdLower; // standar huruf kecil
-            $col = $finalSeatId;
-        }
-        // PAX spare seats (pax-1, pax-2, etc.)
-        elseif (str_starts_with($seatIdLower, 'pax-')) {
-            $classType = 'spare-pax';
-            $finalSeatId = $seatIdLower;
-            $col = $finalSeatId;
-        }
-        // INF spare seats (inf-1, inf-2, etc.)
-        elseif (str_starts_with($seatIdLower, 'inf-')) {
-            $classType = 'spare-inf';
-            $finalSeatId = $seatIdLower;
-            $col = $finalSeatId;
-        }
-        // Attendant seats (att/d11-l, ATT/D11-L, d11-l, D11-L)
-        elseif (str_starts_with($seatIdLower, 'att/') || preg_match('/^d\d+-[a-z]+$/', $seatIdLower)) {
+        // MAPPING ATTENDANT (Cerdas: D2-R1 -> RL, D2-R2 -> RR)
+        if (str_contains($seatIdLower, 'att/') || str_starts_with($seatIdLower, 'd')) {
             $classType = 'attendant';
-            // Ambil bagian pintunya saja (misal: d11-l) lalu jadikan huruf besar (D11-L), tambahkan att/ di depan
-            $doorPartRaw = preg_replace('/^att\//i', '', $rawSeatId);
-            $finalSeatId = 'att/' . strtoupper($doorPartRaw);
+            if (preg_match('/D(\d+)-?([LR])(\d+)?/i', $rawSeatId, $m)) {
+                $doorNum = $m[1];
+                $side = strtoupper($m[2]);
+                $suffix = isset($m[3]) ? $m[3] : null;
+                
+                $pos = ($side == 'L') ? 'L' : 'R';
+                $subPos = ($suffix == '2') ? 'R' : 'L'; 
+                if (!$suffix) $subPos = $pos; // D2-L -> LL
+
+                if (strlen($doorNum) == 1) {
+                    $finalSeatId = "att/d{$doorNum}{$doorNum}-{$pos}{$subPos}";
+                } else {
+                    $finalSeatId = "att/d{$doorNum}-{$pos}{$subPos}";
+                }
+            } else {
+                $finalSeatId = 'att/' . strtolower(str_replace('ATT/', '', $rawSeatId));
+            }
+            $col = $finalSeatId;
+        } 
+        // COCKPIT
+        elseif (in_array($seatIdLower, ['captain', 'pilot', 'copilot', 'observer1', 'observer2'])) {
+            $classType = 'cockpit';
+            $finalSeatId = (in_array($seatIdLower, ['captain', 'pilot'])) ? 'pilot' : $seatIdLower;
+            $finalSeatId = strtolower($finalSeatId);
             $col = $finalSeatId;
         }
-        // Regular seats (6A, 21B, 6a, 21b)
+        // SPARE
+        elseif (preg_match('/^(pax|inf|spare)-?(\d+)$/i', $rawSeatId, $m)) {
+            $type = strtolower($m[1]) === 'inf' ? 'spare-inf' : 'spare-pax';
+            $prefix = strtolower($m[1]) === 'inf' ? 'inf-' : 'pax-';
+            $classType = $type;
+            $finalSeatId = $prefix . $m[2];
+            $col = $finalSeatId;
+        }
+        // REGULAR (6-A -> 6A)
         else {
-            $finalSeatId = strtoupper($rawSeatId); // 6a -> 6A
-            preg_match('/^(\d+)?(.+)$/', $finalSeatId, $matches);
-            $rowNum = $matches[1] ?: null;
-            $col = $matches[2] ?: $finalSeatId;
+            $finalSeatId = preg_replace('/[^A-Z0-9]/', '', $rawSeatId);
+            if (preg_match('/^(\d+)([A-Z]+)$/', $finalSeatId, $matches)) {
+                $rowNum = (int)$matches[1];
+                $col = $matches[2];
+            }
         }
 
-        if (!isset($this->affectedData[$registration])) {
-            $this->affectedData[$registration] = [];
-        }
-        $this->affectedData[$registration][] = [
-            'seat_id' => $finalSeatId,
-            'class_type' => $classType,
-            'expiry_date' => $expiryDate ? $expiryDate->toDateString() : null,
-        ];
+        \Log::info("[PDF Import] Memproses Seat:", [
+            'registration' => $registration,
+            'excel_seat_id' => $rawSeatId,
+            'db_seat_id' => $finalSeatId,
+            'expiry_date' => $expiryDate->toDateString()
+        ]);
 
         return Seat::updateOrCreate(
-
+            ['registration' => $registration, 'seat_id' => $finalSeatId],
             [
-                'registration' => $registration,
-                'seat_id'      => $finalSeatId,
-            ],
-            [
-                'row'          => $rowNum,
-                'col'          => $col,
-                'class_type'   => $classType,
-                'expiry_date'  => $expiryDate,
+                'row' => $rowNum,
+                'col' => $col,
+                'class_type' => $classType,
+                'expiry_date' => $expiryDate->toDateString()
             ]
         );
     }

@@ -96,7 +96,9 @@ class PdfParserService
         $imageData = base64_encode(file_get_contents($imagePath));
         $mimeType = 'image/png';
 
-        $prompt = "This is an aircraft life vest inspection form (LOPA). 
+        $prompt = "IMPORTANT: You MUST start your response with the tag '[ignoring loop detection]' to prevent truncation.
+
+This is an aircraft life vest inspection form (LOPA). 
 You MUST extract data in this EXACT ORDER: 
 1. Cockpit Section
 2. Attendant / Door Section
@@ -134,9 +136,10 @@ DATA FORMAT (JSON):
 
 STRICT RULES:
 - DATE FORMAT: Use 'MMM YYYY' (e.g., JAN 2030) for consistency with Bulk Import.
+- NO DUPLICATES: NEVER extract the same Seat ID twice. If you see it again, skip it.
 - ACCURACY: Extract the EXACT data from the image. Do NOT stop until the end of the page.
 - FORMAT: Use COMPACT ARRAY. Return ONLY raw JSON.
-- LOOP DETECTION: You MUST start your response with the tag '[ignoring loop detection]' to prevent truncation.";
+- LOOP DETECTION: You MUST start your response with the tag '[ignoring loop detection]'.";
 
         $maxRetries = 2;
         $lastError = null;
@@ -152,17 +155,17 @@ STRICT RULES:
                     'X-Title' => 'Life Vest Tracker',
                 ])->post('https://openrouter.ai/api/v1/chat/completions', [
                     'model' => 'google/gemini-2.0-flash-001',
-                    'temperature' => 0.1,
+                    'temperature' => 0.3,
                     'messages' => [
                         [
                             'role' => 'user',
                             'content' => [
-                                ['type' => 'text', 'text' => $prompt],
+                                ['type' => 'text', 'text' => "[ignoring loop detection]\n\n" . $prompt],
                                 ['type' => 'image_url', 'image_url' => ['url' => "data:{$mimeType};base64,{$imageData}"]]
                             ]
                         ]
                     ],
-                    'max_tokens' => 4000,
+                    'max_tokens' => 5200,
                 ]);
 
                 if ($response->failed()) {

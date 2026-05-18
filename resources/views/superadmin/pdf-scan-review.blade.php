@@ -20,7 +20,7 @@
             </div>
         </div>
         <div style="display: flex; gap: 1rem;">
-            <a href="{{ route('superadmin.pdf-scan') }}" class="btn btn-secondary" style="padding: 0.75rem 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+            <a href="{{ route('superadmin.pdf-scan.clear') }}" class="btn btn-secondary" style="padding: 0.75rem 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 17l-5-5 5-5M18 17l-5-5 5-5"></path></svg>
                 Ulangi Scan
             </a>

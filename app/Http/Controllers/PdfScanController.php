@@ -20,7 +20,17 @@ class PdfScanController extends Controller
 
     public function index()
     {
+        if (session()->has('pdf_scan_result')) {
+            $data = session('pdf_scan_result');
+            return view('superadmin.pdf-scan-review', $data);
+        }
         return view('superadmin.pdf-scan');
+    }
+
+    public function clearScan()
+    {
+        session()->forget('pdf_scan_result');
+        return redirect()->route('superadmin.pdf-scan');
     }
 
     public function scan(Request $request)
@@ -53,7 +63,7 @@ class PdfScanController extends Controller
                 'seats_count' => count($seats),
             ]);
 
-            $rawText = "Data diekstrak menggunakan AI (OpenRouter)\n";
+            $rawText = "Data diekstrak menggunakan AI (Google Gemini)\n";
             $rawText .= "Registration: {$registration}\n";
             $rawText .= "Aircraft Type: " . ($parsed['aircraft_type'] ?? 'Unknown') . "\n";
             $rawText .= "Total seats terdeteksi: " . count($seats) . "\n";
@@ -67,12 +77,17 @@ class PdfScanController extends Controller
                 $rawText .= "\nSilakan cek storage/logs/laravel.log untuk detail.";
             }
 
-            return view('superadmin.pdf-scan-review', [
+            $result = [
                 'rawText' => $rawText,
                 'registration' => $registration,
                 'aircraftType' => $parsed['aircraft_type'] ?? 'Unknown',
                 'extractedData' => $seats
-            ]);
+            ];
+
+            // Simpan ke session agar tidak hilang saat navigasi
+            session(['pdf_scan_result' => $result]);
+
+            return view('superadmin.pdf-scan-review', $result);
         } catch (\Exception $e) {
             Storage::delete($path);
             Log::error('[PDF Scan] Scan failed', ['error' => $e->getMessage()]);

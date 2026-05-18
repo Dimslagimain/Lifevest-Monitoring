@@ -95,6 +95,7 @@ Route::middleware('auth')->group(function () {
         // PDF Scan
         Route::get('/superadmin/pdf-scan', [\App\Http\Controllers\PdfScanController::class, 'index'])->name('superadmin.pdf-scan');
         Route::post('/superadmin/pdf-scan', [\App\Http\Controllers\PdfScanController::class, 'scan'])->name('superadmin.pdf-scan.process');
+        Route::get('/superadmin/pdf-scan/clear', [\App\Http\Controllers\PdfScanController::class, 'clearScan'])->name('superadmin.pdf-scan.clear');
         Route::post('/superadmin/pdf-scan/export', [\App\Http\Controllers\PdfScanController::class, 'exportExcel'])->name('superadmin.pdf-scan.export');
     });
 });

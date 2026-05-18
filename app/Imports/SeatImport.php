@@ -77,22 +77,43 @@ class SeatImport implements ToModel, WithHeadingRow
         // MAPPING ATTENDANT (Cerdas: D2-R1 -> RL, D2-R2 -> RR)
         if (str_contains($seatIdLower, 'att/') || str_starts_with($seatIdLower, 'd')) {
             $classType = 'attendant';
-            if (preg_match('/D(\d+)-?([LR])(\d+)?/i', $rawSeatId, $m)) {
+            $cleanId = str_replace('ATT/', '', $rawSeatId);
+            
+            // Get aircraft type for defensive mapping
+            $aircraftType = $aircraft->type;
+            
+            // Modern A330/B777 pattern: row number followed by letters/digits (LL1, LR, L1, etc)
+            // ONLY apply this logic for A330/B777 to avoid breaking B737/A320
+            if (($aircraftType && (str_contains($aircraftType, 'A330') || str_contains($aircraftType, 'B777'))) && 
+                preg_match('/D(\d+)-?([A-Z0-9]{2,})/i', $cleanId, $m)) {
+                $doorNum = $m[1];
+                $pos = strtolower($m[2]);
+                $finalSeatId = "att/d{$doorNum}-{$pos}";
+            } 
+            // Classic pattern (D2-R1, D2-R2, D2-L) for B737, A320, etc.
+            elseif (preg_match('/D(\d+)-?([LR])(\d+)?/i', $cleanId, $m)) {
                 $doorNum = $m[1];
                 $side = strtoupper($m[2]);
                 $suffix = isset($m[3]) ? $m[3] : null;
                 
                 $pos = ($side == 'L') ? 'L' : 'R';
                 $subPos = ($suffix == '2') ? 'R' : 'L'; 
-                if (!$suffix) $subPos = $pos; // D2-L -> LL
-
-                if (strlen($doorNum) == 1) {
-                    $finalSeatId = "att/d{$doorNum}{$doorNum}-{$pos}{$subPos}";
+                if (!$suffix) {
+                    // Logic for single door like D1-L -> att/d11-LL (if door is 1)
+                    if (strlen($doorNum) == 1) {
+                        $finalSeatId = "att/d{$doorNum}{$doorNum}-{$pos}{$pos}";
+                    } else {
+                        $finalSeatId = "att/d{$doorNum}-{$pos}";
+                    }
                 } else {
-                    $finalSeatId = "att/d{$doorNum}-{$pos}{$subPos}";
+                    if (strlen($doorNum) == 1) {
+                        $finalSeatId = "att/d{$doorNum}{$doorNum}-{$pos}{$subPos}";
+                    } else {
+                        $finalSeatId = "att/d{$doorNum}-{$pos}{$subPos}";
+                    }
                 }
             } else {
-                $finalSeatId = 'att/' . strtolower(str_replace('ATT/', '', $rawSeatId));
+                $finalSeatId = 'att/' . strtolower($cleanId);
             }
             $col = $finalSeatId;
         } 

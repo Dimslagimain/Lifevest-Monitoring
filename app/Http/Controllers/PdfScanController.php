@@ -63,7 +63,21 @@ class PdfScanController extends Controller
                 'seats_count' => count($seats),
             ]);
 
-            $rawText = "Data diekstrak menggunakan AI (Google Gemini)\n";
+            // Detect active provider for display
+            $activeProvider = 'Unknown AI';
+            if (!empty(env('SNIFOX_API_KEY'))) {
+                $activeProvider = 'Snifox (' . env('SNIFOX_MODEL', 'google/gemini-3-flash-preview') . ')';
+            } elseif (!empty(env('GEMINI_API_KEY'))) {
+                $activeProvider = 'Google Gemini';
+            } elseif (!empty(env('ANTHROPIC_API_KEY'))) {
+                $activeProvider = 'Anthropic Claude';
+            } elseif (!empty(env('OPENAI_API_KEY'))) {
+                $activeProvider = 'OpenAI GPT-4o';
+            } elseif (!empty(env('OPENROUTER_API_KEY'))) {
+                $activeProvider = 'OpenRouter';
+            }
+
+            $rawText = "Data diekstrak menggunakan AI ({$activeProvider})\n";
             $rawText .= "Registration: {$registration}\n";
             $rawText .= "Aircraft Type: " . ($parsed['aircraft_type'] ?? 'Unknown') . "\n";
             $rawText .= "Total seats terdeteksi: " . count($seats) . "\n";

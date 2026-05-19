@@ -77,45 +77,51 @@ class SeatImport implements ToModel, WithHeadingRow
         // MAPPING ATTENDANT (Cerdas: D2-R1 -> RL, D2-R2 -> RR)
         if (str_contains($seatIdLower, 'att/') || str_starts_with($seatIdLower, 'd')) {
             $classType = 'attendant';
-            $cleanId = str_replace('ATT/', '', $rawSeatId);
             
-            // Get aircraft type for defensive mapping
-            $aircraftType = $aircraft->type;
-            
-            // Modern A330/B777 pattern: row number followed by letters/digits (LL1, LR, L1, etc)
-            // ONLY apply this logic for A330/B777 to avoid breaking B737/A320
-            if (($aircraftType && (str_contains($aircraftType, 'A330') || str_contains($aircraftType, 'B777'))) && 
-                preg_match('/D(\d+)-?([A-Z0-9]{2,})/i', $cleanId, $m)) {
-                $doorNum = $m[1];
-                $pos = strtolower($m[2]);
-                $finalSeatId = "att/d{$doorNum}-{$pos}";
-            } 
-            // Classic pattern (D2-R1, D2-R2, D2-L) for B737, A320, etc.
-            elseif (preg_match('/D(\d+)-?([LR])(\d+)?/i', $cleanId, $m)) {
-                $doorNum = $m[1];
-                $side = strtoupper($m[2]);
-                $suffix = isset($m[3]) ? $m[3] : null;
+            // FAST PATH: If seat_id already has full att/ format (e.g. att/d11-LL, att/d22-RL),
+            // use it directly without re-parsing. This covers Excel exports from PDF Scanner.
+            if (preg_match('/^att\/d[\d]+-[a-z0-9]+$/i', $rawSeatId)) {
+                $finalSeatId = strtolower($rawSeatId);
+                $col = $finalSeatId;
+            } else {
+                $cleanId = str_replace('ATT/', '', $rawSeatId);
                 
-                $pos = ($side == 'L') ? 'L' : 'R';
-                $subPos = ($suffix == '2') ? 'R' : 'L'; 
-                if (!$suffix) {
-                    // Logic for single door like D1-L -> att/d11-LL (if door is 1)
-                    if (strlen($doorNum) == 1) {
-                        $finalSeatId = "att/d{$doorNum}{$doorNum}-{$pos}{$pos}";
+                // Get aircraft type for defensive mapping
+                $aircraftType = $aircraft->type;
+                
+                // Modern A330/B777 pattern: row number followed by letters/digits (LL1, LR, L1, etc)
+                if (($aircraftType && (str_contains($aircraftType, 'A330') || str_contains($aircraftType, 'B777'))) && 
+                    preg_match('/D(\d+)-?([A-Z0-9]{2,})/i', $cleanId, $m)) {
+                    $doorNum = $m[1];
+                    $pos = strtolower($m[2]);
+                    $finalSeatId = "att/d{$doorNum}-{$pos}";
+                } 
+                // Classic pattern (D2-R1, D2-R2, D2-L) for B737, A320, etc.
+                elseif (preg_match('/D(\d+)-?([LR])(\d+)?/i', $cleanId, $m)) {
+                    $doorNum = $m[1];
+                    $side = strtoupper($m[2]);
+                    $suffix = isset($m[3]) ? $m[3] : null;
+                    
+                    $pos = ($side == 'L') ? 'L' : 'R';
+                    $subPos = ($suffix == '2') ? 'R' : 'L'; 
+                    if (!$suffix) {
+                        if (strlen($doorNum) == 1) {
+                            $finalSeatId = "att/d{$doorNum}{$doorNum}-{$pos}{$pos}";
+                        } else {
+                            $finalSeatId = "att/d{$doorNum}-{$pos}";
+                        }
                     } else {
-                        $finalSeatId = "att/d{$doorNum}-{$pos}";
+                        if (strlen($doorNum) == 1) {
+                            $finalSeatId = "att/d{$doorNum}{$doorNum}-{$pos}{$subPos}";
+                        } else {
+                            $finalSeatId = "att/d{$doorNum}-{$pos}{$subPos}";
+                        }
                     }
                 } else {
-                    if (strlen($doorNum) == 1) {
-                        $finalSeatId = "att/d{$doorNum}{$doorNum}-{$pos}{$subPos}";
-                    } else {
-                        $finalSeatId = "att/d{$doorNum}-{$pos}{$subPos}";
-                    }
+                    $finalSeatId = 'att/' . strtolower($cleanId);
                 }
-            } else {
-                $finalSeatId = 'att/' . strtolower($cleanId);
+                $col = $finalSeatId;
             }
-            $col = $finalSeatId;
         } 
         // COCKPIT
         elseif (in_array($seatIdLower, ['captain', 'pilot', 'copilot', 'observer1', 'observer2'])) {
@@ -125,9 +131,11 @@ class SeatImport implements ToModel, WithHeadingRow
             $col = $finalSeatId;
         }
         // SPARE
-        elseif (preg_match('/^(pax|inf|spare)-?(\d+)$/i', $rawSeatId, $m)) {
-            $type = strtolower($m[1]) === 'inf' ? 'spare-inf' : 'spare-pax';
-            $prefix = strtolower($m[1]) === 'inf' ? 'inf-' : 'pax-';
+        elseif (preg_match('/^(pax|adult|inf|infant|spare)-?(\\d+)$/i', $rawSeatId, $m)) {
+            $rawType = strtolower($m[1]);
+            $isInfant = in_array($rawType, ['inf', 'infant']);
+            $type = $isInfant ? 'spare-inf' : 'spare-pax';
+            $prefix = $isInfant ? 'inf-' : 'pax-';
             $classType = $type;
             $finalSeatId = $prefix . $m[2];
             $col = $finalSeatId;

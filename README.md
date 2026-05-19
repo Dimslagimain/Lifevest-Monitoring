@@ -10,16 +10,17 @@
 ---
 
 ## Mengenal Sistem Ini
-**Life Vest Tracker** adalah ekosistem digital mutakhir yang dirancang khusus untuk tim Engineering dan Maintenance GMF AeroAsia. Sistem ini mengubah data keselamatan pesawat yang kompleks menjadi informasi visual yang siap ditindaklanjuti, memastikan setiap pesawat dalam armada dilengkapi dengan peralatan keselamatan yang patuh (compliant) dan aman.
+**Life Vest Tracker** adalah ekosistem digital mutakhir yang dirancang khusus untuk tim Engineering dan Maintenance GMF AeroAsia. Sistem ini mengubah data keselamatan pesawat yang kompleks menjadi informasi visual yang siap ditindaklanjuti, memastikan setiap pesawat dalam armada dilengkapi dengan peralatan keselamatan yang patuh (compliant) dan aman. Menampilkan antarmuka *Dark Mode* modern berbasis *Glassmorphism*, aplikasi ini memastikan manajemen peralatan keselamatan menjadi lebih cepat, akurat, dan sangat memanjakan mata.
 
 ---
 
 ## Fitur Unggulan
 1.  **Dashboard Visual Cerdas**: Menampilkan grafik kesehatan armada (Aman, Peringatan, atau Kritis) secara instan tanpa muat ulang halaman.
-2.  **Peta Kursi Digital (Seat Map)**: Denah pesawat interaktif untuk pembaruan data pelampung secara massal (Multi-Select).
-3.  **Keamanan Berbasis Peran (RBAC)**: Pembagian akses ketat antara Superadmin, Admin (TNP), dan User (Viewer).
-4.  **Laporan & Formulir Lapangan**: Sekali klik untuk cetak laporan PDF atau Formulir Lapangan kosong yang disesuaikan dengan tipe pesawat.
-5.  **Audit Trail (Global Log)**: Pencatatan permanen setiap aktivitas modifikasi data demi transparansi dan kebutuhan audit.
+2.  **Smart PDF Scanner (Hybrid OCR AI)**: Ekstraksi data otomatis dari dokumen "Inventory Check" menggunakan gabungan *Google Cloud Vision* dan AI *Gemini/Claude* untuk akurasi tulisan tangan yang tinggi.
+3.  **Peta Kursi Digital (Seat Map)**: Denah pesawat interaktif untuk pembaruan data pelampung secara massal (Multi-Select).
+4.  **Keamanan Berbasis Peran (RBAC)**: Pembagian akses ketat antara Superadmin, Admin (TNP), dan User (Viewer).
+5.  **Laporan & Formulir Lapangan**: Sekali klik untuk cetak laporan PDF atau Formulir Lapangan kosong yang disesuaikan dengan tipe pesawat.
+6.  **Audit Trail (Global Log)**: Pencatatan permanen setiap aktivitas modifikasi data demi transparansi dan kebutuhan audit.
 
 ---
 
@@ -33,14 +34,22 @@ Sistem ini diorganisir secara sistematis untuk memudahkan pemeliharaan:
 
 ---
 
-## Panduan Penggunaan Lengkap
+## Panduan Pengguna
 
 ### 1. Dashboard Utama (Command Center)
 Dasbor menggunakan navigasi cerdas yang tidak memerlukan pemuatan ulang halaman (SPA). 
 - **Airline Master Deck**: Menampilkan Kartu Maskapai dengan diagram profil kesehatan armada.
 - **Airline Fleet Profile**: Menampilkan daftar pesawat yang dikelompokkan berdasarkan tipe (A320, B737, dll).
 
-### 2. Peta Kursi Digital & Pembaruan Data
+### 2. Smart PDF Scanner (Ekstraksi Dokumen AI)
+- Buka menu **Smart PDF Scanner**.
+- **Upload File**: Seret (*drag and drop*) dokumen PDF/Foto "Inventory Check" (GMF/Q-447) ke area kotak.
+- **Uncertainty Flag**: AI akan otomatis membaca data. Jika ada coretan tinta pudar yang membingungkan AI, baris tersebut akan disorot dengan **Warna Kuning ⚠️** di tabel.
+- **Pengurutan Cerdas (Smart Sorting)**: Sistem otomatis mengurutkan hasil *scan* secara hierarkis dari *Cockpit* hingga ke *Economy Class*, dan mengelompokkan data pelampung bayi/cadangan (*Infant/Spare*) ke bagian paling bawah tabel agar rapi.
+- **Quick Navigation**: Gunakan tombol navigasi melayang (*Top/Mid/Bottom*) untuk menggulir tabel B777/A330 yang panjang secara instan.
+- Klik **Download Excel** untuk mengekspor data yang siap masuk ke fitur *Bulk Import*.
+
+### 3. Peta Kursi Digital & Pembaruan Data
 **Cara Memilih Kursi (Multi-Select):**
 - **Klik Biasa**: Memilih satu kursi.
 - **Ctrl + Klik**: Menambah kursi ke pilihan yang ada.
@@ -96,10 +105,14 @@ composer install && npm install
 # 2. Pengaturan Lingkungan
 cp .env.example .env && php artisan key:generate
 
-# 3. Persiapan Database
+# 3. Kredensial AI (Wajib untuk PDF Scanner)
+# Buka file .env dan pastikan variabel ini terisi:
+# GEMINI_API_KEY="xxx" atau ANTHROPIC_API_KEY="xxx"
+
+# 4. Persiapan Database
 php artisan migrate:fresh --seed
 
-# 4. Kompilasi Aset & Jalankan
+# 5. Kompilasi Aset & Jalankan
 npm run build
 php artisan serve
 ```
@@ -108,9 +121,10 @@ php artisan serve
 
 ## Ekspor Laporan & Manajemen Armada
 Sistem mendukung berbagai format dokumen untuk kebutuhan kantor maupun lapangan:
-- **Laporan Digital (PDF & Excel)**: Cetak peta kursi berwarna (PDF) untuk arsip resmi, atau unduh log aktivitas (Excel) untuk kebutuhan audit data.
+- **Laporan Digital (PDF & Excel)**: Cetak peta kursi berwarna (PDF) untuk arsip resmi, atau unduh log aktivitas (Excel) untuk kebutuhan audit data. File diekspor dengan format tanggal baku `d-m-Y`.
+- **Akurasi Audit Trail (Log)**: Operasi modifikasi massal (*Bulk Import*) akan mencatat riwayat aktivitas (*Activity Log*) secara spesifik berdasarkan *Part Number* (P/N) kursi yang diubah saja, bukan keseluruhan isi pesawat, sehingga menghasilkan audit yang sangat akurat.
 - **Formulir Lapangan (Blank Form)**: Desain khusus dengan kotak isian kosong untuk memudahkan teknisi mencatat data secara manual saat di pesawat.
-- **Fleet Manager**: Pusat pengaturan untuk menambah atau mengubah data registrasi pesawat dan maskapai.
+- **Fleet Manager**: Pusat pengaturan untuk menambah atau mengubah data registrasi pesawat dan maskapai (Mendukung armada A320, A330, B737, hingga struktur kompleks B777).
 
 ---
 

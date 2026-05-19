@@ -308,9 +308,21 @@ COLUMN ALIGNMENT (CRITICAL - THIS IS THE MOST COMMON ERROR!):
 4. FOCUS ON INK, not grid lines. Handwriting may touch or cross grid lines — track the ink strokes only.
 5. DO NOT GUESS. Cannot read a cell? → output empty string '' instead of a wrong date.
 6. A blank/empty cell = no expiry date → output empty string ''.
+7. UNCERTAINTY FLAG: If the handwriting is very faint, scribbled over, ambiguous, or you are NOT 100% sure about your reading, you MUST append a '?' to the end of the date (e.g. 'MAY 2028?').
 
 DATA FORMAT (MINIFIED JSON):
 {\"registration\":\"PK-GIA\",\"aircraft_type\":\"B777-300\",\"seats\":[[\"pilot\",\"31 MAY 2029\"],[\"copilot\",\"17 JAN 2035\"],[\"att/d1-L\",\"14 MAY 2029\"],[\"att/d1-CL\",\"17 MAY 2029\"],[\"6C\",\"12 MAR 2030\"],[\"pax-1\",\"SEP 28\"],[\"inf-1\",\"SEP 23\"]]}";
+
+        // === HYBRID APPROACH: GOOGLE CLOUD VISION API (Optional Fallback) ===
+        $visionText = '';
+        if (!empty($geminiKey)) {
+            $visionText = $this->getVisionOcrText($imagePaths, $geminiKey);
+            if (!empty($visionText)) {
+                $prompt .= "\n\n=== GOOGLE CLOUD VISION OCR TRANSCRIPT ===\n";
+                $prompt .= "Below is the exact text extracted by a highly accurate OCR engine. Use this as your PRIMARY source of truth for reading handwriting (especially dates). Match these text strings to the table structure you see in the image:\n";
+                $prompt .= "```\n" . $visionText . "\n```\n";
+            }
+        }
 
         $geminiParts = [['text' => $prompt]];
         $openAiContent = [['type' => 'text', 'text' => $prompt]];
@@ -565,6 +577,46 @@ DATA FORMAT (MINIFIED JSON):
         }
 
         throw $lastError ?? new \Exception('Gagal menganalisis gambar setelah beberapa percobaan.');
+    }
+
+    private function getVisionOcrText(array $imagePaths, string $apiKey): string
+    {
+        $visionRequests = [];
+        foreach ($imagePaths as $imagePath) {
+            $imageData = base64_encode(file_get_contents($imagePath));
+            $visionRequests[] = [
+                'image' => ['content' => $imageData],
+                'features' => [['type' => 'DOCUMENT_TEXT_DETECTION']]
+            ];
+        }
+
+        try {
+            Log::info("[PDF Scanner] Calling Google Cloud Vision API for " . count($imagePaths) . " image(s)");
+            $response = Http::timeout(60)->post("https://vision.googleapis.com/v1/images:annotate?key={$apiKey}", [
+                'requests' => $visionRequests
+            ]);
+
+            if ($response->failed()) {
+                Log::warning("[PDF Scanner] Vision API failed", ['error' => $response->body()]);
+                return '';
+            }
+
+            $visionText = '';
+            foreach ($response->json('responses', []) as $resp) {
+                if (isset($resp['fullTextAnnotation']['text'])) {
+                    $visionText .= $resp['fullTextAnnotation']['text'] . "\n\n";
+                }
+            }
+            
+            if (!empty($visionText)) {
+                Log::info("[PDF Scanner] Vision API successfully extracted text", ['length' => strlen($visionText)]);
+            }
+            
+            return trim($visionText);
+        } catch (\Exception $e) {
+            Log::warning("[PDF Scanner] Vision API exception", ['error' => $e->getMessage()]);
+            return '';
+        }
     }
 
     private function extractJson(string $content): ?array

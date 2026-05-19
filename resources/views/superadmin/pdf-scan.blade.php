@@ -1,14 +1,14 @@
 @extends('layouts.app')
 
 @section('content')
-<div style="max-width: 800px; margin: 2rem auto; padding: 0 1rem;">
+<div style="max-width: 800px; margin: 1rem auto; padding: 0 1rem;">
     <!-- Modern Header -->
-    <div style="text-align: center; margin-bottom: 3rem;">
-        <div style="display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: 20px; background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.2), rgba(var(--primary-rgb), 0.05)); border: 1px solid rgba(var(--primary-rgb), 0.1); margin-bottom: 1.5rem; box-shadow: 0 8px 16px -4px rgba(var(--primary-rgb), 0.1);">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--primary-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 7l-7 5 7 5V7z"></path><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+    <div style="text-align: center; margin-bottom: 1.5rem;">
+        <div style="display: inline-flex; align-items: center; justify-content: center; width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.2), rgba(var(--primary-rgb), 0.05)); border: 1px solid rgba(var(--primary-rgb), 0.1); margin-bottom: 1rem; box-shadow: 0 8px 16px -4px rgba(var(--primary-rgb), 0.1);">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--primary-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 7l-7 5 7 5V7z"></path><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
         </div>
-        <h1 style="font-size: 2rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.03em; margin: 0 0 0.75rem 0;">Smart PDF Scanner</h1>
-        <p style="font-size: 1.05rem; color: var(--text-muted); max-width: 500px; margin: 0 auto; line-height: 1.5;">Gunakan fitur OCR untuk memindai formulir "Inventory Check" (GMF/Q-447) dan mengonversinya ke file Excel Bulk Import secara otomatis.</p>
+        <h1 style="font-size: 2rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.03em; margin: 0 0 0.5rem 0;">Smart PDF Scanner</h1>
+        <p style="font-size: 1.05rem; color: var(--text-muted); max-width: 600px; margin: 0 auto; line-height: 1.5;">Unggah dokumen LOPA atau daftar periksa Anda untuk mengekstrak data Life Vest secara otomatis menggunakan teknologi AI.</p>
     </div>
 
     @if(session('error'))
@@ -20,18 +20,18 @@
         </div>
     @endif
 
-    <div style="background: var(--bg-card); border-radius: 24px; border: 1px solid var(--border-subtle); box-shadow: var(--shadow-lg); padding: 3rem; position: relative; overflow: hidden;">
+    <div style="background: var(--bg-card); border-radius: 24px; border: 1px solid var(--border-subtle); box-shadow: var(--shadow-lg); padding: 2rem; position: relative; overflow: hidden;">
         <form action="{{ route('superadmin.pdf-scan.process') }}" method="POST" enctype="multipart/form-data">
             @csrf
             
-            <div style="margin-bottom: 2.5rem;">
+            <div style="margin-bottom: 1.5rem;">
                 <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
                     <div style="width: 28px; height: 28px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem;">1</div>
                     <h3 style="margin: 0; font-size: 1.1rem; font-weight: 700; color: var(--text-primary);">Unggah File PDF atau Gambar</h3>
                 </div>
                 
                 <div style="padding-left: 2.5rem;">
-                    <div class="upload-area" id="upload-area" style="border: 2px dashed var(--border); border-radius: 16px; padding: 3rem 2rem; text-align: center; cursor: pointer; transition: all 0.2s ease; background: var(--bg-dark); position: relative;">
+                    <div class="upload-area" id="upload-area" style="border: 2px dashed var(--border); border-radius: 16px; padding: 2rem; text-align: center; cursor: pointer; transition: all 0.2s ease; background: var(--bg-dark); position: relative;">
                         <input type="file" name="file" id="file" accept=".pdf,image/*" style="display: none;" required>
                         
                         <div id="upload-content">
@@ -61,7 +61,7 @@
                 </div>
             </div>
 
-            <div style="padding-left: 2.5rem; margin-top: 3rem; border-top: 1px solid var(--border-subtle); padding-top: 2rem;">
+            <div style="padding-left: 2.5rem; margin-top: 1.5rem; border-top: 1px solid var(--border-subtle); padding-top: 1.5rem;">
                 <button type="submit" id="submit-btn" class="btn btn-primary" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.75rem; padding: 1.25rem; font-size: 1.1rem; font-weight: 700; border-radius: 12px; opacity: 0.5; pointer-events: none;">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
                     Mulai Ekstraksi Data (OCR)
@@ -90,6 +90,40 @@
                 showFileInfo(this.files[0]);
             }
         });
+
+        // === DRAG AND DROP SUPPORT ===
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, () => {
+                uploadArea.style.borderColor = 'var(--primary)';
+                uploadArea.style.background = 'rgba(59, 130, 246, 0.05)'; // subtle blue tint
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, () => {
+                uploadArea.style.borderColor = 'var(--border)';
+                uploadArea.style.background = 'var(--bg-dark)';
+            }, false);
+        });
+
+        uploadArea.addEventListener('drop', function(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            
+            if (files && files[0]) {
+                fileInput.files = files;
+                showFileInfo(files[0]);
+            }
+        }, false);
 
         removeFileBtn.addEventListener('click', (e) => {
             e.stopPropagation();

@@ -31,6 +31,15 @@
         </div>
     </div>
 
+    {{-- Uncertainty Legend --}}
+    <div id="uncertainty-banner" style="display: none; background: linear-gradient(135deg, #78350f15, #92400e10); border: 1px solid #d97706; border-radius: 12px; padding: 0.75rem 1.25rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
+        <span style="font-size: 1.3rem;">⚠️</span>
+        <div>
+            <span style="color: #d97706; font-weight: 700; font-size: 0.9rem;">Perhatian: </span>
+            <span style="color: var(--text-muted); font-size: 0.85rem;">Tanggal yang ditandai <span style="background: #fbbf2440; color: #d97706; padding: 0.15rem 0.5rem; border-radius: 4px; font-weight: 700;">kuning ⚠</span> kemungkinan salah baca oleh AI (tulisan tangan tidak jelas). Silakan periksa dan koreksi manual sebelum export.</span>
+        </div>
+    </div>
+
     <div style="display: grid; grid-template-columns: 1fr 300px; gap: 2rem;">
         <!-- Data Table -->
         <div style="background: var(--bg-card); border-radius: 20px; border: 1px solid var(--border-subtle); overflow: hidden; box-shadow: var(--shadow-md);">
@@ -55,7 +64,7 @@
                                     <input type="text" name="data[{{ $index }}][seat_id]" value="{{ $item['seat_id'] }}" class="input-premium" style="width: 100%; padding: 0.7rem 1rem; border-radius: 8px;">
                                 </td>
                                 <td style="padding: 0.8rem 1rem;">
-                                    <input type="text" name="data[{{ $index }}][expiry_date]" value="{{ $item['expiry_date'] }}" class="input-premium" style="width: 100%; padding: 0.7rem 1rem; border-radius: 8px;">
+                                    <input type="text" name="data[{{ $index }}][expiry_date]" value="{{ $item['expiry_date'] }}" class="input-premium expiry-date-input" style="width: 100%; padding: 0.7rem 1rem; border-radius: 8px;">
                                 </td>
                                 <td style="padding: 1rem 1.5rem;">
                                     <button type="button" class="btn-delete-row" style="color: var(--danger); border: none; background: none; cursor: pointer; padding: 0.5rem;">
@@ -95,6 +104,19 @@
                 <p style="margin: 1rem 0 0 0; font-size: 0.8rem; color: var(--text-muted); font-style: italic;">Gunakan teks asli di atas sebagai referensi jika hasil deteksi di tabel sebelah kiri kurang akurat.</p>
             </div>
         </div>
+    </div>
+
+    <!-- Floating Quick Navigation -->
+    <div style="position: fixed; bottom: 2.5rem; right: 2.5rem; display: flex; flex-direction: column; gap: 0.75rem; z-index: 50;">
+        <button type="button" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="Lompat ke Atas" style="width: 48px; height: 48px; border-radius: 50%; background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-subtle); cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: all 0.2s;" onmouseover="this.style.background='var(--primary)'; this.style.color='white'; this.style.borderColor='var(--primary)';" onmouseout="this.style.background='var(--bg-card)'; this.style.color='var(--text-primary)'; this.style.borderColor='var(--border-subtle)';">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+        </button>
+        <button type="button" onclick="window.scrollTo({top: document.documentElement.scrollHeight / 2 - window.innerHeight / 2, behavior: 'smooth'})" title="Lompat ke Tengah" style="width: 48px; height: 48px; border-radius: 50%; background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-subtle); cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: all 0.2s;" onmouseover="this.style.background='var(--primary)'; this.style.color='white'; this.style.borderColor='var(--primary)';" onmouseout="this.style.background='var(--bg-card)'; this.style.color='var(--text-primary)'; this.style.borderColor='var(--border-subtle)';">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v5M12 17v5M7 12H2M22 12h-5"/></svg>
+        </button>
+        <button type="button" onclick="window.scrollTo({top: document.documentElement.scrollHeight, behavior: 'smooth'})" title="Lompat ke Bawah" style="width: 48px; height: 48px; border-radius: 50%; background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-subtle); cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: all 0.2s;" onmouseover="this.style.background='var(--primary)'; this.style.color='white'; this.style.borderColor='var(--primary)';" onmouseout="this.style.background='var(--bg-card)'; this.style.color='var(--text-primary)'; this.style.borderColor='var(--border-subtle)';">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
+        </button>
     </div>
 </div>
 
@@ -146,6 +168,45 @@
             if (deleteBtn) {
                 deleteBtn.closest('tr').remove();
             }
+        });
+        // === UNCERTAINTY MARKER SYSTEM ===
+        function markUncertainDates() {
+            let hasUncertain = false;
+            document.querySelectorAll('.expiry-date-input').forEach(input => {
+                if (input.value.includes('?')) {
+                    hasUncertain = true;
+                    input.style.background = 'linear-gradient(135deg, #fbbf2420, #f59e0b15)';
+                    input.style.border = '2px solid #d97706';
+                    input.style.color = '#d97706';
+                    input.style.fontWeight = '700';
+                    input.title = '⚠ AI tidak yakin dengan pembacaan tanggal ini. Periksa manual!';
+                } else {
+                    input.style.background = '';
+                    input.style.border = '';
+                    input.style.color = '';
+                    input.style.fontWeight = '';
+                    input.title = '';
+                }
+            });
+            const banner = document.getElementById('uncertainty-banner');
+            if (banner) banner.style.display = hasUncertain ? 'flex' : 'none';
+        }
+
+        // Run on page load
+        markUncertainDates();
+
+        // Re-check when user edits a date
+        dataRows.addEventListener('input', function(e) {
+            if (e.target.classList.contains('expiry-date-input')) {
+                markUncertainDates();
+            }
+        });
+
+        // Strip '?' before form submit so it doesn't pollute the Excel
+        document.getElementById('export-form').addEventListener('submit', function() {
+            document.querySelectorAll('.expiry-date-input').forEach(input => {
+                input.value = input.value.replace(/\?/g, '').trim();
+            });
         });
     });
 </script>

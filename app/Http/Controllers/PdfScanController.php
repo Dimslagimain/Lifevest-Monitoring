@@ -95,7 +95,8 @@ class PdfScanController extends Controller
                 'rawText' => $rawText,
                 'registration' => $registration,
                 'aircraftType' => $parsed['aircraft_type'] ?? 'Unknown',
-                'extractedData' => $seats
+                'extractedData' => $seats,
+                'scanImages' => $parsed['scan_images'] ?? [],
             ];
 
             // Simpan ke session agar tidak hilang saat navigasi
@@ -113,13 +114,46 @@ class PdfScanController extends Controller
     {
         $data = $request->input('data', []);
         $exportData = [];
+        
+        // Check if we should include verification columns
+        $includeVerification = $request->input('include_verification', false);
+        
         foreach ($data as $item) {
-            $exportData[] = [
-                $item['registration'] ?? 'PENDING',
-                $item['seat_id'] ?? 'UNKNOWN',
-                $item['expiry_date'] ?? '-'
-            ];
+            if ($includeVerification) {
+                // Include confidence and notes if verification data is available
+                $confidence = isset($item['confidence']) ? round($item['confidence'] * 100) : 'N/A';
+                $notes = '';
+                
+                if (!empty($item['was_corrected'])) {
+                    $notes = ($item['correction_type'] ?? 'corrected');
+                    if (!empty($item['suggestion'])) {
+                        $notes .= " - " . $item['suggestion'];
+                    }
+                }
+                if (!empty($item['issue_detected'])) {
+                    $notes .= " | Issue: " . $item['issue_detected'];
+                }
+                
+                $exportData[] = [
+                    $item['registration'] ?? 'PENDING',
+                    $item['seat_id'] ?? 'UNKNOWN',
+                    $item['expiry_date'] ?? '-',
+                    $confidence . '%',
+                    $notes ?: 'OK',
+                ];
+            } else {
+                // Standard export (without verification)
+                $exportData[] = [
+                    $item['registration'] ?? 'PENDING',
+                    $item['seat_id'] ?? 'UNKNOWN',
+                    $item['expiry_date'] ?? '-'
+                ];
+            }
         }
-        return Excel::download(new PdfScanExport($exportData), 'pdf_scan_result.xlsx');
+        
+        return Excel::download(
+            new PdfScanExport($exportData, $includeVerification), 
+            'pdf_scan_result.xlsx'
+        );
     }
 }

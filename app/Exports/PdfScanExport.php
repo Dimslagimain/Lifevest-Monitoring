@@ -11,10 +11,12 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 class PdfScanExport implements FromArray, WithHeadings, WithStyles, ShouldAutoSize
 {
     protected $data;
+    protected $includeVerification;
 
-    public function __construct(array $data)
+    public function __construct(array $data, bool $includeVerification = false)
     {
         $this->data = $data;
+        $this->includeVerification = $includeVerification;
     }
 
     public function array(): array
@@ -24,6 +26,9 @@ class PdfScanExport implements FromArray, WithHeadings, WithStyles, ShouldAutoSi
 
     public function headings(): array
     {
+        if ($this->includeVerification) {
+            return ['Registration', 'Seat_ID', 'Expiry_Date', 'Confidence', 'Notes'];
+        }
         return ['Registration', 'Seat_ID', 'Expiry_Date'];
     }
 

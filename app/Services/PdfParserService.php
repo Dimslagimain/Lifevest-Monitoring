@@ -22,7 +22,30 @@ class PdfParserService
         if ($extension === 'pdf') {
             return $this->processPdf($filePath);
         }
-        return $this->analyzeWithAI([$filePath]);
+        
+        $allResults = $this->analyzeWithAI([$filePath]);
+        
+        // Save scan image for review page display
+        $scanDir = 'scan_preview';
+        $storageScanDir = storage_path("app/public/{$scanDir}");
+        if (!is_dir($storageScanDir)) {
+            mkdir($storageScanDir, 0755, true);
+        }
+        // Clean old previews
+        foreach (glob($storageScanDir . '/*') as $old) @unlink($old);
+        
+        $filename = "page_1.jpg";
+        $imgRes = @imagecreatefromstring(file_get_contents($filePath));
+        if ($imgRes !== false) {
+            imagejpeg($imgRes, $storageScanDir . '/' . $filename, 85);
+            imagedestroy($imgRes);
+        } else {
+            copy($filePath, $storageScanDir . '/' . $filename);
+        }
+        
+        $allResults['scan_images'] = ["/storage/{$scanDir}/{$filename}"];
+        
+        return $allResults;
     }
 
     public function processPdf(string $pdfPath): array
@@ -54,6 +77,31 @@ class PdfParserService
 
         // Send ALL pages to AI in a single request!
         $allResults = $this->analyzeWithAI($pageImages);
+
+        // Save scan images to public storage for review page display
+        $scanImagePaths = [];
+        $scanDir = 'scan_preview';
+        $storageScanDir = storage_path("app/public/{$scanDir}");
+        if (!is_dir($storageScanDir)) {
+            mkdir($storageScanDir, 0755, true);
+        }
+        // Clean old previews
+        foreach (glob($storageScanDir . '/*') as $old) @unlink($old);
+        
+        foreach ($pageImages as $idx => $img) {
+            $filename = "page_" . ($idx + 1) . ".jpg";
+            // Compress to JPEG for web display
+            $imgRes = imagecreatefrompng($img);
+            if ($imgRes === false) $imgRes = imagecreatefromstring(file_get_contents($img));
+            if ($imgRes !== false) {
+                imagejpeg($imgRes, $storageScanDir . '/' . $filename, 85);
+                imagedestroy($imgRes);
+            } else {
+                copy($img, $storageScanDir . '/' . $filename);
+            }
+            $scanImagePaths[] = "/storage/{$scanDir}/{$filename}";
+        }
+        $allResults['scan_images'] = $scanImagePaths;
 
         // Log raw IDs for debugging
         $spareIds = array_filter(
@@ -764,6 +812,54 @@ DATA FORMAT (MINIFIED JSON):
             'aircraft_type' => $data['aircraft_type'] ?? 'Unknown',
             'seats' => $seats
         ];
+    }
+
+    /**
+     * Verify extracted data and apply corrections
+     * 
+     * @param array $extractedData {registration, aircraft_type, seats: [[seat_id, expiry_date], ...]}
+     * @param array|string $imagePaths Original images for AI validation
+     * @return array Enhanced data with confidence scores
+     */
+    private function verifyExtractionResults(array $extractedData, array|string $imagePaths): array
+    {
+        try {
+            Log::info('[PDF Scanner] Starting verification pass');
+            
+            $verificationService = new VerificationService();
+            $verificationResult = $verificationService->verify($extractedData, $imagePaths);
+            
+            Log::info('[PDF Scanner] Verification complete', [
+                'auto_accepted' => $verificationResult['summary']['auto_accepted'] ?? 0,
+                'flagged' => $verificationResult['summary']['flagged'] ?? 0,
+                'needs_review' => $verificationResult['summary']['needs_review'] ?? 0,
+            ]);
+            
+            // Return in format compatible with existing pipeline
+            return [
+                'registration' => $verificationResult['registration'],
+                'aircraft_type' => $verificationResult['aircraft_type'],
+                'seats' => $verificationResult['seats'],
+                'verification' => [
+                    'enabled' => true,
+                    'summary' => $verificationResult['summary'],
+                    'confidence_threshold' => $verificationResult['confidence_threshold'],
+                ]
+            ];
+            
+        } catch (\Exception $e) {
+            Log::error('[PDF Scanner] Verification failed, returning unverified data', [
+                'error' => $e->getMessage()
+            ]);
+            
+            // Graceful fallback: return original data without verification
+            return array_merge($extractedData, [
+                'verification' => [
+                    'enabled' => false,
+                    'error' => $e->getMessage(),
+                ]
+            ]);
+        }
     }
 
     private function cleanTempDir(string $dir): void

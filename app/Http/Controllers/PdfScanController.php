@@ -103,10 +103,33 @@ class PdfScanController extends Controller
             session(['pdf_scan_result' => $result]);
 
             return view('superadmin.pdf-scan-review', $result);
+        } catch (\Illuminate\Http\Client\ConnectionException $e) {
+            Storage::delete($path);
+            Log::error('[PDF Scan] Connection timeout', ['error' => $e->getMessage()]);
+            return redirect()->back()->with('error', '⏱ Koneksi timeout — server AI tidak merespon dalam waktu yang ditentukan. Coba lagi dalam beberapa menit atau gunakan file dengan ukuran lebih kecil.');
         } catch (\Exception $e) {
             Storage::delete($path);
             Log::error('[PDF Scan] Scan failed', ['error' => $e->getMessage()]);
-            return redirect()->back()->with('error', 'Gagal memproses file: ' . $e->getMessage());
+
+            $msg = $e->getMessage();
+            // Detect specific error types for better user messaging
+            if (str_contains($msg, 'API Error (HTTP 401)') || str_contains($msg, 'API Error (HTTP 403)')) {
+                $userMsg = '🔑 API Key tidak valid atau tidak memiliki akses. Periksa konfigurasi API key di file .env.';
+            } elseif (str_contains($msg, 'API Error (HTTP 429)')) {
+                $userMsg = '⚡ Rate limit tercapai — terlalu banyak request ke AI. Tunggu 1-2 menit lalu coba lagi.';
+            } elseif (str_contains($msg, 'API Error (HTTP 5')) {
+                $userMsg = '🔧 Server AI sedang bermasalah (error 5xx). Coba lagi dalam beberapa menit.';
+            } elseif (str_contains($msg, 'Ghostscript') || str_contains($msg, 'Gagal memproses PDF')) {
+                $userMsg = '📄 Gagal mengkonversi PDF ke gambar. Pastikan Ghostscript terinstall dan path sudah benar di .env (GHOSTSCRIPT_PATH).';
+            } elseif (str_contains($msg, 'empty content') || str_contains($msg, 'JSON')) {
+                $userMsg = '🤖 AI mengembalikan response tidak valid. Coba ulangi scan — kualitas gambar atau format dokumen mungkin perlu diperbaiki.';
+            } elseif (str_contains($msg, 'API Key') || str_contains($msg, 'Belum ada')) {
+                $userMsg = $msg; // Already user-friendly from PdfParserService
+            } else {
+                $userMsg = 'Gagal memproses file: ' . $msg;
+            }
+
+            return redirect()->back()->with('error', $userMsg);
         }
     }
 
@@ -151,9 +174,23 @@ class PdfScanController extends Controller
             }
         }
         
+        // Build dynamic filename from registration + aircraft type
+        $registration = $request->input('master_registration', 'scan');
+        $aircraftType = $request->input('aircraft_type', '');
+        
+        // Sanitize for filename: PK-GIA_B777_scan.xlsx
+        $regPart = preg_replace('/[^A-Za-z0-9\-]/', '', $registration) ?: 'scan';
+        $typePart = preg_replace('/[^A-Za-z0-9\-]/', '', $aircraftType);
+        $filenameParts = [$regPart];
+        if (!empty($typePart)) {
+            $filenameParts[] = $typePart;
+        }
+        $filenameParts[] = 'scan';
+        $filename = implode('_', $filenameParts) . '.xlsx';
+
         return Excel::download(
             new PdfScanExport($exportData, $includeVerification), 
-            'pdf_scan_result.xlsx'
+            $filename
         );
     }
 }

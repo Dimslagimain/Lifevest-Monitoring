@@ -23,10 +23,10 @@
             </div>
         </div>
         <div style="display: flex; gap: 1rem;">
-            <a href="{{ route('superadmin.pdf-scan.clear') }}" class="btn btn-secondary" style="padding: 0.75rem 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+            <button type="button" id="btn-ulangi-scan" class="btn btn-secondary" style="padding: 0.75rem 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 17l-5-5 5-5M18 17l-5-5 5-5"></path></svg>
                 Ulangi Scan
-            </a>
+            </button>
             <button form="export-form" type="submit" class="btn btn-primary" style="padding: 0.75rem 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
                 Download Excel (Bulk Import)
@@ -54,6 +54,7 @@
         <div style="background: var(--bg-card); border-radius: 16px; border: 1px solid var(--border-subtle); overflow: hidden; box-shadow: var(--shadow-md);">
             <form id="export-form" action="{{ route('superadmin.pdf-scan.export') }}" method="POST">
                 @csrf
+                <input type="hidden" name="master_registration" id="export-master-registration" value="{{ $registration }}">
                 <table style="width: 100%; border-collapse: collapse; text-align: left;">
                     <thead>
                         <tr style="background: var(--bg-dark); border-bottom: 1px solid var(--border-subtle);">
@@ -184,12 +185,15 @@
         const masterRegInput = document.getElementById('master-registration');
         let rowCount = {{ count($extractedData) }};
 
-        // Sync registration across all rows
+        // Sync registration across all rows + hidden export field
         masterRegInput.addEventListener('input', function() {
             const newValue = this.value;
             document.querySelectorAll('.row-registration').forEach(input => {
                 input.value = newValue;
             });
+            // Sync hidden field for export filename
+            const hiddenReg = document.getElementById('export-master-registration');
+            if (hiddenReg) hiddenReg.value = newValue;
         });
 
         addRowBtn.addEventListener('click', function() {
@@ -333,6 +337,36 @@
         document.getElementById('export-form').addEventListener('submit', function() {
             document.querySelectorAll('.expiry-date-input').forEach(input => {
                 input.value = input.value.replace(/\?/g, '').trim();
+            });
+        });
+
+        // === ULANGI SCAN CONFIRMATION ===
+        document.getElementById('btn-ulangi-scan')?.addEventListener('click', function() {
+            const rowCount = document.querySelectorAll('#data-rows tr').length;
+            Swal.fire({
+                title: 'Ulangi Scan?',
+                text: `Data hasil ekstraksi (${rowCount} baris) akan dihapus dan tidak bisa dikembalikan. Pastikan Anda sudah download Excel jika diperlukan.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Ulangi Scan',
+                cancelButtonText: 'Batal',
+                background: getComputedStyle(document.documentElement).getPropertyValue('--bg-card-solid').trim() || (document.documentElement.getAttribute('data-theme') === 'dark' ? '#162238' : '#ffffff'),
+                color: getComputedStyle(document.documentElement).getPropertyValue('--text-primary').trim() || (document.documentElement.getAttribute('data-theme') === 'dark' ? '#ffffff' : '#1e293b'),
+                reverseButtons: true,
+                padding: '2rem',
+                customClass: {
+                    popup: 'swal2-premium-popup',
+                    title: 'swal2-premium-title',
+                    htmlContainer: 'swal2-premium-text',
+                    confirmButton: 'swal2-premium-confirm swal2-variant-danger',
+                    cancelButton: 'swal2-premium-cancel',
+                    icon: 'swal2-premium-icon'
+                },
+                buttonsStyling: false,
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "{{ route('superadmin.pdf-scan.clear') }}";
+                }
             });
         });
     });

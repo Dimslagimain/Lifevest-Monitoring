@@ -296,7 +296,7 @@ html, body {
 }
 
 .auth-submit:hover:not(:disabled) {
-    background: var(--primary-dark);
+    background: var(--primary-hover);
     transform: translateY(-1px);
     box-shadow: 0 6px 16px rgba(30, 144, 255, 0.3);
 }

@@ -10,9 +10,11 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        // We use raw statement because Doctrine DBAL has issues modifying ENUMs directly in some Laravel versions
-        // This forces the column to only accept 'active' and 'prolong'
-        DB::statement("ALTER TABLE aircraft MODIFY COLUMN status ENUM('active', 'prolong') NOT NULL DEFAULT 'active'");
+        if (DB::getDriverName() !== 'sqlite') {
+            // We use raw statement because Doctrine DBAL has issues modifying ENUMs directly in some Laravel versions
+            // This forces the column to only accept 'active' and 'prolong'
+            DB::statement("ALTER TABLE aircraft MODIFY COLUMN status ENUM('active', 'prolong') NOT NULL DEFAULT 'active'");
+        }
     }
 
     /**
@@ -20,7 +22,9 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        // Revert back to include preservation just in case rollback is needed
-        DB::statement("ALTER TABLE aircraft MODIFY COLUMN status ENUM('active', 'prolong', 'preservation') NOT NULL DEFAULT 'active'");
+        if (DB::getDriverName() !== 'sqlite') {
+            // Revert back to include preservation just in case rollback is needed
+            DB::statement("ALTER TABLE aircraft MODIFY COLUMN status ENUM('active', 'prolong', 'preservation') NOT NULL DEFAULT 'active'");
+        }
     }
 };

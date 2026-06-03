@@ -80,8 +80,8 @@ return [
         ['name' => 'Economy Class - Rows 41-58', 'rows' => range(41, 58), 'columns' => ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'K'], 'exceptions' => ['41A', '41C', '41H', '41K']],
     ],
     'a330-900b' => [
-        ['name' => 'Economy Class - Rows 28-51', 'rows' => range(28, 51), 'columns' => ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'K']],
-        ['name' => 'Economy Class - Rows 52-69', 'rows' => range(52, 69), 'columns' => ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'K']],
+        ['name' => 'Economy Class - Rows 21-40', 'rows' => array_values(array_diff(range(21, 40), [24])), 'columns' => ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'K']],
+        ['name' => 'Economy Class - Rows 41-58', 'rows' => range(41, 58), 'columns' => ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'K']],
     ],
 
     // ═══════════════════════════════════════════════════════════

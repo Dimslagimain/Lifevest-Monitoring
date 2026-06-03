@@ -49,8 +49,7 @@ return [
         'economy' => array_diff(range(21, 58), [24]),
     ],
     'a330-900b' => [
-        'economy_premium' => array_diff(range(21, 27), [24]),
-        'economy' => range(28, 69),
+        'economy' => array_diff(range(21, 58), [24]),
     ],
 
     // ═══════════════════════════════════════════════════════════

@@ -51,10 +51,17 @@ class VerificationService
             'has_images' => !empty($imagePaths),
         ]);
 
-        // Step 1: Apply rule-based corrections
+        // Step 1: Apply registration-specific row validation (per-aircraft layout)
+        $registration = $extractedData['registration'] ?? 'PENDING';
+        $extractedData['seats'] = $this->validateAndCorrectRowsByRegistration(
+            $registration,
+            $extractedData['seats'] ?? []
+        );
+
+        // Step 2: Apply rule-based corrections
         $verifiedSeats = $this->applyRuleBasedCorrections($extractedData['seats'] ?? []);
 
-        // Step 2: Apply AI validation if images provided
+        // Step 3: Apply AI validation if images provided
         if (!empty($imagePaths) && !empty($this->geminiKey)) {
             try {
                 $this->imageData = $this->prepareImageData($imagePaths);
@@ -127,6 +134,113 @@ class VerificationService
             'summary' => $summary,
             'confidence_threshold' => $this->confidenceThreshold,
         ];
+    }
+
+    /**
+     * Validate and correct row numbers based on aircraft layout from database
+     * 
+     * For each registration (aircraft), lookup the configured layout and validate
+     * that seat rows match the expected range for that layout.
+     * 
+     * Example:
+     * - PK-GHE (layout: a330-900a): Business 6-11, Economy 21-58
+     * - PK-GHH (layout: a330-900b): Economy only 21-58 (no business, so min row is 21)
+     * 
+     * If scan shows "6C" but layout says min is 21, flag or correct it.
+     * 
+     * @param string $registration Aircraft registration (e.g., PK-GHH)
+     * @param array $seats Extracted seats from PDF
+     * @return array Seats with row validation applied
+     */
+    protected function validateAndCorrectRowsByRegistration(string $registration, array $seats): array
+    {
+        if ($registration === 'PENDING' || empty($seats)) {
+            return $seats;
+        }
+
+        try {
+            // Lookup aircraft from database
+            $aircraft = \App\Models\Aircraft::where('registration', $registration)->first();
+            if (!$aircraft) {
+                Log::warning('[Verification] Aircraft not found in database', ['registration' => $registration]);
+                return $seats; // No validation possible
+            }
+
+            $layout = $aircraft->layout;
+            $classRowsConfig = config('aircraft_class_rows');
+            if (!isset($classRowsConfig[$layout])) {
+                Log::warning('[Verification] Layout config not found', ['layout' => $layout, 'registration' => $registration]);
+                return $seats; // No validation possible
+            }
+
+            // Get the expected row ranges for this aircraft
+            $layoutConfig = $classRowsConfig[$layout];
+            $expectedRows = [];
+            $minRow = null;
+            $maxRow = null;
+
+            foreach ($layoutConfig as $class => $rows) {
+                if (is_array($rows)) {
+                    foreach ($rows as $row) {
+                        $expectedRows[] = $row;
+                        if ($minRow === null || $row < $minRow) $minRow = $row;
+                        if ($maxRow === null || $row > $maxRow) $maxRow = $row;
+                    }
+                }
+            }
+
+            Log::info('[Verification] Aircraft layout validated', [
+                'registration' => $registration,
+                'layout' => $layout,
+                'min_expected_row' => $minRow,
+                'max_expected_row' => $maxRow,
+            ]);
+
+            // Validate each seat
+            foreach ($seats as &$seat) {
+                $seatId = $seat['seat_id'] ?? ($seat[0] ?? '');
+                
+                // Extract row number from seat_id (e.g., "6A" → 6, "21C" → 21)
+                if (preg_match('/^(\d+)/', $seatId, $m)) {
+                    $row = (int)$m[1];
+                    
+                    // Check if row is valid for this aircraft
+                    if ($minRow !== null && $row < $minRow) {
+                        Log::warning('[Verification] Seat row below minimum for layout', [
+                            'registration' => $registration,
+                            'seat_id' => $seatId,
+                            'row' => $row,
+                            'min_expected' => $minRow,
+                            'layout' => $layout,
+                        ]);
+                        
+                        // Flag for review - don't auto-correct row numbers as that's risky
+                        $seat['issue_detected'] = "Row {$row} below expected minimum {$minRow} for {$layout}";
+                        $seat['was_flagged'] = true;
+                    } elseif ($maxRow !== null && $row > $maxRow) {
+                        Log::warning('[Verification] Seat row above maximum for layout', [
+                            'registration' => $registration,
+                            'seat_id' => $seatId,
+                            'row' => $row,
+                            'max_expected' => $maxRow,
+                            'layout' => $layout,
+                        ]);
+                        
+                        // Flag for review
+                        $seat['issue_detected'] = "Row {$row} above expected maximum {$maxRow} for {$layout}";
+                        $seat['was_flagged'] = true;
+                    }
+                }
+            }
+
+            return $seats;
+        } catch (\Exception $e) {
+            Log::error('[Verification] Row validation error', [
+                'registration' => $registration,
+                'error' => $e->getMessage(),
+            ]);
+            return $seats; // Return original on error
+        }
     }
 
     /**

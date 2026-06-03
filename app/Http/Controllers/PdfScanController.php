@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Services\PdfParserService;
+use App\Services\VerificationService;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\PdfScanExport;
 use Illuminate\Support\Facades\Storage;
@@ -12,10 +13,12 @@ use Illuminate\Support\Facades\Log;
 class PdfScanController extends Controller
 {
     protected PdfParserService $pdfParser;
+    protected VerificationService $verificationService;
 
-    public function __construct(PdfParserService $pdfParser)
+    public function __construct(PdfParserService $pdfParser, VerificationService $verificationService)
     {
         $this->pdfParser = $pdfParser;
+        $this->verificationService = $verificationService;
     }
 
     public function index()
@@ -58,9 +61,28 @@ class PdfScanController extends Controller
                 return $seat;
             }, $parsed['seats'] ?? []);
 
-            Log::info('[PDF Scan] Scan complete', [
+            // ===== SMART VERIFICATION: Per-Aircraft Layout Validation =====
+            // Pass through VerificationService for row validation based on aircraft layout
+            $verificationResult = $this->verificationService->verify([
                 'registration' => $registration,
+                'aircraft_type' => $parsed['aircraft_type'] ?? 'Unknown',
+                'seats' => $seats,
+            ]);
+
+            $registration = $verificationResult['registration'] ?? 'PENDING';
+            $seats = $verificationResult['seats'] ?? [];
+
+            // Ensure each seat has the registration key (required by view)
+            $seats = array_map(function($seat) use ($registration) {
+                $seat['registration'] = $seat['registration'] ?? $registration;
+                return $seat;
+            }, $seats);
+
+            Log::info('[PDF Scan] Scan complete with per-aircraft validation', [
+                'registration' => $registration,
+                'aircraft_type' => $verificationResult['aircraft_type'],
                 'seats_count' => count($seats),
+                'flagged_count' => $verificationResult['summary']['flagged'] ?? 0,
             ]);
 
             // Detect active provider for display
@@ -79,8 +101,32 @@ class PdfScanController extends Controller
 
             $rawText = "Data diekstrak menggunakan AI ({$activeProvider})\n";
             $rawText .= "Registration: {$registration}\n";
-            $rawText .= "Aircraft Type: " . ($parsed['aircraft_type'] ?? 'Unknown') . "\n";
+            $rawText .= "Aircraft Type: " . ($verificationResult['aircraft_type'] ?? 'Unknown') . "\n";
             $rawText .= "Total seats terdeteksi: " . count($seats) . "\n";
+
+            // Get aircraft layout info
+            $aircraft = \App\Models\Aircraft::where('registration', $registration)->first();
+            if ($aircraft) {
+                $rawText .= "Layout: " . $aircraft->layout . "\n";
+                $classRowsConfig = config('aircraft_class_rows');
+                if (isset($classRowsConfig[$aircraft->layout])) {
+                    $layoutInfo = $classRowsConfig[$aircraft->layout];
+                    $rawText .= "\n📋 Expected Layout Structure:\n";
+                    foreach ($layoutInfo as $class => $rows) {
+                        if (is_array($rows) && !empty($rows)) {
+                            $rowStr = is_array($rows) && count($rows) > 1 
+                                ? "rows " . min($rows) . "-" . max($rows)
+                                : "row " . current($rows);
+                            $rowCount = count($rows);
+                            $rawText .= "  • {$class}: {$rowStr} ({$rowCount} rows)\n";
+                        }
+                    }
+                }
+            }
+
+            if (!empty($verificationResult['summary']['flagged'])) {
+                $rawText .= "\n⚠️  " . $verificationResult['summary']['flagged'] . " seats flagged for review (possible row/layout mismatches).\n";
+            }
 
             if (empty($seats)) {
                 $rawText .= "\n⚠ AI tidak mendeteksi data seats.\n";
@@ -94,9 +140,10 @@ class PdfScanController extends Controller
             $result = [
                 'rawText' => $rawText,
                 'registration' => $registration,
-                'aircraftType' => $parsed['aircraft_type'] ?? 'Unknown',
+                'aircraftType' => $verificationResult['aircraft_type'] ?? 'Unknown',
                 'extractedData' => $seats,
                 'scanImages' => $parsed['scan_images'] ?? [],
+                'verificationSummary' => $verificationResult['summary'] ?? [],
             ];
 
             // Simpan ke session agar tidak hilang saat navigasi

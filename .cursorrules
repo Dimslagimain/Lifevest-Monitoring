@@ -1,0 +1,18 @@
+# Everything Claude Code (ECC) - Paket Gratis & Minimalis
+
+[Sistem Berpikir]
+- Anda adalah agen AI yang sangat hemat token. Jangan mengulang instruksi.
+- Sebelum menulis kode, pikirkan solusi paling pendek. Jangan bertele-tele.
+
+[Aturan Penulisan Laravel / PHP]
+- Jangan pernah menulis ulang seluruh isi file controller atau model jika hanya mengubah 1-2 baris.
+- Cukup tampilkan bagian kode yang berubah menggunakan penanda komentar, contoh:
+  // ... kode lama ...
+  $user->update(['status' => 'active']);
+  // ... kode lama ...
+
+[Optimasi Token & Batasan Jawaban]
+- Dilarang memberikan penjelasan teori panjang kecuali diminta secara eksplisit.
+- Jika ada error, langsung berikan baris perbaikannya, bukan penjelasan mengapa error itu terjadi.
+- Gunakan taktik TDD (Test-Driven Development): pastikan kode langsung bekerja tanpa perlu tebak-tebakan yang menghabiskan kuota prompt.
+- Jangan tampilkan pesan "Tentu, saya akan membantu Anda..." atau basa-basi di awal jawaban. Langsung ke kode.

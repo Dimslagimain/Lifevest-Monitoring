@@ -412,6 +412,30 @@ class DashboardController extends Controller
                 unset($bucket['start_date']); // Don't need this in frontend
             }
             unset($bucket); // Break reference
+
+            // Remove past empty periods (total=0) that are before the current period.
+            // Keep: 'overdue', current period, future periods, and any past period with actual data.
+            $currentKeyMap = [
+                'weekly'  => $today->format('o-\WW'),
+                'monthly' => $today->format('Y-m'),
+                'yearly'  => $today->format('Y'),
+            ];
+            $currentKey = $currentKeyMap[$intervalName];
+
+            $replacementPlans[$intervalName] = array_filter(
+                $replacementPlans[$intervalName],
+                function ($bucket, $key) use ($currentKey) {
+                    // Always keep overdue bucket
+                    if ($key === 'overdue') return true;
+                    // Always keep buckets with data
+                    if ($bucket['total'] > 0) return true;
+                    // Keep current and future periods even if empty
+                    if (strcmp($bucket['sort'], $currentKey) >= 0) return true;
+                    // Remove past empty periods
+                    return false;
+                },
+                ARRAY_FILTER_USE_BOTH
+            );
         }
 
         return [

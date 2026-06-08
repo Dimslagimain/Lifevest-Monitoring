@@ -38,8 +38,10 @@ class PdfScanController extends Controller
 
     public function scan(Request $request)
     {
+        // First validate that a file is uploaded and size is acceptable.
+        // We relax the 'mimes' rule here because corrupted files often lose their correct mime-type detection.
         $request->validate([
-            'file' => 'required|file|mimes:pdf,jpeg,png,jpg|max:20480',
+            'file' => 'required|file|max:20480',
         ]);
 
         $file = $request->file('file');
@@ -64,8 +66,12 @@ class PdfScanController extends Controller
                 throw new \Exception('File tidak dapat dibaca atau berukuran 0 bytes.');
             }
 
-            // Quick validation for corrupted files
+            // Quick validation for allowed extensions and corrupted files
             $extension = strtolower($file->getClientOriginalExtension());
+            if (!in_array($extension, ['pdf', 'jpeg', 'jpg', 'png'])) {
+                throw new \Exception('Format file tidak didukung. Gunakan PDF, JPG, atau PNG.');
+            }
+
             if (in_array($extension, ['jpeg', 'jpg', 'png'])) {
                 $imgTest = @imagecreatefromstring(file_get_contents($fullPath));
                 if ($imgTest === false) {

@@ -44,28 +44,45 @@ class PdfScanController extends Controller
 
         $file = $request->file('file');
         
-        // Ensure file exists and is valid
-        if (!$file->isValid()) {
-            return redirect()->back()->with('error', 'File yang diupload rusak atau gagal diterima oleh server.');
+        // Try to store the file and handle storage error
+        try {
+            $path = $file->store('temp_scans');
+            if (!$path) {
+                throw new \Exception('Gagal menyimpan file ke temporary storage.');
+            }
+        } catch (\Exception $e) {
+            Log::error('[PDF Scan] File storage failed', ['error' => $e->getMessage()]);
+            return redirect()->back()->with('error', 'Gagal menyimpan file yang diunggah. Silakan periksa ruang penyimpanan server Anda.');
         }
 
-        $path = $file->store('temp_scans');
         $fullPath = storage_path('app/private/' . $path);
-
         Log::info('[PDF Scan] Starting scan', ['file' => $file->getClientOriginalName(), 'size' => $file->getSize()]);
 
         try {
-            // Verify if the PDF is not corrupt before sending to process
+            // Verify file readability/validity before processing
+            if (!file_exists($fullPath) || !is_readable($fullPath) || filesize($fullPath) === 0) {
+                throw new \Exception('File tidak dapat dibaca atau berukuran 0 bytes.');
+            }
+
+            // Quick validation for corrupted files
             $extension = strtolower($file->getClientOriginalExtension());
-            if ($extension === 'pdf') {
-                $fileContent = file_get_contents($fullPath);
-                if ($fileContent === false || empty($fileContent)) {
-                    throw new \Exception('File PDF kosong atau tidak dapat dibaca.');
+            if (in_array($extension, ['jpeg', 'jpg', 'png'])) {
+                $imgTest = @imagecreatefromstring(file_get_contents($fullPath));
+                if ($imgTest === false) {
+                    throw new \Exception('File gambar rusak atau corrupt.');
                 }
-                
-                // A quick check for PDF signature %PDF-
-                if (strncmp($fileContent, '%PDF-', 5) !== 0) {
-                    throw new \Exception('Struktur file PDF corrupt atau bukan file PDF valid.');
+                imagedestroy($imgTest);
+            } elseif ($extension === 'pdf') {
+                // Read first few bytes of PDF to check signature
+                $handle = @fopen($fullPath, 'r');
+                if ($handle) {
+                    $header = fread($handle, 4);
+                    fclose($handle);
+                    if ($header !== '%PDF') {
+                        throw new \Exception('File PDF tidak valid atau header corrupt.');
+                    }
+                } else {
+                    throw new \Exception('Gagal membuka file PDF.');
                 }
             }
 
@@ -187,11 +204,13 @@ class PdfScanController extends Controller
             } elseif (str_contains($msg, 'API Error (HTTP 5')) {
                 $userMsg = '🔧 Server AI sedang bermasalah (error 5xx). Coba lagi dalam beberapa menit.';
             } elseif (str_contains($msg, 'Ghostscript') || str_contains($msg, 'Gagal memproses PDF')) {
-                $userMsg = '📄 Gagal mengkonversi PDF ke gambar. Pastikan Ghostscript terinstall dan path sudah benar di .env (GHOSTSCRIPT_PATH).';
+                $userMsg = '📄 Gagal mengkonversi PDF ke gambar. Pastikan file PDF tidak corrupt, Ghostscript terinstall, dan path sudah benar di .env (GHOSTSCRIPT_PATH).';
             } elseif (str_contains($msg, 'empty content') || str_contains($msg, 'JSON')) {
                 $userMsg = '🤖 AI mengembalikan response tidak valid. Coba ulangi scan — kualitas gambar atau format dokumen mungkin perlu diperbaiki.';
             } elseif (str_contains($msg, 'API Key') || str_contains($msg, 'Belum ada')) {
                 $userMsg = $msg; // Already user-friendly from PdfParserService
+            } elseif (str_contains($msg, 'tidak dapat dibaca') || str_contains($msg, 'corrupt') || str_contains($msg, 'rusak')) {
+                $userMsg = '⚠️ File yang diunggah rusak atau corrupt. Pastikan file PDF/Gambar Anda valid dan tidak rusak.';
             } else {
                 $userMsg = 'Gagal memproses file: ' . $msg;
             }

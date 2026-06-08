@@ -125,68 +125,43 @@ html[data-theme="dark"] .sidebar-nav-item.active {
     border-left-color: #60a5fa;
 }
 
-/* ========== SIDEBAR FOOTER ========== */
-.sidebar-footer {
-    padding: 1rem;
-    border-top: 1px solid var(--border-subtle);
-    margin-top: auto;
-}
-
-.sidebar-divider {
-    height: 1px;
-    background: var(--border-subtle);
-    margin-bottom: 0.75rem;
-}
-
-.sidebar-theme-switch {
+/* ========== NAVBAR THEME TOGGLE ========== */
+.theme-toggle-btn-nav {
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    width: 36px;
+    height: 36px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 0.5rem 0.75rem;
+    justify-content: center;
     cursor: pointer;
+    color: var(--text-primary);
+    transition: all 0.2s ease;
+    padding: 0;
+    margin-left: 0.5rem;
 }
 
-.theme-label {
-    font-size: 0.85rem;
-    color: var(--text-secondary);
-    font-weight: 500;
-}
-
-.theme-slider {
-    position: relative;
-    width: 44px;
-    height: 24px;
+.theme-toggle-btn-nav:hover {
     background: var(--bg-hover);
-    border-radius: 12px;
-    border: 1px solid var(--border);
-    cursor: pointer;
-    transition: background var(--transition-fast);
-    display: inline-block;
+    transform: scale(1.05);
 }
 
-.sidebar-theme-switch input[type="checkbox"] {
+/* Hide sun in dark theme, hide moon in light theme */
+html[data-theme="light"] .theme-toggle-btn-nav .moon-icon {
+    display: none;
+}
+html[data-theme="dark"] .theme-toggle-btn-nav .sun-icon {
     display: none;
 }
 
-.sidebar-theme-switch input[type="checkbox"]:checked ~ .theme-slider {
-    background: #fbbf24;
-    border-color: #f59e0b;
+html[data-theme="light"] .theme-toggle-btn-nav .sun-icon {
+    display: block;
+    color: #eab308; /* yellow-500 */
 }
-
-.theme-slider::after {
-    content: '';
-    position: absolute;
-    width: 18px;
-    height: 18px;
-    background: var(--bg-secondary);
-    border-radius: 50%;
-    top: 2px;
-    left: 2px;
-    transition: left var(--transition-fast);
-}
-
-.sidebar-theme-switch input[type="checkbox"]:checked ~ .theme-slider::after {
-    left: 24px;
+html[data-theme="dark"] .theme-toggle-btn-nav .moon-icon {
+    display: block;
+    color: #38bdf8; /* sky-400 */
 }
 
 /* ========== SIDEBAR OVERLAY (Mobile) ========== */

@@ -2366,12 +2366,9 @@
             }
 
             // Listen for theme changes to re-render chart
-            const themeToggle = document.getElementById('theme-toggle-sidebar');
-            if (themeToggle) {
-                themeToggle.addEventListener('change', () => {
-                    setTimeout(updateAll, 100);
-                });
-            }
+            window.addEventListener('theme-changed', () => {
+                setTimeout(updateAll, 100);
+            });
 
             // Initial render
             updateAll();

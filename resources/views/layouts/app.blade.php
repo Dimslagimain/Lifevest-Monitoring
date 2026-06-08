@@ -70,6 +70,25 @@
                     </div>
                 @endif
 
+                <button type="button" id="theme-toggle" class="theme-toggle-btn-nav" title="Toggle Theme">
+                    <!-- Sun Icon (visible in light theme) -->
+                    <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="18.36" x2="5.64" y2="16.93"></line>
+                        <line x1="18.36" y1="4.22" x2="19.78" y2="5.64"></line>
+                    </svg>
+                    <!-- Moon Icon (visible in dark theme) -->
+                    <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+
                 @auth
                     <div class="navbar-user-menu" id="navbarUserMenu">
                         <button type="button" class="navbar-user-btn" id="navbarUserBtn" title="{{ Auth::user()->name }}">
@@ -168,23 +187,8 @@
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 7l-7 5 7 5V7z"></path><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
                     <span>Smart PDF Scanner</span>
                 </a>
-                {{-- 
-                <a href="#" class="sidebar-nav-item">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33 1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82 1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-                    <span>System Settings</span>
-                </a>
-                --}}
                 @endif
             </nav>
-
-            <div class="sidebar-footer">
-                <div class="sidebar-divider"></div>
-                <label class="sidebar-theme-switch" title="Toggle Theme">
-                    <span class="theme-label">Theme</span>
-                    <input type="checkbox" id="theme-toggle-sidebar">
-                    <span class="theme-slider"></span>
-                </label>
-            </div>
         </aside>
 
         <!-- Sidebar Overlay (for mobile) -->
@@ -216,25 +220,23 @@
     
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const toggleSidebar = document.getElementById('theme-toggle-sidebar');
+            const themeToggleBtn = document.getElementById('theme-toggle');
             const html = document.documentElement;
             const sidebar = document.getElementById('sidebar');
             const sidebarOverlay = document.getElementById('sidebarOverlay');
-            const sidebarToggleBtn = document.getElementById('sidebarToggleBtn');
+            const sidebarToggleBtnEl = document.getElementById('sidebarToggleBtn');
             const sidebarToggleDesktopBtn = document.getElementById('sidebarToggleDesktopBtn');
             const sidebarCloseBtn = document.getElementById('sidebarCloseBtn');
 
-            // Theme Toggle (only in sidebar)
-            const savedTheme = localStorage.getItem('theme') || 'light';
-            if (toggleSidebar) toggleSidebar.checked = (savedTheme === 'light');
-
-            const handleThemeChange = () => {
-                const currentTheme = toggleSidebar.checked ? 'light' : 'dark';
-                html.setAttribute('data-theme', currentTheme);
-                localStorage.setItem('theme', currentTheme);
-            };
-
-            if (toggleSidebar) toggleSidebar.addEventListener('change', handleThemeChange);
+            // Theme Toggle Click Handler
+            themeToggleBtn?.addEventListener('click', () => {
+                const currentTheme = html.getAttribute('data-theme') || 'light';
+                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                html.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                // Dispatch custom event for widgets/charts
+                window.dispatchEvent(new CustomEvent('theme-changed', { detail: { theme: newTheme } }));
+            });
 
             // Desktop Sidebar Toggle
             const isDesktopSidebarCollapsed = localStorage.getItem('sidebar-collapsed') === 'true';

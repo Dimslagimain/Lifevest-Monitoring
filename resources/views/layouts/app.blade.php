@@ -48,12 +48,8 @@
 
 
                 <a href="{{ route('dashboard') }}" class="navbar-brand">
-                    <div class="navbar-logo-wrap">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12 2L3 7L12 12L21 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-                            <path d="M3 12L12 17L21 12" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-                            <path d="M3 17L12 22L21 17" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-                        </svg>
+                    <div class="navbar-logo-wrap" style="display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 8px; overflow: hidden; background: transparent;">
+                        <img src="{{ asset('images/cabinx.jpeg') }}" alt="CabinX Logo" style="width: 100%; height: 100%; object-fit: cover;">
                     </div>
                     <span class="navbar-title">Life Vest Tracker</span>
                 </a>

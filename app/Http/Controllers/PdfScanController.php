@@ -204,19 +204,19 @@ class PdfScanController extends Controller
             $msg = $e->getMessage();
             // Detect specific error types for better user messaging
             if (str_contains($msg, 'API Error (HTTP 401)') || str_contains($msg, 'API Error (HTTP 403)')) {
-                $userMsg = '🔑 API Key tidak valid atau tidak memiliki akses. Periksa konfigurasi API key di file .env.';
+                $userMsg = 'API Key tidak valid atau tidak memiliki akses. Periksa konfigurasi API key di file .env.';
             } elseif (str_contains($msg, 'API Error (HTTP 429)')) {
-                $userMsg = '⚡ Rate limit tercapai — terlalu banyak request ke AI. Tunggu 1-2 menit lalu coba lagi.';
+                $userMsg = 'Rate limit tercapai — terlalu banyak request ke AI. Tunggu 1-2 menit lalu coba lagi.';
             } elseif (str_contains($msg, 'API Error (HTTP 5')) {
-                $userMsg = '🔧 Server AI sedang bermasalah (error 5xx). Coba lagi dalam beberapa menit.';
+                $userMsg = 'Server AI sedang bermasalah (error 5xx). Coba lagi dalam beberapa menit.';
             } elseif (str_contains($msg, 'Ghostscript') || str_contains($msg, 'Gagal memproses PDF')) {
-                $userMsg = '📄 Gagal mengkonversi PDF ke gambar. Pastikan file PDF tidak corrupt, Ghostscript terinstall, dan path sudah benar di .env (GHOSTSCRIPT_PATH).';
+                $userMsg = 'Gagal mengkonversi PDF ke gambar. Pastikan file PDF tidak corrupt, Ghostscript terinstall, dan path sudah benar di .env (GHOSTSCRIPT_PATH).';
             } elseif (str_contains($msg, 'empty content') || str_contains($msg, 'JSON')) {
-                $userMsg = '🤖 AI mengembalikan response tidak valid. Coba ulangi scan — kualitas gambar atau format dokumen mungkin perlu diperbaiki.';
+                $userMsg = 'AI mengembalikan response tidak valid. Coba ulangi scan — kualitas gambar atau format dokumen mungkin perlu diperbaiki.';
             } elseif (str_contains($msg, 'API Key') || str_contains($msg, 'Belum ada')) {
                 $userMsg = $msg; // Already user-friendly from PdfParserService
             } elseif (str_contains($msg, 'tidak dapat dibaca') || str_contains($msg, 'corrupt') || str_contains($msg, 'rusak')) {
-                $userMsg = '⚠️ File yang diunggah rusak atau corrupt. Pastikan file PDF/Gambar Anda valid dan tidak rusak.';
+                $userMsg = 'File yang diunggah rusak atau corrupt. Pastikan file PDF/Gambar Anda valid dan tidak rusak.';
             } else {
                 $userMsg = 'Gagal memproses file: ' . $msg;
             }

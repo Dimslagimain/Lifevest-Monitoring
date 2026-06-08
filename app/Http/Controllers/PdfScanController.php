@@ -43,12 +43,32 @@ class PdfScanController extends Controller
         ]);
 
         $file = $request->file('file');
+        
+        // Ensure file exists and is valid
+        if (!$file->isValid()) {
+            return redirect()->back()->with('error', 'File yang diupload rusak atau gagal diterima oleh server.');
+        }
+
         $path = $file->store('temp_scans');
         $fullPath = storage_path('app/private/' . $path);
 
         Log::info('[PDF Scan] Starting scan', ['file' => $file->getClientOriginalName(), 'size' => $file->getSize()]);
 
         try {
+            // Verify if the PDF is not corrupt before sending to process
+            $extension = strtolower($file->getClientOriginalExtension());
+            if ($extension === 'pdf') {
+                $fileContent = file_get_contents($fullPath);
+                if ($fileContent === false || empty($fileContent)) {
+                    throw new \Exception('File PDF kosong atau tidak dapat dibaca.');
+                }
+                
+                // A quick check for PDF signature %PDF-
+                if (strncmp($fileContent, '%PDF-', 5) !== 0) {
+                    throw new \Exception('Struktur file PDF corrupt atau bukan file PDF valid.');
+                }
+            }
+
             // processFile now returns the parsed data array directly (from AI)
             $parsed = $this->pdfParser->processFile($fullPath);
 

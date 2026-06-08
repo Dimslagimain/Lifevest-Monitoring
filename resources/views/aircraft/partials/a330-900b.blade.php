@@ -20,7 +20,8 @@
                 $status = $seat?->status ?? 'no-data';
                 $expiryDate = $seat?->expiry_date?->format($dateFormat) ?? '-';
             @endphp
-            <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-row="{{ $seatId }}" data-col="LL1">
+            <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}"
+                data-row="{{ $seatId }}" data-col="LL1">
                 <div class="seat-id">D11-LL1</div>
                 <div class="seat-date" data-date="{{ $seat?->expiry_date?->format('Y-m-d') ?? '' }}">
                     {{ $expiryDate }}
@@ -32,7 +33,8 @@
                 $status = $seat?->status ?? 'no-data';
                 $expiryDate = $seat?->expiry_date?->format($dateFormat) ?? '-';
             @endphp
-            <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-row="{{ $seatId }}" data-col="LR">
+            <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}"
+                data-row="{{ $seatId }}" data-col="LR">
                 <div class="seat-id">D11-LR</div>
                 <div class="seat-date" data-date="{{ $seat?->expiry_date?->format('Y-m-d') ?? '' }}">
                     {{ $expiryDate }}
@@ -46,7 +48,8 @@
                 $status = $seat?->status ?? 'no-data';
                 $expiryDate = $seat?->expiry_date?->format($dateFormat) ?? '-';
             @endphp
-            <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-row="{{ $seatId }}" data-col="R">
+            <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}"
+                data-row="{{ $seatId }}" data-col="R">
                 <div class="seat-id">D21-R</div>
                 <div class="seat-date" data-date="{{ $seat?->expiry_date?->format('Y-m-d') ?? '' }}">
                     {{ $expiryDate }}
@@ -61,7 +64,8 @@
                 $status = $seat?->status ?? 'no-data';
                 $expiryDate = $seat?->expiry_date?->format($dateFormat) ?? '-';
             @endphp
-            <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-row="{{ $seatId }}" data-col="LL2">
+            <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}"
+                data-row="{{ $seatId }}" data-col="LL2">
                 <div class="seat-id">D11-LL2</div>
                 <div class="seat-date" data-date="{{ $seat?->expiry_date?->format('Y-m-d') ?? '' }}">
                     {{ $expiryDate }}
@@ -94,7 +98,8 @@
                 $status = $seat?->status ?? 'no-data';
                 $expiryDate = $seat?->expiry_date?->format($dateFormat) ?? '-';
             @endphp
-            <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-row="{{ $seatId }}" data-col="L1">
+            <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}"
+                data-row="{{ $seatId }}" data-col="L1">
                 <div class="seat-id">D12-L1</div>
                 <div class="seat-date" data-date="{{ $seat?->expiry_date?->format('Y-m-d') ?? '' }}">
                     {{ $expiryDate }}
@@ -109,7 +114,8 @@
                 $status = $seat?->status ?? 'no-data';
                 $expiryDate = $seat?->expiry_date?->format($dateFormat) ?? '-';
             @endphp
-            <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-row="{{ $seatId }}" data-col="R1">
+            <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}"
+                data-row="{{ $seatId }}" data-col="R1">
                 <div class="seat-id">D22-R1</div>
                 <div class="seat-date" data-date="{{ $seat?->expiry_date?->format('Y-m-d') ?? '' }}">
                     {{ $expiryDate }}
@@ -118,7 +124,7 @@
         </div>
     </div>
 </section>
-
+1
 <!-- Economy Premium - Rows 21-27 (2-3-2 layout: A C - D F G - H K) -->
 <section class="cabin-section">
     <h2>Economy Premium - Rows 21-27</h2>
@@ -134,24 +140,39 @@
             <span class="col-label col-header" data-col="H">H</span>
             <span class="col-label col-header" data-col="K">K</span>
         </div>
-        @foreach(range(21, 27) as $row)
-            @if($row == 24)
+        @foreach (range(21, 27) as $row)
+            @if ($row == 24)
                 @continue
             @endif
             @php
                 $rowCols = ['A', 'C', 'D', 'F', 'G', 'H', 'K'];
             @endphp
             <div class="seat-row grid-row-2-3-2" data-row="{{ $row }}">
-                @foreach(['A', 'C'] as $col)
-                    @include('components.seat-cell', ['row' => $row, 'col' => $col, 'rowCols' => $rowCols, 'seats' => $seats])
+                @foreach (['A', 'C'] as $col)
+                    @include('components.seat-cell', [
+                        'row' => $row,
+                        'col' => $col,
+                        'rowCols' => $rowCols,
+                        'seats' => $seats,
+                    ])
                 @endforeach
                 <div class="row-number" data-row="{{ $row }}">{{ $row }}</div>
-                @foreach(['D', 'F', 'G'] as $col)
-                    @include('components.seat-cell', ['row' => $row, 'col' => $col, 'rowCols' => $rowCols, 'seats' => $seats])
+                @foreach (['D', 'F', 'G'] as $col)
+                    @include('components.seat-cell', [
+                        'row' => $row,
+                        'col' => $col,
+                        'rowCols' => $rowCols,
+                        'seats' => $seats,
+                    ])
                 @endforeach
                 <div class="row-number" data-row="{{ $row }}">{{ $row }}</div>
-                @foreach(['H', 'K'] as $col)
-                    @include('components.seat-cell', ['row' => $row, 'col' => $col, 'rowCols' => $rowCols, 'seats' => $seats])
+                @foreach (['H', 'K'] as $col)
+                    @include('components.seat-cell', [
+                        'row' => $row,
+                        'col' => $col,
+                        'rowCols' => $rowCols,
+                        'seats' => $seats,
+                    ])
                 @endforeach
             </div>
         @endforeach
@@ -179,21 +200,36 @@
                 31 => ['D', 'E', 'F', 'G'],
             ];
         @endphp
-        @foreach(range(28, 51) as $row)
+        @foreach (range(28, 51) as $row)
             @php
                 $rowCols = $exceptions[$row] ?? ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'K'];
             @endphp
             <div class="seat-row grid-row-2-4-2" data-row="{{ $row }}">
-                @foreach(['A', 'C'] as $col)
-                    @include('components.seat-cell', ['row' => $row, 'col' => $col, 'rowCols' => $rowCols, 'seats' => $seats])
+                @foreach (['A', 'C'] as $col)
+                    @include('components.seat-cell', [
+                        'row' => $row,
+                        'col' => $col,
+                        'rowCols' => $rowCols,
+                        'seats' => $seats,
+                    ])
                 @endforeach
                 <div class="row-number" data-row="{{ $row }}">{{ $row }}</div>
-                @foreach(['D', 'E', 'F', 'G'] as $col)
-                    @include('components.seat-cell', ['row' => $row, 'col' => $col, 'rowCols' => $rowCols, 'seats' => $seats])
+                @foreach (['D', 'E', 'F', 'G'] as $col)
+                    @include('components.seat-cell', [
+                        'row' => $row,
+                        'col' => $col,
+                        'rowCols' => $rowCols,
+                        'seats' => $seats,
+                    ])
                 @endforeach
                 <div class="row-number" data-row="{{ $row }}">{{ $row }}</div>
-                @foreach(['H', 'K'] as $col)
-                    @include('components.seat-cell', ['row' => $row, 'col' => $col, 'rowCols' => $rowCols, 'seats' => $seats])
+                @foreach (['H', 'K'] as $col)
+                    @include('components.seat-cell', [
+                        'row' => $row,
+                        'col' => $col,
+                        'rowCols' => $rowCols,
+                        'seats' => $seats,
+                    ])
                 @endforeach
             </div>
         @endforeach
@@ -218,7 +254,8 @@
                 $status = $seat?->status ?? 'no-data';
                 $expiryDate = $seat?->expiry_date?->format($dateFormat) ?? '-';
             @endphp
-            <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-row="{{ $seatId }}" data-col="L">
+            <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}"
+                data-row="{{ $seatId }}" data-col="L">
                 <div class="seat-id">D13-L</div>
                 <div class="seat-date" data-date="{{ $seat?->expiry_date?->format('Y-m-d') ?? '' }}">
                     {{ $expiryDate }}
@@ -233,7 +270,8 @@
                 $status = $seat?->status ?? 'no-data';
                 $expiryDate = $seat?->expiry_date?->format($dateFormat) ?? '-';
             @endphp
-            <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-row="{{ $seatId }}" data-col="R">
+            <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}"
+                data-row="{{ $seatId }}" data-col="R">
                 <div class="seat-id">D23-R</div>
                 <div class="seat-date" data-date="{{ $seat?->expiry_date?->format('Y-m-d') ?? '' }}">
                     {{ $expiryDate }}
@@ -261,7 +299,8 @@
                 $status = $seat?->status ?? 'no-data';
                 $expiryDate = $seat?->expiry_date?->format($dateFormat) ?? '-';
             @endphp
-            <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-row="{{ $seatId }}" data-col="L">
+            <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}"
+                data-row="{{ $seatId }}" data-col="L">
                 <div class="seat-id">D14-L</div>
                 <div class="seat-date" data-date="{{ $seat?->expiry_date?->format('Y-m-d') ?? '' }}">
                     {{ $expiryDate }}
@@ -276,7 +315,8 @@
                 $status = $seat?->status ?? 'no-data';
                 $expiryDate = $seat?->expiry_date?->format($dateFormat) ?? '-';
             @endphp
-            <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}" data-row="{{ $seatId }}" data-col="R">
+            <div class="seat-card status-{{ $status }}" data-seat="{{ $seatId }}"
+                data-row="{{ $seatId }}" data-col="R">
                 <div class="seat-id">D24-R</div>
                 <div class="seat-date" data-date="{{ $seat?->expiry_date?->format('Y-m-d') ?? '' }}">
                     {{ $expiryDate }}
@@ -295,7 +335,9 @@
             <h3>PAX</h3>
             <div class="spare-items" id="pax-items">
                 @php
-                    $paxSeats = collect($seats)->filter(fn($s, $id) => str_starts_with($id, 'pax-'))->sortBy(fn($s, $id) => (int) str_replace('pax-', '', $id));
+                    $paxSeats = collect($seats)
+                        ->filter(fn($s, $id) => str_starts_with($id, 'pax-'))
+                        ->sortBy(fn($s, $id) => (int) str_replace('pax-', '', $id));
                 @endphp
                 @forelse($paxSeats as $seatId => $seat)
                     @php
@@ -303,7 +345,8 @@
                         $status = $seat?->status ?? 'no-data';
                         $expiryDate = $seat?->expiry_date?->format($dateFormat) ?? '-';
                     @endphp
-                    <div class="seat-card spare-card status-{{ $status }}" data-seat="{{ $seatId }}" data-row="{{ $seatId }}">
+                    <div class="seat-card spare-card status-{{ $status }}" data-seat="{{ $seatId }}"
+                        data-row="{{ $seatId }}">
                         <button type="button" class="btn-delete-spare" title="Delete">&times;</button>
                         <div class="seat-id">{{ $num }}</div>
                         <div class="seat-date" data-date="{{ $seat?->expiry_date?->format('Y-m-d') ?? '' }}">
@@ -322,7 +365,9 @@
             <h3>INF</h3>
             <div class="spare-items" id="inf-items">
                 @php
-                    $infSeats = collect($seats)->filter(fn($s, $id) => str_starts_with($id, 'inf-'))->sortBy(fn($s, $id) => (int) str_replace('inf-', '', $id));
+                    $infSeats = collect($seats)
+                        ->filter(fn($s, $id) => str_starts_with($id, 'inf-'))
+                        ->sortBy(fn($s, $id) => (int) str_replace('inf-', '', $id));
                 @endphp
                 @forelse($infSeats as $seatId => $seat)
                     @php
@@ -330,7 +375,8 @@
                         $status = $seat?->status ?? 'no-data';
                         $expiryDate = $seat?->expiry_date?->format($dateFormat) ?? '-';
                     @endphp
-                    <div class="seat-card spare-card status-{{ $status }}" data-seat="{{ $seatId }}" data-row="{{ $seatId }}">
+                    <div class="seat-card spare-card status-{{ $status }}" data-seat="{{ $seatId }}"
+                        data-row="{{ $seatId }}">
                         <button type="button" class="btn-delete-spare" title="Delete">&times;</button>
                         <div class="seat-id">{{ $num }}</div>
                         <div class="seat-date" data-date="{{ $seat?->expiry_date?->format('Y-m-d') ?? '' }}">
@@ -371,21 +417,36 @@
                 69 => ['D', 'F', 'G'],
             ];
         @endphp
-        @foreach(range(52, 69) as $row)
+        @foreach (range(52, 69) as $row)
             @php
                 $rowCols = $exceptions[$row] ?? ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'K'];
             @endphp
             <div class="seat-row grid-row-2-4-2" data-row="{{ $row }}">
-                @foreach(['A', 'C'] as $col)
-                    @include('components.seat-cell', ['row' => $row, 'col' => $col, 'rowCols' => $rowCols, 'seats' => $seats])
+                @foreach (['A', 'C'] as $col)
+                    @include('components.seat-cell', [
+                        'row' => $row,
+                        'col' => $col,
+                        'rowCols' => $rowCols,
+                        'seats' => $seats,
+                    ])
                 @endforeach
                 <div class="row-number" data-row="{{ $row }}">{{ $row }}</div>
-                @foreach(['D', 'E', 'F', 'G'] as $col)
-                    @include('components.seat-cell', ['row' => $row, 'col' => $col, 'rowCols' => $rowCols, 'seats' => $seats])
+                @foreach (['D', 'E', 'F', 'G'] as $col)
+                    @include('components.seat-cell', [
+                        'row' => $row,
+                        'col' => $col,
+                        'rowCols' => $rowCols,
+                        'seats' => $seats,
+                    ])
                 @endforeach
                 <div class="row-number" data-row="{{ $row }}">{{ $row }}</div>
-                @foreach(['H', 'K'] as $col)
-                    @include('components.seat-cell', ['row' => $row, 'col' => $col, 'rowCols' => $rowCols, 'seats' => $seats])
+                @foreach (['H', 'K'] as $col)
+                    @include('components.seat-cell', [
+                        'row' => $row,
+                        'col' => $col,
+                        'rowCols' => $rowCols,
+                        'seats' => $seats,
+                    ])
                 @endforeach
             </div>
         @endforeach

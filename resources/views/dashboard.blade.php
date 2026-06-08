@@ -11,10 +11,12 @@
         .list-view-active .fleet-cards[style*="grid"] {
             display: flex !important;
         }
+
         .list-view-active .fleet-cards {
             flex-direction: column;
             gap: 0.5rem;
         }
+
         .list-view-active .fleet-card {
             flex-direction: row;
             align-items: center;
@@ -22,6 +24,7 @@
             height: auto;
             justify-content: space-between;
         }
+
         .list-view-active .fleet-card-header {
             width: 250px;
             margin-bottom: 0;
@@ -31,10 +34,12 @@
             align-items: center;
             gap: 1rem;
         }
+
         .list-view-active .fleet-card-icon {
             font-size: 1.5rem;
             margin-bottom: 0;
         }
+
         .list-view-active .fleet-card-stats {
             flex-direction: row;
             border-top: none;
@@ -45,17 +50,21 @@
             justify-content: flex-start;
             flex-grow: 1;
         }
+
         .list-view-active .fleet-stat {
             flex-direction: row;
             gap: 0.6rem;
             align-items: center;
         }
+
         .list-view-active .fleet-stat-value {
             font-size: 1.1rem;
         }
+
         .list-view-active .fleet-card-progress {
             display: none;
         }
+
         .list-view-active .fleet-card-footer {
             border-top: none;
             margin-top: 0;
@@ -64,38 +73,256 @@
             width: auto;
             justify-content: flex-end;
         }
+
         .list-view-active .fleet-card-action {
             display: none;
+        }
+
+        /* Premium Dashboard Grid Layout */
+        .dashboard-main-grid {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 1.75rem;
+            margin-top: 2rem;
+            align-items: start;
+        }
+
+        @media (max-width: 1200px) {
+            .dashboard-main-grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+
+        /* Table and Card Styling */
+        .premium-card-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .premium-table-title {
+            margin: 0 0 1.25rem 0;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .premium-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .premium-table th {
+            padding: 0.75rem 1rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid var(--border-subtle);
+            text-align: left;
+        }
+
+        .premium-table td {
+            padding: 1rem;
+            font-size: 0.9rem;
+            border-bottom: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+            vertical-align: middle;
+        }
+
+        .premium-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .premium-table tr:hover td {
+            background: rgba(255, 255, 255, 0.015);
+        }
+
+        [data-theme="light"] .premium-table tr:hover td {
+            background: rgba(15, 23, 42, 0.01);
+        }
+
+        .airline-badge-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 0.85rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .btn-table-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.45rem 0.9rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all var(--transition-fast);
+            background: var(--bg-hover);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+        }
+
+        .btn-table-action:hover {
+            background: var(--primary-glow);
+            border-color: var(--primary);
+            color: var(--primary-light);
+        }
+
+        /* Widget Styling */
+        .widget-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 1.25rem 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .widget-title {
+            margin: 0 0 1rem 0;
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .widget-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .widget-table th {
+            padding: 0.5rem;
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid var(--border-subtle);
+            text-align: left;
+        }
+
+        .widget-table td {
+            padding: 0.65rem 0.5rem;
+            font-size: 0.82rem;
+            border-bottom: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+        }
+
+        .widget-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .upcoming-event-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.65rem 0;
+            border-bottom: 1px solid var(--border-subtle);
+            font-size: 0.85rem;
+        }
+
+        .upcoming-event-item:last-child {
+            border-bottom: none;
+        }
+
+        .quick-actions-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .quick-action-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.65rem 0.85rem;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all var(--transition-fast);
+        }
+
+        [data-theme="light"] .quick-action-link {
+            background: rgba(15, 23, 42, 0.02);
+        }
+
+        .quick-action-link:hover {
+            background: var(--bg-hover);
+            border-color: var(--primary);
+            color: var(--primary-light);
+            transform: translateX(4px);
         }
     </style>
 
     <!-- Full-Screen View Styles -->
-    @if($isFullScreenView)
+    @if ($isFullScreenView)
         <style>
             .dashboard-container {
                 display: flex;
                 flex-direction: column;
                 height: 100%;
             }
-            
+
             .dashboard-content {
                 flex: 1;
                 overflow-y: auto;
                 display: flex;
                 flex-direction: column;
             }
-            
-            .summary-section { display: block; }
-            .airline-section { display: block; }
-            #life-vest-summary-section { display: block; }
-            #top-pn-insights-section { display: block; }
-            #activity-log-section { display: block; }
-            .replacement-interval-section { display: block; }
-            
+
+            .summary-section {
+                display: block;
+            }
+
+            .airline-section {
+                display: block;
+            }
+
+            #life-vest-summary-section {
+                display: block;
+            }
+
+            #top-pn-insights-section {
+                display: block;
+            }
+
+            #activity-log-section {
+                display: block;
+            }
+
+            .replacement-interval-section {
+                display: block;
+            }
+
             /* Filter only shown in full view */
-            #top { display: {{ ($currentView === 'fleet-overview' || $currentView === 'all') ? 'flex' : 'none' }}; }
-            #filterPanel { display: none; }
-            
+            #top {
+                display: {{ $currentView === 'fleet-overview' || $currentView === 'all' ? 'flex' : 'none' }};
+            }
+
+            #filterPanel {
+                display: none;
+            }
+
             /* Back button for full-screen view */
             .view-back-btn {
                 display: flex;
@@ -112,7 +339,7 @@
                 font-weight: 500;
                 transition: all 0.2s ease;
             }
-            
+
             .view-back-btn:hover {
                 background: var(--bg-hover);
                 border-color: var(--primary);
@@ -120,369 +347,725 @@
 
             /* View Transition Animations */
             @keyframes fadeInSlide {
-                0% { opacity: 0; transform: translateY(12px); }
-                100% { opacity: 1; transform: translateY(0); }
+                0% {
+                    opacity: 0;
+                    transform: translateY(12px);
+                }
+
+                100% {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
             }
+
             .animate-view {
                 animation: fadeInSlide 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
             }
         </style>
     @endif
 
-<div class="dashboard-content">
-    <!-- Back Button for Full-Screen Views -->
-    @if($isFullScreenView)
-        <a href="{{ route('dashboard') }}" class="view-back-btn">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
-            <span>Back to Dashboard</span>
-        </a>
-    @endif
+    <div class="dashboard-content" style="padding-top: 0.5rem;">
+        <!-- Header & Back Button Combined -->
+        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem;">
+            @if ($isFullScreenView)
+                <a href="{{ route('dashboard') }}" id="dashboard-back-btn" class="view-back-btn" style="margin-bottom: 0; padding: 0.4rem 0.75rem; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.35rem; text-decoration: none;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
+                    <span>Back</span>
+                </a>
+            @endif
 
-    <!-- Header & Quick Navigation -->
-    @if($currentView === 'fleet-overview' || $currentView === 'all')
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-        <h1 style="margin: 0; font-size: 2rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.02em;">Fleet Overview</h1>
-    </div>
-    @endif
-
-
-
-
-
-
-    @if($currentView === 'fleet-overview' || $currentView === 'all')
-        {{-- Summary Cards (Clean & Responsive) --}}
-        <section class="summary-section animate-view" style="margin-bottom: 3rem;">
-            <div class="summary-cards">
-                <!-- SAFE -->
-                <div class="summary-card safe">
-                    <div class="summary-icon">🟢</div>
-                    <div class="summary-value">{{ $totalStats['safe'] }}</div>
-                    <div class="summary-label">Safe</div>
-                    <div class="summary-desc">> 6 months</div>
-                </div>
-
-                <!-- WARNING -->
-                <div class="summary-card warning">
-                    <div class="summary-icon">🟡</div>
-                    <div class="summary-value">{{ $totalStats['warning'] }}</div>
-                    <div class="summary-label">Warning</div>
-                    <div class="summary-desc">3-6 months</div>
-                </div>
-
-                <!-- CRITICAL -->
-                <div class="summary-card critical">
-                    <div class="summary-icon">🔴</div>
-                    <div class="summary-value">{{ $totalStats['critical'] }}</div>
-                    <div class="summary-label">Critical</div>
-                    <div class="summary-desc">< 3 months</div>
-                </div>
-
-                <!-- EXPIRED -->
-                <div class="summary-card expired">
-                    <div class="summary-icon">🟣</div>
-                    <div class="summary-value">{{ $totalStats['expired'] }}</div>
-                    <div class="summary-label">Expired</div>
-                    <div class="summary-desc">Past due</div>
-                </div>
-            </div>
-        </section>
-
-        {{-- Airline Master Overview Section --}}
-        <section class="master-airline-section animate-view" id="airline-master-overview" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem; margin-top: 1rem;">
-        <!-- Smart Sorting Control -->
-        <div style="grid-column: 1 / -1; display: flex; justify-content: flex-end; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
-            <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Sort By:</span>
-            <select id="airlineSortControl" class="form-select" style="min-width: 200px; padding: 0.5rem 1rem; border-radius: 8px; font-weight: 500; cursor: pointer; background-color: var(--bg-card); border-color: var(--border-subtle);" onchange="sortMasterAirlines(this.value)">
-                <option value="name_asc">Alphabetical (A-Z)</option>
-                <option value="health_asc">Lowest Health First</option>
-                <option value="expired_desc">Most Expired Vests</option>
-            </select>
+            <h1 id="dashboard-main-title" style="margin: 0; font-size: 1.6rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.02em;">
+                @if ($currentView === 'fleet-overview' || $currentView === 'all')
+                    Fleet Overview
+                @elseif ($currentView === 'life-vest-summary')
+                    Life Vest Summary
+                @elseif ($currentView === 'top-pn-insights')
+                    Top P/N Insights
+                @elseif ($currentView === 'replacement-weekly')
+                    Weekly Replacement Plan
+                @elseif ($currentView === 'replacement-monthly')
+                    Monthly Replacement Plan
+                @elseif ($currentView === 'replacement-yearly')
+                    Yearly Replacement Plan
+                @elseif ($currentView === 'activity-log')
+                    Global Activity Log
+                @else
+                    Dashboard
+                @endif
+            </h1>
         </div>
 
-        @foreach($fleetByAirline as $airlineId => $airline)
-            @php
-                $aSafe = 0; $aWarn = 0; $aCrit = 0; $aExp = 0;
-                foreach($airline['types'] as $typeGroup) {
-                    foreach($typeGroup['aircraft'] as $ac) {
-                        $aSafe += $ac['stats']['safe'] ?? 0;
-                        $aWarn += $ac['stats']['warning'] ?? 0;
-                        $aCrit += $ac['stats']['critical'] ?? 0;
-                        $aExp += $ac['stats']['expired'] ?? 0;
-                    }
-                }
-                $aTotal = $aSafe + $aWarn + $aCrit + $aExp;
-                $aHealth = $aTotal > 0 ? round((($aSafe + ($aWarn * 0.5)) / $aTotal) * 100) : 100;
-            @endphp
-            <div class="fleet-card airline-master-card" data-name="{{ strtolower($airline['name']) }}" data-health="{{ $aHealth }}" data-expired="{{ $aExp }}" style="cursor: pointer; padding: 2rem 1.5rem; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; border: 1px solid var(--border-subtle); transition: transform 0.2s, box-shadow 0.2s; background: var(--bg-card); border-radius: 12px; position: relative; overflow: hidden;" onclick="showAirlineDetails('{{ $airline['name'] }}')" onmouseover="this.style.transform='translateY(-6px)'; this.style.boxShadow='var(--shadow-lg)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='var(--shadow)';">
-                <div style="margin-bottom: 1.5rem;">
-                    <h2 style="margin: 0; font-size: 1.6rem; font-weight: 700; color: var(--text-primary); letter-spacing: -0.01em;">{{ $airline['name'] }}</h2>
-                    <span style="color: var(--text-muted); font-size: 0.9rem;">{{ $airline['code'] }} • {{ $airline['aircraft_count'] }} Aircraft</span>
+        @if ($currentView === 'fleet-overview' || $currentView === 'all')
+            {{-- Summary Cards (Clean & Responsive) --}}
+            <section class="summary-section animate-view" style="margin-bottom: 1.25rem;">
+                <div class="summary-cards">
+                    <!-- SAFE -->
+                    <div class="summary-card safe" style="position: relative;">
+                        <div class="summary-icon"
+                            style="width: 18px; height: 18px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #34d399, #059669 60%, #047857); box-shadow: 0 0 12px rgba(16,185,129,0.75);">
+                        </div>
+                        <div class="summary-value" id="overviewSafe" data-initial="{{ $totalStats['safe'] }}">
+                            {{ $totalStats['safe'] }}</div>
+                        <div class="summary-label">Safe</div>
+                        <div class="summary-desc">More than 6 months</div>
+                        <svg width="100" height="40" viewBox="0 0 100 40" style="position: absolute; right: 0.5rem; bottom: 0.5rem; overflow: visible; opacity: 0.9; filter: drop-shadow(0 2px 4px rgba(16,185,129,0.4));">
+                            <path d="M 0 32 C 20 30, 40 25, 60 12 C 75 4, 85 8, 100 2" stroke="var(--success)" fill="none"
+                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </div>
+
+                    <!-- WARNING -->
+                    <div class="summary-card warning" style="position: relative;">
+                        <div class="summary-icon"
+                            style="width: 18px; height: 18px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #fbbf24, #d97706 60%, #b45309); box-shadow: 0 0 12px rgba(245,158,11,0.75);">
+                        </div>
+                        <div class="summary-value" id="overviewWarning" data-initial="{{ $totalStats['warning'] }}">
+                            {{ $totalStats['warning'] }}</div>
+                        <div class="summary-label">Warning</div>
+                        <div class="summary-desc">3 - 6 months</div>
+                        <svg width="100" height="40" viewBox="0 0 100 40" style="position: absolute; right: 0.5rem; bottom: 0.5rem; overflow: visible; opacity: 0.9; filter: drop-shadow(0 2px 4px rgba(245,158,11,0.4));">
+                            <path d="M 0 15 C 20 5, 35 25, 55 10 C 75 0, 85 28, 100 32" stroke="var(--warning)" fill="none"
+                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </div>
+
+                    <!-- CRITICAL -->
+                    <div class="summary-card critical" style="position: relative;">
+                        <div class="summary-icon"
+                            style="width: 18px; height: 18px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #f87171, #dc2626 60%, #b91c1c); box-shadow: 0 0 12px rgba(239,68,68,0.75);">
+                        </div>
+                        <div class="summary-value" id="overviewCritical" data-initial="{{ $totalStats['critical'] }}">
+                            {{ $totalStats['critical'] }}</div>
+                        <div class="summary-label">Critical</div>
+                        <div class="summary-desc">Less than 3 months</div>
+                        <svg width="100" height="40" viewBox="0 0 100 40" style="position: absolute; right: 0.5rem; bottom: 0.5rem; overflow: visible; opacity: 0.9; filter: drop-shadow(0 2px 4px rgba(239,68,68,0.4));">
+                            <path d="M 0 8 C 25 5, 45 32, 70 28 C 80 26, 90 35, 100 38" stroke="var(--danger)" fill="none"
+                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </div>
+
+                    <!-- EXPIRED -->
+                    <div class="summary-card expired" style="position: relative;">
+                        <div class="summary-icon"
+                            style="width: 18px; height: 18px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #c084fc, #7c3aed 60%, #6d28d9); box-shadow: 0 0 12px rgba(168,85,247,0.75);">
+                        </div>
+                        <div class="summary-value" id="overviewExpired" data-initial="{{ $totalStats['expired'] }}">
+                            {{ $totalStats['expired'] }}</div>
+                        <div class="summary-label">Expired</div>
+                        <div class="summary-desc">Past due date</div>
+                        <svg width="100" height="40" viewBox="0 0 100 40" style="position: absolute; right: 0.5rem; bottom: 0.5rem; overflow: visible; opacity: 0.9; filter: drop-shadow(0 2px 4px rgba(168,85,247,0.4));">
+                            <path d="M 0 28 C 15 35, 30 10, 50 20 C 70 30, 85 8, 100 5" stroke="var(--expired)" fill="none"
+                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </div>
                 </div>
-                
-                <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; margin-bottom: 1.5rem;">
-                    @php
-                        $healthColor = $aHealth >= 70 ? 'var(--success)' : ($aHealth >= 40 ? 'var(--warning)' : 'var(--danger)');
-                        $bgColor = $aHealth >= 70 ? 'rgba(46, 204, 113, 0.15)' : ($aHealth >= 40 ? 'rgba(241, 196, 15, 0.15)' : 'rgba(231, 76, 60, 0.15)');
-                    @endphp
-                    <div style="
-                        position: relative; 
-                        width: 130px; 
-                        height: 130px; 
-                        border-radius: 50%; 
-                        background: conic-gradient({{ $healthColor }} {{ $aHealth }}%, {{ $bgColor }} 0);
-                        display: flex; 
-                        align-items: center; 
-                        justify-content: center;
-                        margin-bottom: 1.25rem;
-                        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-                        z-index: 1;
-                    ">
-                        <div style="
-                            position: relative;
-                            width: 106px; 
-                            height: 106px; 
-                            background-color: var(--bg-card);
-                            border-radius: 50%;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            box-shadow: inset 0 3px 6px rgba(0,0,0,0.1);
-                        ">
-                            <span style="font-weight: 800; font-size: 2.25rem; color: {{ $healthColor }}; leading-height: 1;">{{ $aHealth }}<span style="font-size: 1.25rem;">%</span></span>
+            </section>
+
+            {{-- Main Grid Layout --}}
+            <div class="dashboard-main-grid animate-view" id="airline-master-overview" style="margin-top: 1.25rem;">
+
+                {{-- Left Column: Airline Fleet Details --}}
+                <div class="premium-card-box">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.5rem;">
+                        <h2 class="premium-table-title" style="margin-bottom: 0;">Airline Fleet Details</h2>
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                            <span
+                                style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Sort
+                                By:</span>
+                            <select id="airlineSortControl" class="form-select"
+                                style="min-width: 180px; padding: 0.4rem 0.85rem; border-radius: 8px; font-size: 0.85rem; font-weight: 500; cursor: pointer; background-color: var(--bg-card-solid); border-color: var(--border-subtle); color: var(--text-primary);"
+                                onchange="sortMasterAirlines(this.value)">
+                                <option value="name_asc">Alphabetical (A-Z)</option>
+                                <option value="health_asc">Lowest Health First</option>
+                                <option value="expired_desc">Most Expired Vests</option>
+                            </select>
                         </div>
                     </div>
-                    
-                    <div style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 700;">Overall Fleet Health</div>
-                </div>
 
-                <div style="display: flex; gap: 1rem; font-size: 0.85rem; width: 100%; justify-content: center; margin-bottom: 1.5rem;">
-                    <span style="color: var(--success); font-weight: 600; display: flex; align-items: center; gap: 0.25rem;">🟢 {{ $aSafe }}</span>
-                    <span style="color: var(--warning); font-weight: 600; display: flex; align-items: center; gap: 0.25rem;">🟡 {{ $aWarn }}</span>
-                    <span style="color: var(--danger); font-weight: 600; display: flex; align-items: center; gap: 0.25rem;">🔴 {{ $aCrit }}</span>
-                    <span style="color: purple; font-weight: 600; display: flex; align-items: center; gap: 0.25rem;">🟣 {{ $aExp }}</span>
-                </div>
-
-                <div style="width: 100%; height: 8px; background: rgba(0,0,0,0.1); border-radius: 10px; display: flex; overflow: hidden; margin-top: auto; box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);">
-                    @if($aTotal > 0)
-                        <div style="width: {{ ($aSafe/$aTotal)*100 }}%; background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, var(--success) 50%, rgba(0,0,0,0.1) 100%); height: 100%;"></div>
-                        <div style="width: {{ ($aWarn/$aTotal)*100 }}%; background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, var(--warning) 50%, rgba(0,0,0,0.1) 100%); height: 100%;"></div>
-                        <div style="width: {{ (($aCrit+$aExp)/$aTotal)*100 }}%; background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, var(--danger) 50%, rgba(0,0,0,0.1) 100%); height: 100%;"></div>
-                    @endif
-                </div>
-            </div>
-        @endforeach
-    </section>
-
-        {{-- Fleet Details Container --}}
-        {{-- Fleet Details Container (Dynamic Header) --}}
-        <div id="airline-fleet-details" class="animate-view" style="display: none; margin-bottom: 2rem;">
-            <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 1rem; border-bottom: 2px solid var(--border-subtle); margin-bottom: 1.5rem;">
-                <div>
-                    <h1 id="airline-details-title" style="margin: 0; font-size: 2rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.02em;">Airline Fleet</h1>
-                    <p id="airline-details-subtitle" style="margin: 0.25rem 0 0; color: var(--text-muted); font-size: 0.9rem; font-weight: 500;"></p>
-                </div>
-                <button type="button" onclick="hideAirlineDetails()" class="btn-premium" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.6rem 1.25rem; border-radius: 8px; background: var(--bg-card); border: 1px solid var(--border-subtle); color: var(--primary); font-weight: 700; cursor: pointer; transition: all 0.2s;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-                    Back to Overview
-                </button>
-            </div>
-        </div>
-
-    @if(empty($fleetByAirline))
-        <div style="padding: 5rem 2rem; text-align: center; background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border-subtle); margin-top: 2rem;">
-            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color: var(--text-muted); margin-bottom: 1.5rem; opacity: 0.5;">
-                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>
-            </svg>
-            <h3 style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin: 0;">No Aircraft Found</h3>
-            <p style="color: var(--text-muted); margin-top: 0.5rem; max-width: 400px; margin-left: auto; margin-right: auto;">It looks like there are no aircraft registered in the system yet. Please contact an administrator to add your fleet.</p>
-        </div>
-    @endif
-
-    {{-- Fleet Cards Section --}}
-    @foreach($fleetByAirline as $airlineId => $airline)
-            <section class="airline-section" data-airline="{{ $airline['name'] }}" style="margin-bottom: 2rem; display: none;">
-            <div class="airline-header"
-                style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border);">
-                <div>
-                    <h2 style="margin: 0; font-size: 1.35rem; font-weight: 700; letter-spacing: -0.02em;">{{ $airline['name'] }}</h2>
-                    <span style="color: var(--text-muted); font-size: 0.8rem;">{{ $airline['code'] }} ·
-                        <span class="airline-count">{{ $airline['aircraft_count'] }}</span> aircraft</span>
-                </div>
-            </div>
-
-            @foreach($airline['types'] as $baseType => $typeGroup)
-                <section class="fleet-section" style="margin-left: 0.5rem;">
-                    <h3 style="display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.65rem; font-size: 1rem; font-weight: 700; color: var(--text-secondary); cursor: pointer;"
-                        onclick="const cards = this.nextElementSibling; const isHidden = cards.style.display==='none'; cards.style.display=isHidden?(document.body.classList.contains('list-view-active')?'flex':'grid'):'none'; this.querySelector('.collapse-icon').style.transform=isHidden?'rotate(90deg)':'rotate(0deg)';">
-                        <span class="collapse-icon" style="font-size: 0.7em; transition: transform 0.2s; transform: rotate(0deg); display: inline-block;">▶</span>
-                         {{ $typeGroup['name'] }}
-                        <span class="type-count"
-                            style="color: var(--text-muted); font-weight: 400; font-size: 0.8rem;">({{ count($typeGroup['aircraft']) }})</span>
-                    </h3>
-                    <div class="fleet-cards" style="display: none;">
-                        @foreach($typeGroup['aircraft'] as $registration => $aircraft)
-                            <a href="{{ route('aircraft.show', $registration) }}"
-                                class="fleet-card {{ $aircraft['health'] >= 70 ? 'healthy' : ($aircraft['health'] >= 40 ? 'warning' : 'critical') }}"
-                                data-status="{{ $aircraft['status'] ?? 'active' }}"
-                                data-health="{{ $aircraft['health'] >= 70 ? 'safe' : ($aircraft['health'] >= 40 ? 'warning' : 'critical') }}"
-                                data-airline="{{ $airline['name'] }}" data-type="{{ $aircraft['type'] }}">
-                                <div class="fleet-card-header">
-                                    <div>
-                                        <div class="fleet-card-type">
-                                            {{ $aircraft['type'] }}
-                                            <span class="status-badge {{ $aircraft['status'] ?? 'active' }}">
-                                                {{ strtoupper($aircraft['status'] ?? 'active') }}
-                                            </span>
-                                        </div>
-                                        <div class="fleet-card-reg">{{ $registration }}</div>
-                                    </div>
-                                </div>
-                                <div class="fleet-card-stats">
-                                    <div class="fleet-stat safe fleet-stat-clickable" onclick="openSeatStatusModal('{{ $registration }}', 'safe', event)" title="Klik untuk detail">
-                                        <div class="fleet-stat-value">{{ $aircraft['stats']['safe'] }}</div>
-                                        <div class="fleet-stat-label">Safe</div>
-                                    </div>
-                                    <div class="fleet-stat warning fleet-stat-clickable" onclick="openSeatStatusModal('{{ $registration }}', 'warning', event)" title="Klik untuk detail">
-                                        <div class="fleet-stat-value">{{ $aircraft['stats']['warning'] }}</div>
-                                        <div class="fleet-stat-label">Warning</div>
-                                    </div>
-                                    <div class="fleet-stat critical fleet-stat-clickable" onclick="openSeatStatusModal('{{ $registration }}', 'critical', event)" title="Klik untuk detail">
-                                        <div class="fleet-stat-value">{{ $aircraft['stats']['critical'] }}</div>
-                                        <div class="fleet-stat-label">Critical</div>
-                                    </div>
-                                    <div class="fleet-stat expired fleet-stat-clickable" onclick="openSeatStatusModal('{{ $registration }}', 'expired', event)" title="Klik untuk detail">
-                                        <div class="fleet-stat-value">{{ $aircraft['stats']['expired'] }}</div>
-                                        <div class="fleet-stat-label">Expired</div>
-                                    </div>
-                                </div>
-                                <div class="fleet-card-progress">
+                    <div style="overflow-x: auto;">
+                        <table class="premium-table">
+                            <thead>
+                                <tr>
+                                    <th>Airline</th>
+                                    <th>Total Aircraft</th>
+                                    <th>Active Life Vests</th>
+                                    <th>Expired/Critical</th>
+                                    <th>Overall Health</th>
+                                    <th style="text-align: right;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @php
+                                    $airlineMeta = [
+                                        'garuda indonesia' => [
+                                            'initials' => 'GA',
+                                            'color' => '#1e40af',
+                                            'bg' => 'rgba(30, 64, 175, 0.15)',
+                                            'logo' => '/images/garudaindonesia.png',
+                                        ],
+                                        'citilink' => [
+                                            'initials' => 'QG',
+                                            'color' => '#10b981',
+                                            'bg' => 'rgba(16, 185, 129, 0.15)',
+                                            'logo' => '/images/citilink.png',
+                                        ],
+                                    ];
+                                @endphp
+                                @foreach ($fleetByAirline as $airlineId => $airline)
                                     @php
-                                        $total = array_sum($aircraft['stats']) ?: 1;
+                                        $aSafe = 0;
+                                        $aWarn = 0;
+                                        $aCrit = 0;
+                                        $aExp = 0;
+                                        foreach ($airline['types'] as $typeGroup) {
+                                            foreach ($typeGroup['aircraft'] as $ac) {
+                                                $aSafe += $ac['stats']['safe'] ?? 0;
+                                                $aWarn += $ac['stats']['warning'] ?? 0;
+                                                $aCrit += $ac['stats']['critical'] ?? 0;
+                                                $aExp += $ac['stats']['expired'] ?? 0;
+                                            }
+                                        }
+                                        $aTotal = $aSafe + $aWarn + $aCrit + $aExp;
+                                        $aActive = $aSafe + $aWarn + $aCrit;
+                                        $aExpiredCritical = $aExp + $aCrit;
+                                        $aHealth = $aTotal > 0 ? round((($aSafe + $aWarn * 0.5) / $aTotal) * 100) : 100;
+
+                                        $nameLower = strtolower($airline['name']);
+                                        $meta = $airlineMeta[$nameLower] ?? [
+                                            'initials' => substr(
+                                                strtoupper($airline['code'] ?: $airline['name']),
+                                                0,
+                                                2,
+                                            ),
+                                            'color' => 'var(--primary)',
+                                            'bg' => 'var(--primary-glow)',
+                                        ];
                                     @endphp
-                                    <div class="progress-bar">
-                                        <div class="progress-segment safe"
-                                            style="width: {{ ($aircraft['stats']['safe'] / $total) * 100 }}%"></div>
-                                        <div class="progress-segment warning"
-                                            style="width: {{ ($aircraft['stats']['warning'] / $total) * 100 }}%"></div>
-                                        <div class="progress-segment critical"
-                                            style="width: {{ ($aircraft['stats']['critical'] / $total) * 100 }}%"></div>
-                                        <div class="progress-segment expired"
-                                            style="width: {{ ($aircraft['stats']['expired'] / $total) * 100 }}%"></div>
-                                        <div class="progress-segment no-data"
-                                            style="width: {{ ($aircraft['stats']['no_data'] / $total) * 100 }}%"></div>
-                                    </div>
-                                </div>
-                                <div class="fleet-card-footer">
-                                    <span
-                                        class="health-score {{ $aircraft['health'] >= 70 ? 'good' : ($aircraft['health'] >= 40 ? 'medium' : 'bad') }}">
-                                        {{ $aircraft['health'] }}% Health
-                                    </span>
-                                    <span class="fleet-card-action">Open →</span>
-                                </div>
-                            </a>
-                        @endforeach
+                                    <tr class="airline-master-card" data-name="{{ strtolower($airline['name']) }}"
+                                        data-health="{{ $aHealth }}" data-expired="{{ $aExp }}">
+                                        <td>
+                                            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                                @if (!empty($meta['logo']))
+                                                    <img src="{{ $meta['logo'] }}" alt="{{ $airline['name'] }}"
+                                                        style="width: 36px; height: 36px; border-radius: 8px; object-fit: contain; background: white; padding: 3px; border: 1px solid {{ $meta['color'] }}33;"
+                                                        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                                    <div class="airline-badge-wrap"
+                                                        style="display: none; background-color: {{ $meta['bg'] }}; border: 1px solid {{ $meta['color'] }}33; color: {{ $meta['color'] }};">
+                                                        {{ $meta['initials'] }}
+                                                    </div>
+                                                @else
+                                                    <div class="airline-badge-wrap"
+                                                        style="background-color: {{ $meta['bg'] }}; border: 1px solid {{ $meta['color'] }}33; color: {{ $meta['color'] }};">
+                                                        {{ $meta['initials'] }}
+                                                    </div>
+                                                @endif
+                                                <div>
+                                                    <div
+                                                        style="font-weight: 700; color: var(--text-primary); font-size: 0.95rem;">
+                                                        {{ $airline['name'] }}</div>
+                                                    <div
+                                                        style="font-size: 0.75rem; color: var(--text-muted); font-weight: 500;">
+                                                        {{ $airline['code'] }}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td style="font-weight: 600; font-size: 1rem;">{{ $airline['aircraft_count'] }}
+                                        </td>
+                                        <td style="font-weight: 600; font-size: 1rem; color: var(--text-secondary);">
+                                            {{ $aActive }}</td>
+                                        <td
+                                            style="font-weight: 700; font-size: 1rem; color: {{ $aExpiredCritical > 0 ? 'var(--danger)' : 'var(--text-muted)' }};">
+                                            {{ $aExpiredCritical > 0 ? $aExpiredCritical : '0' }}
+                                        </td>
+                                        <td>
+                                            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                                @php
+                                                    $healthColor =
+                                                        $aHealth >= 70
+                                                            ? 'var(--success)'
+                                                            : ($aHealth >= 40
+                                                                ? 'var(--warning)'
+                                                                : 'var(--danger)');
+                                                    $bgColor =
+                                                        $aHealth >= 70
+                                                            ? 'rgba(16, 185, 129, 0.12)'
+                                                            : ($aHealth >= 40
+                                                                ? 'rgba(245, 158, 11, 0.12)'
+                                                                : 'rgba(239, 68, 68, 0.12)');
+                                                @endphp
+                                                <div
+                                                    style="
+                                                position: relative; 
+                                                width: 44px; 
+                                                height: 44px; 
+                                                border-radius: 50%; 
+                                                background: conic-gradient({{ $healthColor }} {{ $aHealth }}%, {{ $bgColor }} 0);
+                                                display: flex; 
+                                                align-items: center; 
+                                                justify-content: center;
+                                                flex-shrink: 0;
+                                            ">
+                                                    <div
+                                                        style="
+                                                    width: 34px; 
+                                                    height: 34px; 
+                                                    background-color: var(--bg-card-solid);
+                                                    border-radius: 50%;
+                                                    display: flex;
+                                                    align-items: center;
+                                                    justify-content: center;
+                                                ">
+                                                        <span
+                                                            style="font-weight: 700; font-size: 0.78rem; color: var(--text-primary);">{{ $aHealth }}%</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td style="text-align: right;">
+                                            <div style="display: inline-flex; gap: 0.5rem; justify-content: flex-end;">
+                                                <button type="button" class="btn-table-action"
+                                                    onclick="showAirlineDetails('{{ $airline['name'] }}')">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24"
+                                                        fill="none" stroke="currentColor" stroke-width="2">
+                                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                                        <circle cx="12" cy="12" r="3" />
+                                                    </svg>
+                                                    <span>View Details</span>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
                     </div>
+                </div>
+
+                {{-- Right Column: Widgets Sidebar --}}
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+
+                    <!-- Widget: Critical Status Highlights -->
+                    <div class="widget-box">
+                        <h3 class="widget-title">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5">
+                                <path
+                                    d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                                <line x1="12" y1="9" x2="12" y2="13" />
+                                <line x1="12" y1="17" x2="12.01" y2="17" />
+                            </svg>
+                            Critical Status Highlights
+                        </h3>
+                        @php
+                            $criticalAircraft = collect($fleet)
+                                ->filter(function ($ac) {
+                                    return $ac['stats']['expired'] > 0 || $ac['stats']['critical'] > 0;
+                                })
+                                ->sortByDesc(function ($ac) {
+                                    return $ac['stats']['expired'] * 1000 + $ac['stats']['critical'];
+                                })
+                                ->take(4);
+                        @endphp
+                        @if ($criticalAircraft->isEmpty())
+                            <div
+                                style="padding: 1.5rem 0.5rem; text-align: center; color: var(--success); font-size: 0.85rem; font-weight: 600;">
+                                ✨ All aircraft are fully safe!
+                            </div>
+                        @else
+                            <table class="widget-table">
+                                <thead>
+                                    <tr>
+                                        <th>Aircraft</th>
+                                        <th>Life Vests</th>
+                                        <th style="text-align: right;">Expired</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($criticalAircraft as $reg => $ac)
+                                        <tr>
+                                            <td>
+                                                <a href="{{ route('aircraft.show', $reg) }}"
+                                                    style="font-weight: 700; color: var(--primary-light); text-decoration: none;">{{ $reg }}</a>
+                                            </td>
+                                            <td>
+                                                @if ($ac['stats']['expired'] > 0)
+                                                    <span
+                                                        style="color: var(--danger); font-weight: 600; font-size: 0.78rem; text-transform: uppercase;">Expired</span>
+                                                @else
+                                                    <span
+                                                        style="color: var(--warning); font-weight: 600; font-size: 0.78rem; text-transform: uppercase;">Critical</span>
+                                                @endif
+                                            </td>
+                                            <td style="text-align: right; font-weight: 700; color: var(--danger);">
+                                                {{ $ac['stats']['expired'] ?: $ac['stats']['critical'] }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        @endif
+                    </div>
+
+                    <!-- Widget: Upcoming Expiry Events -->
+                    <div class="widget-box">
+                        <h3 class="widget-title">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                                <line x1="16" y1="2" x2="16" y2="6" />
+                                <line x1="8" y1="2" x2="8" y2="6" />
+                                <line x1="3" y1="10" x2="21" y2="10" />
+                            </svg>
+                            Upcoming Expiry Events
+                        </h3>
+                        @php
+                            $todayCar = now()->startOfDay();
+                            $next30 = $todayCar->copy()->addDays(30);
+                            $next60 = $todayCar->copy()->addDays(60);
+                            $next90 = $todayCar->copy()->addDays(90);
+                            $next120 = $todayCar->copy()->addDays(120);
+
+                            $expiry30 = \App\Models\Seat::whereNotNull('expiry_date')
+                                ->whereBetween('expiry_date', [$todayCar->copy()->addDay(), $next30])
+                                ->count();
+                            $expiry60 = \App\Models\Seat::whereNotNull('expiry_date')
+                                ->whereBetween('expiry_date', [$next30->copy()->addDay(), $next60])
+                                ->count();
+                            $expiry90 = \App\Models\Seat::whereNotNull('expiry_date')
+                                ->whereBetween('expiry_date', [$next60->copy()->addDay(), $next90])
+                                ->count();
+                            $expiry120 = \App\Models\Seat::whereNotNull('expiry_date')
+                                ->whereBetween('expiry_date', [$next90->copy()->addDay(), $next120])
+                                ->count();
+                        @endphp
+                        <div class="upcoming-event-item">
+                            <span style="color: var(--text-secondary); font-weight: 500;">Next 30 Days</span>
+                            <span
+                                style="font-weight: 700; color: {{ $expiry30 > 0 ? 'var(--danger)' : 'var(--text-muted)' }};">{{ $expiry30 }}
+                                units</span>
+                        </div>
+                        <div class="upcoming-event-item">
+                            <span style="color: var(--text-secondary); font-weight: 500;">Next 60 Days</span>
+                            <span
+                                style="font-weight: 700; color: {{ $expiry60 > 0 ? 'var(--warning)' : 'var(--text-muted)' }};">{{ $expiry60 }}
+                                units</span>
+                        </div>
+                        <div class="upcoming-event-item">
+                            <span style="color: var(--text-secondary); font-weight: 500;">Next 90 Days</span>
+                            <span style="font-weight: 700; color: var(--text-secondary);">{{ $expiry90 }} units</span>
+                        </div>
+                        <div class="upcoming-event-item">
+                            <span style="color: var(--text-secondary); font-weight: 500;">Next 120 Days</span>
+                            <span style="font-weight: 700; color: var(--text-secondary);">{{ $expiry120 }} units</span>
+                        </div>
+                    </div>
+
+
+
+                </div>
+
+            </div>
+
+            {{-- Fleet Details Container --}}
+            <div id="airline-fleet-details" style="display: none;"></div>
+
+            @if (empty($fleetByAirline))
+                <div
+                    style="padding: 5rem 2rem; text-align: center; background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border-subtle); margin-top: 2rem;">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="1.5" style="color: var(--text-muted); margin-bottom: 1.5rem; opacity: 0.5;">
+                        <path
+                            d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                        <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+                        <line x1="12" y1="22.08" x2="12" y2="12" />
+                    </svg>
+                    <h3 style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin: 0;">No Aircraft
+                        Found</h3>
+                    <p
+                        style="color: var(--text-muted); margin-top: 0.5rem; max-width: 400px; margin-left: auto; margin-right: auto;">
+                        It looks like there are no aircraft registered in the system yet. Please contact an administrator to
+                        add your fleet.</p>
+                </div>
+            @endif
+
+            {{-- Fleet Cards Section --}}
+            @foreach ($fleetByAirline as $airlineId => $airline)
+                <section class="airline-section" data-airline="{{ $airline['name'] }}"
+                    style="margin-bottom: 2rem; display: none;">
+                    @php
+                        $airlineNameLower = strtolower($airline['name']);
+                        $meta = null;
+                        if (isset($airlineMeta) && isset($airlineMeta[$airlineNameLower])) {
+                            $meta = $airlineMeta[$airlineNameLower];
+                        } else {
+                            $fallbackMeta = [
+                                'garuda indonesia' => [
+                                    'initials' => 'GA',
+                                    'color' => '#1e40af',
+                                    'bg' => 'rgba(30, 64, 175, 0.15)',
+                                    'logo' => '/images/garudaindonesia.png',
+                                ],
+                                'citilink' => [
+                                    'initials' => 'QG',
+                                    'color' => '#10b981',
+                                    'bg' => 'rgba(16, 185, 129, 0.15)',
+                                    'logo' => '/images/citilink.png',
+                                ]
+                            ];
+                            $meta = $fallbackMeta[$airlineNameLower] ?? null;
+                        }
+                    @endphp
+                    <div class="airline-header"
+                        style="display: flex; align-items: center; margin-bottom: 1.25rem; padding: 1rem 1.15rem; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 12px; box-shadow: var(--shadow-sm); flex-wrap: wrap;">
+                        <div>
+                            <h2 style="margin: 0; font-size: 1.4rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.02em; line-height: 1.2;">
+                                {{ $airline['name'] }}</h2>
+                            <span style="color: var(--text-muted); font-size: 0.85rem; font-weight: 500;">
+                                <strong style="color: var(--primary-light);">{{ $airline['code'] }}</strong> &middot; 
+                                <span class="airline-count" style="color: var(--text-primary); font-weight: 700;">{{ $airline['aircraft_count'] }}</span> aircraft in fleet
+                            </span>
+                        </div>
+                    </div>
+
+                    @foreach ($airline['types'] as $baseType => $typeGroup)
+                        <section class="fleet-section" style="margin-left: 0.5rem;">
+                            <div class="fleet-type-header"
+                                style="display: flex; align-items: center; justify-content: space-between; padding: 0.65rem 1rem; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-subtle); border-radius: 8px; margin-bottom: 0.75rem; cursor: pointer; transition: all 0.2s; user-select: none;"
+                                onmouseover="this.style.background='rgba(255,255,255,0.04)'; this.style.borderColor='rgba(59, 130, 246, 0.35)';"
+                                onmouseout="this.style.background='rgba(255,255,255,0.02)'; this.style.borderColor='var(--border-subtle)';"
+                                onclick="const cards = this.nextElementSibling; const isHidden = cards.style.display==='none'; cards.style.display=isHidden?(document.body.classList.contains('list-view-active')?'flex':'grid'):'none'; this.querySelector('.collapse-arrow').style.transform=isHidden?'rotate(90deg)':'rotate(0deg)';">
+                                <div style="display: flex; align-items: center; gap: 0.65rem;">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.85;">
+                                        <polygon points="12 2 2 22 12 17 22 22 12 2"></polygon>
+                                    </svg>
+                                    <span style="font-size: 0.9rem; font-weight: 700; color: var(--text-primary);">
+                                        {{ $typeGroup['name'] }}
+                                    </span>
+                                    <span style="font-size: 0.7rem; font-weight: 700; background: rgba(255,255,255,0.05); color: var(--text-muted); padding: 1px 6px; border-radius: 20px; border: 1px solid var(--border-subtle);">
+                                        {{ count($typeGroup['aircraft']) }} aircraft
+                                    </span>
+                                </div>
+                                <span class="collapse-arrow" style="font-size: 0.75rem; color: var(--text-muted); transition: transform 0.2s; transform: rotate(0deg); display: inline-block;">▶</span>
+                            </div>
+                            <div class="fleet-cards" style="display: none;">
+                                @foreach ($typeGroup['aircraft'] as $registration => $aircraft)
+                                    <a href="{{ route('aircraft.show', $registration) }}"
+                                        class="fleet-card {{ $aircraft['health'] >= 70 ? 'healthy' : ($aircraft['health'] >= 40 ? 'warning' : 'critical') }}"
+                                        data-status="{{ $aircraft['status'] ?? 'active' }}"
+                                        data-health="{{ $aircraft['health'] >= 70 ? 'safe' : ($aircraft['health'] >= 40 ? 'warning' : 'critical') }}"
+                                        data-airline="{{ $airline['name'] }}" data-type="{{ $aircraft['type'] }}">
+                                        <div class="fleet-card-header">
+                                            <div>
+                                                <div class="fleet-card-type">
+                                                    {{ $aircraft['type'] }}
+                                                    <span class="status-badge {{ $aircraft['status'] ?? 'active' }}">
+                                                        {{ strtoupper($aircraft['status'] ?? 'active') }}
+                                                    </span>
+                                                </div>
+                                                <div class="fleet-card-reg">{{ $registration }}</div>
+                                            </div>
+                                        </div>
+                                        <div class="fleet-card-stats">
+                                            <div class="fleet-stat safe fleet-stat-clickable"
+                                                onclick="openSeatStatusModal('{{ $registration }}', 'safe', event)"
+                                                title="Klik untuk detail">
+                                                <div class="fleet-stat-value">{{ $aircraft['stats']['safe'] }}</div>
+                                                <div class="fleet-stat-label">Safe</div>
+                                            </div>
+                                            <div class="fleet-stat warning fleet-stat-clickable"
+                                                onclick="openSeatStatusModal('{{ $registration }}', 'warning', event)"
+                                                title="Klik untuk detail">
+                                                <div class="fleet-stat-value">{{ $aircraft['stats']['warning'] }}</div>
+                                                <div class="fleet-stat-label">Warning</div>
+                                            </div>
+                                            <div class="fleet-stat critical fleet-stat-clickable"
+                                                onclick="openSeatStatusModal('{{ $registration }}', 'critical', event)"
+                                                title="Klik untuk detail">
+                                                <div class="fleet-stat-value">{{ $aircraft['stats']['critical'] }}</div>
+                                                <div class="fleet-stat-label">Critical</div>
+                                            </div>
+                                            <div class="fleet-stat expired fleet-stat-clickable"
+                                                onclick="openSeatStatusModal('{{ $registration }}', 'expired', event)"
+                                                title="Klik untuk detail">
+                                                <div class="fleet-stat-value">{{ $aircraft['stats']['expired'] }}</div>
+                                                <div class="fleet-stat-label">Expired</div>
+                                            </div>
+                                        </div>
+                                        <div class="fleet-card-progress">
+                                            @php
+                                                $total = array_sum($aircraft['stats']) ?: 1;
+                                            @endphp
+                                            <div class="progress-bar">
+                                                <div class="progress-segment safe"
+                                                    style="width: {{ ($aircraft['stats']['safe'] / $total) * 100 }}%">
+                                                </div>
+                                                <div class="progress-segment warning"
+                                                    style="width: {{ ($aircraft['stats']['warning'] / $total) * 100 }}%">
+                                                </div>
+                                                <div class="progress-segment critical"
+                                                    style="width: {{ ($aircraft['stats']['critical'] / $total) * 100 }}%">
+                                                </div>
+                                                <div class="progress-segment expired"
+                                                    style="width: {{ ($aircraft['stats']['expired'] / $total) * 100 }}%">
+                                                </div>
+                                                <div class="progress-segment no-data"
+                                                    style="width: {{ ($aircraft['stats']['no_data'] / $total) * 100 }}%">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="fleet-card-footer">
+                                            <span
+                                                class="health-score {{ $aircraft['health'] >= 70 ? 'good' : ($aircraft['health'] >= 40 ? 'medium' : 'bad') }}">
+                                                {{ $aircraft['health'] }}% Health
+                                            </span>
+                                            <span class="fleet-card-action">Open →</span>
+                                        </div>
+                                    </a>
+                                @endforeach
+                            </div>
+                        </section>
+                    @endforeach
                 </section>
             @endforeach
-        </section>
-    @endforeach
 
 
-    <!-- Empty State (No Results Found) -->
-    <div id="empty-state" style="display: none; padding: 4rem 2rem; text-align: center; background: var(--bg-card); border: 2px dashed var(--border); border-radius: 12px; margin: 2rem 0;">
-        <div style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;">🔍</div>
-        <h3 style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin: 0 0 0.5rem;">Tidak Ada Hasil Ditemukan</h3>
-        <p style="color: var(--text-muted); font-size: 1rem; max-width: 400px; margin: 0 auto 1.5rem;">Maaf, tidak ada pesawat atau maskapai yang cocok dengan kriteria pencarian Anda. Silakan coba kata kunci lain atau bersihkan filter.</p>
-        <button type="button" onclick="document.getElementById('clearFilters').click();" class="btn-premium" style="padding: 0.6rem 1.5rem;">Bersihkan Semua Filter</button>
-    </div>
+            <!-- Empty State (No Results Found) -->
+            <div id="empty-state"
+                style="display: none; padding: 4rem 2rem; text-align: center; background: var(--bg-card); border: 2px dashed var(--border); border-radius: 12px; margin: 2rem 0;">
+                <div style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;">🔍</div>
+                <h3 style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin: 0 0 0.5rem;">Tidak Ada
+                    Hasil Ditemukan</h3>
+                <p style="color: var(--text-muted); font-size: 1rem; max-width: 400px; margin: 0 auto 1.5rem;">Maaf, tidak
+                    ada pesawat atau maskapai yang cocok dengan kriteria pencarian Anda. Silakan coba kata kunci lain atau
+                    bersihkan filter.</p>
+                <button type="button" onclick="document.getElementById('clearFilters').click();" class="btn-premium"
+                    style="padding: 0.6rem 1.5rem;">Bersihkan Semua Filter</button>
+            </div>
 
-    <!-- Seat Status Detail Modal -->
-    <div id="seatStatusModal" class="seat-status-modal-overlay" style="display: none;" onclick="if(event.target===this) closeSeatStatusModal()">
-        <div class="seat-status-modal">
-            <div class="seat-status-modal-header">
-                <div>
-                    <h3 id="seatModalTitle" style="margin: 0; font-size: 1.25rem; font-weight: 800; color: var(--text-primary);"></h3>
-                    <p id="seatModalSubtitle" style="margin: 0.25rem 0 0; font-size: 0.85rem; color: var(--text-muted);"></p>
+            <!-- Seat Status Detail Modal -->
+            <div id="seatStatusModal" class="seat-status-modal-overlay" style="display: none;"
+                onclick="if(event.target===this) closeSeatStatusModal()">
+                <div class="seat-status-modal">
+                    <div class="seat-status-modal-header">
+                        <div>
+                            <h3 id="seatModalTitle"
+                                style="margin: 0; font-size: 1.25rem; font-weight: 800; color: var(--text-primary);"></h3>
+                            <p id="seatModalSubtitle"
+                                style="margin: 0.25rem 0 0; font-size: 0.85rem; color: var(--text-muted);"></p>
+                        </div>
+                        <button type="button" onclick="closeSeatStatusModal()" class="seat-status-modal-close"
+                            title="Tutup">&times;</button>
+                    </div>
+                    <div id="seatModalBody" class="seat-status-modal-body">
+                        <!-- Content loaded via JS -->
+                    </div>
                 </div>
-                <button type="button" onclick="closeSeatStatusModal()" class="seat-status-modal-close" title="Tutup">&times;</button>
             </div>
-            <div id="seatModalBody" class="seat-status-modal-body">
-                <!-- Content loaded via JS -->
-            </div>
-        </div>
-    </div>
-    
+
     </div>
     @endif
 
     {{-- Life Vest Replacement Summary --}}
-    @if(count($pnSummary) > 0 && $currentView === 'life-vest-summary')
-        <section class="replacement-section animate-view" id="life-vest-summary-section">
-            <h2 style="margin-bottom: 1.5rem;">Life Vest Replacement Summary</h2>
+    @if (count($pnSummary) > 0 && $currentView === 'life-vest-summary')
+        <section class="replacement-section animate-view" id="life-vest-summary-section" style="margin-top: 0.25rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h2 style="margin: 0; font-size: 1.5rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.02em;">Life Vest Replacement Summary</h2>
+            </div>
             <div class="replacement-grid">
-                @foreach($pnSummary as $idx => $item)
+                @foreach ($pnSummary as $idx => $item)
                     @php
                         $hasAttention = $item['expired'] > 0 || $item['critical'] > 0 || $item['warning'] > 0;
+                        $borderColor = 'var(--border-subtle)';
+                        $boxShadow = 'var(--shadow-sm)';
+                        if ($item['expired'] > 0) {
+                            $borderColor = 'rgba(139, 92, 246, 0.35)';
+                            $boxShadow = '0 4px 16px rgba(139, 92, 246, 0.06), inset 0 0 10px rgba(139, 92, 246, 0.03)';
+                        } elseif ($item['critical'] > 0) {
+                            $borderColor = 'rgba(239, 68, 68, 0.35)';
+                            $boxShadow = '0 4px 16px rgba(239, 68, 68, 0.06), inset 0 0 10px rgba(239, 68, 68, 0.03)';
+                        } elseif ($item['warning'] > 0) {
+                            $borderColor = 'rgba(245, 158, 11, 0.35)';
+                            $boxShadow = '0 4px 16px rgba(245, 158, 11, 0.06), inset 0 0 10px rgba(245, 158, 11, 0.03)';
+                        }
                     @endphp
-                    <div class="replacement-card {{ $hasAttention ? 'has-expired' : 'all-good' }}">
-                        <div class="replacement-header">
-                            <div>
-                                <span class="replacement-pn">{{ $item['pn'] }}</span>
-                                <span
-                                    class="replacement-category {{ $item['category'] }}">{{ strtoupper($item['category']) }}</span>
+                    <div class="replacement-card" style="border: 1px solid {{ $borderColor }}; box-shadow: {{ $boxShadow }}; padding: 0.9rem; border-radius: 10px; background: var(--bg-card); transition: all 0.2s;">
+                        <div class="replacement-header" style="margin-bottom: 0.65rem;">
+                            <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                                <span class="replacement-pn" style="font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 0.95rem; color: var(--text-primary);">{{ $item['pn'] }}</span>
+                                <span class="replacement-category {{ $item['category'] }}" style="margin-left: 0; font-size: 0.65rem; font-weight: 800;">{{ strtoupper($item['category']) }}</span>
                             </div>
                             <div class="replacement-counts">
-                                <span class="replacement-total">{{ $item['total'] }} total</span>
+                                <span class="replacement-total" style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted);">{{ number_format($item['total']) }} total</span>
                             </div>
                         </div>
 
                         {{-- Clickable status badges (act as filter tabs) --}}
-                        <div class="replacement-badges">
-                            @if($item['expired'] > 0)
-                                <span class="badge-btn badge-expired {{ $item['expired'] > 0 ? 'active' : '' }}" data-tab="expired"
-                                    data-card="{{ $idx }}">🟣 {{ $item['expired'] }} expired</span>
+                        <div class="replacement-badges" style="margin-top: 0; padding-bottom: 0.4rem; gap: 0.4rem;">
+                            @if ($item['expired'] > 0)
+                                <span class="badge-btn badge-expired {{ $item['expired'] > 0 ? 'active' : '' }}"
+                                    data-tab="expired" data-card="{{ $idx }}"
+                                    style="background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.25); color: #c4b5fd; font-size: 0.75rem; font-weight: 700; padding: 2px 8px; border-radius: 12px; display: inline-flex; align-items: center; gap: 0.35rem;">
+                                    <span style="display:inline-block; width: 6px; height: 6px; border-radius: 50%; background: #a855f7; box-shadow: 0 0 6px #a855f7;"></span>
+                                    {{ $item['expired'] }} expired
+                                </span>
                             @endif
-                            @if($item['critical'] > 0)
-                                <span
-                                    class="badge-btn badge-critical {{ $item['expired'] == 0 && $item['critical'] > 0 ? 'active' : '' }}"
-                                    data-tab="critical" data-card="{{ $idx }}">🔴 {{ $item['critical'] }} critical</span>
+                            @if ($item['critical'] > 0)
+                                <span class="badge-btn badge-critical {{ $item['expired'] == 0 && $item['critical'] > 0 ? 'active' : '' }}"
+                                    data-tab="critical" data-card="{{ $idx }}"
+                                    style="background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25); color: #f87171; font-size: 0.75rem; font-weight: 700; padding: 2px 8px; border-radius: 12px; display: inline-flex; align-items: center; gap: 0.35rem;">
+                                    <span style="display:inline-block; width: 6px; height: 6px; border-radius: 50%; background: #ef4444; box-shadow: 0 0 6px #ef4444;"></span>
+                                    {{ $item['critical'] }} critical
+                                </span>
                             @endif
-                            @if($item['warning'] > 0)
-                                <span
-                                    class="badge-btn badge-warning {{ $item['expired'] == 0 && $item['critical'] == 0 && $item['warning'] > 0 ? 'active' : '' }}"
-                                    data-tab="warning" data-card="{{ $idx }}">🟡 {{ $item['warning'] }} warning</span>
+                            @if ($item['warning'] > 0)
+                                <span class="badge-btn badge-warning {{ $item['expired'] == 0 && $item['critical'] == 0 && $item['warning'] > 0 ? 'active' : '' }}"
+                                    data-tab="warning" data-card="{{ $idx }}"
+                                    style="background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.25); color: #fbbf24; font-size: 0.75rem; font-weight: 700; padding: 2px 8px; border-radius: 12px; display: inline-flex; align-items: center; gap: 0.35rem;">
+                                    <span style="display:inline-block; width: 6px; height: 6px; border-radius: 50%; background: #f59e0b; box-shadow: 0 0 6px #f59e0b;"></span>
+                                    {{ $item['warning'] }} warning
+                                </span>
                             @endif
-                            @if(!$hasAttention)
-                                <span class="replacement-ok">All safe</span>
+                            @if (!$hasAttention)
+                                <span class="replacement-ok" style="background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.25); color: #34d399; font-size: 0.75rem; font-weight: 700; padding: 2px 8px; border-radius: 12px; display: inline-flex; align-items: center; gap: 0.35rem;">
+                                    <span style="display:inline-block; width: 6px; height: 6px; border-radius: 50%; background: #10b981; box-shadow: 0 0 6px #10b981;"></span>
+                                    All Safe
+                                </span>
                             @endif
                         </div>
 
                         {{-- Breakdowns --}}
-                        @if(count($item['aircraft']) > 0)
+                        @if (count($item['aircraft']) > 0)
                             <div class="replacement-breakdown" data-card="{{ $idx }}" data-type="expired"
-                                style="{{ $item['expired'] > 0 ? '' : 'display:none' }}">
-                                @foreach($item['aircraft'] as $ac)
-                                    @if($ac['expired'] > 0)
-                                        <span class="breakdown-item bd-expired">{{ $ac['reg'] }}: {{ $ac['expired'] }}</span>
+                                style="{{ $item['expired'] > 0 ? '' : 'display:none' }}; margin-top: 0.4rem; padding-top: 0.5rem; border-top: 1px solid var(--border-subtle); gap: 0.35rem;">
+                                @foreach ($item['aircraft'] as $ac)
+                                    @if ($ac['expired'] > 0)
+                                        <span class="breakdown-item bd-expired" style="background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.18); color: #c4b5fd; font-size: 0.75rem; padding: 2px 6px; border-radius: 6px; font-weight: 700;">
+                                            {{ $ac['reg'] }}: {{ $ac['expired'] }}
+                                        </span>
                                     @endif
                                 @endforeach
                             </div>
 
                             <div class="replacement-breakdown" data-card="{{ $idx }}" data-type="critical"
-                                style="{{ $item['expired'] == 0 && $item['critical'] > 0 ? '' : 'display:none' }}">
-                                @foreach($item['aircraft'] as $ac)
-                                    @if($ac['critical'] > 0)
-                                        <span class="breakdown-item bd-critical">{{ $ac['reg'] }}: {{ $ac['critical'] }}</span>
+                                style="{{ $item['expired'] == 0 && $item['critical'] > 0 ? '' : 'display:none' }}; margin-top: 0.4rem; padding-top: 0.5rem; border-top: 1px solid var(--border-subtle); gap: 0.35rem;">
+                                @foreach ($item['aircraft'] as $ac)
+                                    @if ($ac['critical'] > 0)
+                                        <span class="breakdown-item bd-critical" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.18); color: #f87171; font-size: 0.75rem; padding: 2px 6px; border-radius: 6px; font-weight: 700;">
+                                            {{ $ac['reg'] }}: {{ $ac['critical'] }}
+                                        </span>
                                     @endif
                                 @endforeach
                             </div>
 
                             <div class="replacement-breakdown" data-card="{{ $idx }}" data-type="warning"
-                                style="{{ $item['expired'] == 0 && $item['critical'] == 0 && $item['warning'] > 0 ? '' : 'display:none' }}">
-                                @foreach($item['aircraft'] as $ac)
-                                    @if($ac['warning'] > 0)
-                                        <span class="breakdown-item bd-warning">{{ $ac['reg'] }}: {{ $ac['warning'] }}</span>
+                                style="{{ $item['expired'] == 0 && $item['critical'] == 0 && $item['warning'] > 0 ? '' : 'display:none' }}; margin-top: 0.4rem; padding-top: 0.5rem; border-top: 1px solid var(--border-subtle); gap: 0.35rem;">
+                                @foreach ($item['aircraft'] as $ac)
+                                    @if ($ac['warning'] > 0)
+                                        <span class="breakdown-item bd-warning" style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.18); color: #fbbf24; font-size: 0.75rem; padding: 2px 6px; border-radius: 6px; font-weight: 700;">
+                                            {{ $ac['reg'] }}: {{ $ac['warning'] }}
+                                        </span>
                                     @endif
                                 @endforeach
                             </div>
@@ -494,13 +1077,14 @@
     @endif
 
     {{-- Dedicated Activity Log Section (Full Width) --}}
-    @if(auth()->user() && auth()->user()->isAdmin() && $currentView === 'activity-log')
+    @if (auth()->user() && auth()->user()->isAdmin() && $currentView === 'activity-log')
         <section class="replacement-section animate-view" id="activity-log-section">
-            
+
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
                 <div>
                     <h2 style="margin: 0;">Global Activity Log</h2>
-                    <p style="margin: 0.25rem 0 0; color: var(--text-muted); font-size: 0.85rem;">Historical record of all administrative changes across the fleet</p>
+                    <p style="margin: 0.25rem 0 0; color: var(--text-muted); font-size: 0.85rem;">Historical record of all
+                        administrative changes across the fleet</p>
                 </div>
             </div>
 
@@ -509,9 +1093,9 @@
     @endif
 
     {{-- TOP P/N INSIGHTS SECTION --}}
-    @if(count($pnSummary) > 0 && $currentView === 'top-pn-insights')
-        <section class="replacement-section animate-view" id="top-pn-insights-section">
-            
+    @if (count($pnSummary) > 0 && $currentView === 'top-pn-insights')
+        <section class="replacement-section animate-view" id="top-pn-insights-section" style="margin-top: 0.25rem;">
+
             @php
                 $totalExpired = collect($pnSummary)->sum('expired');
                 $totalCritical = collect($pnSummary)->sum('critical');
@@ -519,72 +1103,104 @@
                 $totalActionRequired = $totalExpired + $totalCritical + $totalWarning;
             @endphp
 
-            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+            <div style="display: flex; flex-direction: column; gap: 1.25rem;">
                 {{-- Charts & Summary --}}
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.75rem;">
-                        <div class="replacement-card" style="border-left: 3px solid var(--primary); text-align: center; padding: 1rem;">
-                            <div style="font-size: 1.8rem; font-weight: 800; color: var(--primary);">{{ $totalActionRequired }}</div>
-                            <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em;">Total Action Required</div>
-                        </div>
-                        <div class="replacement-card" style="border-left: 3px solid #8b5cf6; text-align: center; padding: 1rem;">
-                            <div style="font-size: 1.8rem; font-weight: 800; color: #c4b5fd;">{{ $totalExpired }}</div>
-                            <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em;">Expired</div>
-                        </div>
-                        <div class="replacement-card" style="border-left: 3px solid #ef4444; text-align: center; padding: 1rem;">
-                            <div style="font-size: 1.8rem; font-weight: 800; color: #f87171;">{{ $totalCritical }}</div>
-                            <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em;">Critical</div>
-                        </div>
-                        <div class="replacement-card" style="border-left: 3px solid #f59e0b; text-align: center; padding: 1rem;">
-                            <div style="font-size: 1.8rem; font-weight: 800; color: #fbbf24;">{{ $totalWarning }}</div>
-                            <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em;">Warning</div>
-                        </div>
+                    {{-- Total Action Required --}}
+                    <div class="replacement-card"
+                        style="border: 1px solid rgba(59, 130, 246, 0.45); background: linear-gradient(180deg, rgba(59, 130, 246, 0.14) 0%, rgba(59, 130, 246, 0.02) 100%); box-shadow: inset 0 0 12px rgba(59, 130, 246, 0.08); text-align: center; padding: 1.15rem; border-radius: 10px;">
+                        <div style="font-size: 1.8rem; font-weight: 800; color: var(--primary);">
+                            {{ $totalActionRequired }}</div>
+                        <div
+                            style="font-size: 0.72rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 0.25rem;">
+                            Total Action Required</div>
                     </div>
-
-                    {{-- Chart --}}
-                    <div class="replacement-card" style="padding: 1.5rem; border-left: none;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
-                            <h3 style="margin: 0; font-size: 1.1rem; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 0.5rem;">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary);"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-                                Part Numbers by Urgency Level
-                            </h3>
-                            <select id="pnCategoryFilter" class="form-select" style="padding: 0.4rem 1rem; font-size: 0.85rem; width: auto !important; min-width: 160px; max-width: 220px; cursor: pointer; border-radius: 8px;">
-                                <option value="all">All Categories</option>
-                                <option value="adult">Adult Vests</option>
-                                <option value="crew">Crew Vests</option>
-                                <option value="infant">Infant Vests</option>
-                            </select>
-                        </div>
-                        <div style="position: relative; height: 380px;">
-                            <canvas id="pnInsightsChart"></canvas>
-                        </div>
+                    {{-- Expired --}}
+                    <div class="replacement-card"
+                        style="border: 1px solid rgba(139, 92, 246, 0.45); background: linear-gradient(180deg, rgba(139, 92, 246, 0.14) 0%, rgba(139, 92, 246, 0.02) 100%); box-shadow: inset 0 0 12px rgba(139, 92, 246, 0.08); text-align: center; padding: 1.15rem; border-radius: 10px;">
+                        <div style="font-size: 1.8rem; font-weight: 800; color: #c4b5fd;">{{ $totalExpired }}</div>
+                        <div
+                            style="font-size: 0.72rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 0.25rem;">
+                            Expired</div>
                     </div>
-
-                    {{-- Data Table --}}
-                    <div class="replacement-card" style="padding: 1.5rem; border-left: none; overflow-x: auto;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                            <h3 style="margin: 0; font-size: 1rem; font-weight: 700; color: var(--text-primary);">Detailed Breakdown</h3>
-                            <a href="{{ route('reports.summary') }}" class="btn-premium btn-premium-success">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                                Export Insights
-                            </a>
-                        </div>
-                        <table class="fleet-table" style="width: 100%; border: none;">
-                            <thead>
-                                <tr>
-                                    <th class="fleet-th">#</th>
-                                    <th class="fleet-th">Part Number</th>
-                                    <th class="fleet-th">Category</th>
-                                    <th class="fleet-th" style="text-align: center;">Exp</th>
-                                    <th class="fleet-th" style="text-align: center;">Crit</th>
-                                    <th class="fleet-th" style="text-align: center;">Warn</th>
-                                    <th class="fleet-th" style="text-align: center;">Total</th>
-                                    <th class="fleet-th">Affected</th>
-                                </tr>
-                            </thead>
-                            <tbody id="pnInsightsTableBody"></tbody>
-                        </table>
+                    {{-- Critical --}}
+                    <div class="replacement-card"
+                        style="border: 1px solid rgba(239, 68, 68, 0.45); background: linear-gradient(180deg, rgba(239, 68, 68, 0.14) 0%, rgba(239, 68, 68, 0.02) 100%); box-shadow: inset 0 0 12px rgba(239, 68, 68, 0.08); text-align: center; padding: 1.15rem; border-radius: 10px;">
+                        <div style="font-size: 1.8rem; font-weight: 800; color: #f87171;">{{ $totalCritical }}</div>
+                        <div
+                            style="font-size: 0.72rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 0.25rem;">
+                            Critical</div>
+                    </div>
+                    {{-- Warning --}}
+                    <div class="replacement-card"
+                        style="border: 1px solid rgba(245, 158, 11, 0.45); background: linear-gradient(180deg, rgba(245, 158, 11, 0.14) 0%, rgba(245, 158, 11, 0.02) 100%); box-shadow: inset 0 0 12px rgba(245, 158, 11, 0.08); text-align: center; padding: 1.15rem; border-radius: 10px;">
+                        <div style="font-size: 1.8rem; font-weight: 800; color: #fbbf24;">{{ $totalWarning }}</div>
+                        <div
+                            style="font-size: 0.72rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 0.25rem;">
+                            Warning</div>
                     </div>
                 </div>
+
+                {{-- Chart --}}
+                <div class="replacement-card" style="padding: 1.25rem; border-radius: 10px; border: 1px solid var(--border-subtle);">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+                        <h3
+                            style="margin: 0; font-size: 1.05rem; font-weight: 800; color: var(--text-primary); display: flex; align-items: center; gap: 0.5rem;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                                style="color: var(--primary); opacity: 0.85;">
+                                <line x1="18" y1="20" x2="18" y2="10" />
+                                <line x1="12" y1="20" x2="12" y2="4" />
+                                <line x1="6" y1="20" x2="6" y2="14" />
+                            </svg>
+                            Part Numbers by Urgency Level
+                        </h3>
+                        <select id="pnCategoryFilter" class="form-select"
+                            style="padding: 0.35rem 0.85rem; font-size: 0.82rem; width: auto !important; min-width: 150px; max-width: 220px; cursor: pointer; border-radius: 8px; background-color: var(--bg-card-solid); border-color: var(--border-subtle); color: var(--text-primary);">
+                            <option value="all">All Categories</option>
+                            <option value="adult">Adult Vests</option>
+                            <option value="crew">Crew Vests</option>
+                            <option value="infant">Infant Vests</option>
+                        </select>
+                    </div>
+                    <div style="position: relative; height: 320px;">
+                        <canvas id="pnInsightsChart"></canvas>
+                    </div>
+                </div>
+
+                {{-- Data Table --}}
+                <div class="replacement-card" style="padding: 1.25rem; border-radius: 10px; border: 1px solid var(--border-subtle); overflow-x: auto;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem; flex-wrap: wrap; gap: 0.5rem;">
+                        <h3 style="margin: 0; font-size: 1.05rem; font-weight: 800; color: var(--text-primary);">Detailed Breakdown</h3>
+                        <a href="{{ route('reports.summary') }}" class="btn-premium btn-premium-success" style="padding: 0.4rem 0.85rem; font-size: 0.8rem; border-radius: 6px;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                                style="margin-right: 4px;">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                <polyline points="7 10 12 15 17 10" />
+                                <line x1="12" y1="15" x2="12" y2="3" />
+                            </svg>
+                            Export Insights
+                        </a>
+                    </div>
+                    <table class="fleet-table" style="width: 100%; border: none;">
+                        <thead>
+                            <tr>
+                                <th class="fleet-th" style="padding: 0.5rem 0.75rem; font-size: 0.72rem;">#</th>
+                                <th class="fleet-th" style="padding: 0.5rem 0.75rem; font-size: 0.72rem;">Part Number</th>
+                                <th class="fleet-th" style="padding: 0.5rem 0.75rem; font-size: 0.72rem;">Category</th>
+                                <th class="fleet-th" style="padding: 0.5rem 0.75rem; font-size: 0.72rem; text-align: center;">Exp</th>
+                                <th class="fleet-th" style="padding: 0.5rem 0.75rem; font-size: 0.72rem; text-align: center;">Crit</th>
+                                <th class="fleet-th" style="padding: 0.5rem 0.75rem; font-size: 0.72rem; text-align: center;">Warn</th>
+                                <th class="fleet-th" style="padding: 0.5rem 0.75rem; font-size: 0.72rem; text-align: center;">Total</th>
+                                <th class="fleet-th" style="padding: 0.5rem 0.75rem; font-size: 0.72rem;">Affected</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pnInsightsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
             </div>
         </section>
     @endif
@@ -595,142 +1211,170 @@
     </script>
 
     {{-- Replacement Plans --}}
-    @if(isset($replacementPlans))
-        @foreach(['weekly', 'monthly', 'yearly'] as $interval)
+    @if (isset($replacementPlans))
+        @foreach (['weekly', 'monthly', 'yearly'] as $interval)
             @php
                 $plan = $replacementPlans[$interval];
                 $viewKey = 'replacement-' . $interval;
-                $isPlanVisible = ($currentView === $viewKey);
+                $isPlanVisible = $currentView === $viewKey;
                 $titleText = ucfirst($interval) . ' Replacement Plan';
-                $subtitleText = 'Timeline kebutuhan penggantian life vest per ' . ($interval === 'weekly' ? 'minggu' : ($interval === 'monthly' ? 'bulan' : 'tahun'));
+                $subtitleText =
+                    'Timeline kebutuhan penggantian life vest per ' .
+                    ($interval === 'weekly' ? 'minggu' : ($interval === 'monthly' ? 'bulan' : 'tahun'));
             @endphp
-            
-            @if($isPlanVisible)
-                @if(count($plan) > 0)
-                    <section class="replacement-section replacement-interval-section animate-view" data-interval="{{ $interval }}" id="replacement-{{ $interval }}-plan">
-                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
-                        <div style="display: flex; align-items: center; gap: 0.75rem;">
-                            <h2>{{ $titleText }}</h2>
-                            <span class="monthly-plan-subtitle">{{ $subtitleText }}</span>
-                        </div>
-                        <div style="display: flex; gap: 0.75rem; align-items: center;">
-                            <a href="{{ route('reports.excel') }}" class="btn-premium btn-premium-success" title="Download Excel Report">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                                Export Schedule
-                            </a>
-                            <button type="button" class="btn-premium" id="toggleAllPlanBtn-{{ $interval }}" onclick="toggleAllPlan('{{ $interval }}')" style="cursor: pointer; height: 100%; border-radius: 8px;">Expand All</button>
-                        </div>
-                    </div>
 
-                    {{-- Grand Total Summary --}}
-                    @php
-                        $grandTotal = collect($plan)->sum('total');
-                        $overdueTotal = isset($plan['overdue']) ? $plan['overdue']['total'] : 0;
-                    @endphp
-                    <div class="monthly-grand-summary">
-                        <div class="monthly-grand-item">
-                            <span class="monthly-grand-value">{{ $grandTotal }}</span>
-                            <span class="monthly-grand-label">Total Life Vests</span>
+            @if ($isPlanVisible)
+                @if (count($plan) > 0)
+                    <section class="replacement-section replacement-interval-section animate-view"
+                        data-interval="{{ $interval }}" id="replacement-{{ $interval }}-plan" style="margin-top: 0.25rem;">
+                        <div
+                            style="display: flex; justify-content: flex-end; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.85rem;">
+                            <div style="display: flex; gap: 0.75rem; align-items: center;">
+                                <a href="{{ route('reports.excel') }}" class="btn-premium btn-premium-success"
+                                    title="Download Excel Report" style="padding: 0.4rem 0.85rem; font-size: 0.8rem; border-radius: 6px;">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                        stroke-linejoin="round" style="margin-right: 4px;">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                        <polyline points="7 10 12 15 17 10" />
+                                        <line x1="12" y1="15" x2="12" y2="3" />
+                                    </svg>
+                                    Export Schedule
+                                </a>
+                                <button type="button" class="btn-premium" id="toggleAllPlanBtn-{{ $interval }}"
+                                    onclick="toggleAllPlan('{{ $interval }}')"
+                                    style="cursor: pointer; padding: 0.4rem 0.85rem; font-size: 0.8rem; border-radius: 8px;">Expand All</button>
+                            </div>
                         </div>
-                        <div class="monthly-grand-item overdue">
-                            <span class="monthly-grand-value">{{ $overdueTotal }}</span>
-                            <span class="monthly-grand-label">Overdue</span>
-                        </div>
-                        <div class="monthly-grand-item">
-                            <span class="monthly-grand-value">{{ count($plan) - (isset($plan['overdue']) ? 1 : 0) }}</span>
-                            <span class="monthly-grand-label">Periods Ahead</span>
-                        </div>
-                    </div>
 
-                    {{-- Timeline --}}
-                    <div class="monthly-timeline" id="timeline-{{$interval}}">
-                        @foreach($plan as $bucketKey => $bucket)
-                            <div class="monthly-card {{ $bucket['urgency'] }}" data-month="{{ $bucketKey }}">
-                                {{-- Header (clickable) --}}
-                                <div class="monthly-card-header" onclick="toggleMonth('{{ $interval }}-{{ $bucketKey }}')">
-                                    <div class="monthly-card-left">
-                                        <span class="monthly-urgency-dot {{ $bucket['urgency'] }}"></span>
-                                        <div>
-                                            <div class="monthly-card-title">
-                                                {{ $bucket['label'] }}
-                                                @if($bucket['urgency'] === 'overdue')
-                                                    <span class="monthly-badge overdue">OVERDUE</span>
-                                                @elseif($bucket['urgency'] === 'critical')
-                                                    <span class="monthly-badge critical">CRITICAL</span>
-                                                @elseif($bucket['urgency'] === 'warning')
-                                                    <span class="monthly-badge warning">WARNING</span>
-                                                @endif
-                                                @if($bucket['isCurrentMonth'] ?? false)
-                                                    <span class="monthly-badge current-month">CURRENT PERIOD</span>
-                                                @endif
-                                            </div>
-                                            <div class="monthly-card-meta">
-                                                {{ count($bucket['pn_breakdown']) }} Part Number(s) • {{ count($bucket['aircraft_breakdown']) }} Aircraft
+                        {{-- Grand Total Summary --}}
+                        @php
+                            $grandTotal = collect($plan)->sum('total');
+                            $overdueTotal = isset($plan['overdue']) ? $plan['overdue']['total'] : 0;
+                        @endphp
+                        <div class="monthly-grand-summary" style="margin: 0 0 1.25rem 0; gap: 0.75rem;">
+                            <div class="monthly-grand-item" style="border: 1px solid rgba(59, 130, 246, 0.45); background: linear-gradient(180deg, rgba(59, 130, 246, 0.14) 0%, rgba(59, 130, 246, 0.02) 100%); box-shadow: inset 0 0 12px rgba(59, 130, 246, 0.08); padding: 0.9rem; border-radius: 10px; flex: 1;">
+                                <span class="monthly-grand-value" style="font-size: 1.8rem; font-weight: 800; color: var(--primary);">{{ $grandTotal }}</span>
+                                <span class="monthly-grand-label" style="font-size: 0.72rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 0.25rem;">Total Life Vests</span>
+                            </div>
+                            <div class="monthly-grand-item overdue" style="border: 1px solid rgba(139, 92, 246, 0.45); background: linear-gradient(180deg, rgba(139, 92, 246, 0.14) 0%, rgba(139, 92, 246, 0.02) 100%); box-shadow: inset 0 0 12px rgba(139, 92, 246, 0.08); padding: 0.9rem; border-radius: 10px; flex: 1;">
+                                <span class="monthly-grand-value" style="font-size: 1.8rem; font-weight: 800; color: #c4b5fd;">{{ $overdueTotal }}</span>
+                                <span class="monthly-grand-label" style="font-size: 0.72rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 0.25rem;">Overdue</span>
+                            </div>
+                            <div class="monthly-grand-item" style="border: 1px solid rgba(16, 185, 129, 0.45); background: linear-gradient(180deg, rgba(16, 185, 129, 0.14) 0%, rgba(16, 185, 129, 0.02) 100%); box-shadow: inset 0 0 12px rgba(16, 185, 129, 0.08); padding: 0.9rem; border-radius: 10px; flex: 1;">
+                                <span class="monthly-grand-value" style="font-size: 1.8rem; font-weight: 800; color: #34d399;">{{ count($plan) - (isset($plan['overdue']) ? 1 : 0) }}</span>
+                                <span class="monthly-grand-label" style="font-size: 0.72rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 0.25rem;">Periods Scheduled</span>
+                            </div>
+                        </div>
+
+                        {{-- Timeline --}}
+                        <div class="monthly-timeline" id="timeline-{{ $interval }}">
+                            @foreach ($plan as $bucketKey => $bucket)
+                                <div class="monthly-card {{ $bucket['urgency'] }}" data-month="{{ $bucketKey }}">
+                                    {{-- Header (clickable) --}}
+                                    <div class="monthly-card-header"
+                                        onclick="toggleMonth('{{ $interval }}-{{ $bucketKey }}')">
+                                        <div class="monthly-card-left">
+                                            <span class="monthly-urgency-dot {{ $bucket['urgency'] }}"></span>
+                                            <div>
+                                                <div class="monthly-card-title">
+                                                    {{ $bucket['label'] }}
+                                                    @if ($bucket['urgency'] === 'overdue')
+                                                        <span class="monthly-badge overdue">OVERDUE</span>
+                                                    @elseif($bucket['urgency'] === 'critical')
+                                                        <span class="monthly-badge critical">CRITICAL</span>
+                                                    @elseif($bucket['urgency'] === 'warning')
+                                                        <span class="monthly-badge warning">WARNING</span>
+                                                    @endif
+                                                    @if ($bucket['isCurrentMonth'] ?? false)
+                                                        <span class="monthly-badge current-month">CURRENT PERIOD</span>
+                                                    @endif
+                                                </div>
+                                                <div class="monthly-card-meta">
+                                                    {{ count($bucket['pn_breakdown']) }} Part Number(s) •
+                                                    {{ count($bucket['aircraft_breakdown']) }} Aircraft
+                                                </div>
                                             </div>
                                         </div>
+                                        <div class="monthly-card-right">
+                                            <span class="monthly-card-total">{{ $bucket['total'] }}</span>
+                                            <span class="monthly-card-unit">vests</span>
+                                            <span class="monthly-card-arrow"
+                                                id="arrow-{{ $interval }}-{{ $bucketKey }}">▼</span>
+                                        </div>
                                     </div>
-                                    <div class="monthly-card-right">
-                                        <span class="monthly-card-total">{{ $bucket['total'] }}</span>
-                                        <span class="monthly-card-unit">vests</span>
-                                        <span class="monthly-card-arrow" id="arrow-{{ $interval }}-{{ $bucketKey }}">▼</span>
-                                    </div>
-                                </div>
 
-                                {{-- Detail (collapsible) --}}
-                                <div class="monthly-card-body" id="body-{{ $interval }}-{{ $bucketKey }}" style="display: none;">
-                                    {{-- P/N Breakdown --}}
-                                    @foreach($bucket['pn_breakdown'] as $pnKey => $pnData)
-                                        <div class="monthly-pn-row">
-                                            <div class="monthly-pn-header" onclick="togglePnDetails('{{ $interval }}-{{ $bucketKey }}-{{ str_replace('|', '-', $pnKey) }}'); event.stopPropagation();">
-                                                <div style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; flex: 1;">
-                                                    <span class="monthly-pn-toggle" id="toggle-{{ $interval }}-{{ $bucketKey }}-{{ str_replace('|', '-', $pnKey) }}">▶</span>
-                                                    <div class="monthly-pn-info">
-                                                        <span class="monthly-pn-name">{{ $pnData['pn'] }}</span>
-                                                        <span class="monthly-pn-category {{ $pnData['category'] }}">{{ strtoupper($pnData['category']) }}</span>
+                                    {{-- Detail (collapsible) --}}
+                                    <div class="monthly-card-body" id="body-{{ $interval }}-{{ $bucketKey }}"
+                                        style="display: none;">
+                                        {{-- P/N Breakdown --}}
+                                        @foreach ($bucket['pn_breakdown'] as $pnKey => $pnData)
+                                            <div class="monthly-pn-row">
+                                                <div class="monthly-pn-header"
+                                                    onclick="togglePnDetails('{{ $interval }}-{{ $bucketKey }}-{{ str_replace('|', '-', $pnKey) }}'); event.stopPropagation();">
+                                                    <div
+                                                        style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; flex: 1;">
+                                                        <span class="monthly-pn-toggle"
+                                                            id="toggle-{{ $interval }}-{{ $bucketKey }}-{{ str_replace('|', '-', $pnKey) }}">▶</span>
+                                                        <div class="monthly-pn-info">
+                                                            <span class="monthly-pn-name">{{ $pnData['pn'] }}</span>
+                                                            <span
+                                                                class="monthly-pn-category {{ $pnData['category'] }}">{{ strtoupper($pnData['category']) }}</span>
+                                                        </div>
                                                     </div>
+                                                    <span class="monthly-pn-count">× {{ $pnData['count'] }}</span>
                                                 </div>
-                                                <span class="monthly-pn-count">× {{ $pnData['count'] }}</span>
+                                                <div class="monthly-aircraft-list"
+                                                    id="details-{{ $interval }}-{{ $bucketKey }}-{{ str_replace('|', '-', $pnKey) }}"
+                                                    style="display: none;">
+                                                    @foreach ($pnData['aircraft'] as $reg => $count)
+                                                        <a href="{{ route('aircraft.show', $reg) }}"
+                                                            class="monthly-aircraft-chip"
+                                                            title="Open {{ $reg }}">
+                                                            {{ $reg }}: {{ $count }}
+                                                        </a>
+                                                    @endforeach
+                                                </div>
                                             </div>
-                                            <div class="monthly-aircraft-list" id="details-{{ $interval }}-{{ $bucketKey }}-{{ str_replace('|', '-', $pnKey) }}" style="display: none;">
-                                                @foreach($pnData['aircraft'] as $reg => $count)
-                                                    <a href="{{ route('aircraft.show', $reg) }}" class="monthly-aircraft-chip" title="Open {{ $reg }}">
-                                                        {{ $reg }}: {{ $count }}
+                                        @endforeach
+
+                                        {{-- Aircraft Summary --}}
+                                        <div class="monthly-aircraft-summary">
+                                            <div class="monthly-aircraft-summary-title">Aircraft Summary:</div>
+                                            <div class="monthly-aircraft-summary-list">
+                                                @foreach ($bucket['aircraft_breakdown'] as $reg => $acData)
+                                                    <a href="{{ route('aircraft.show', $reg) }}"
+                                                        class="monthly-ac-summary-chip">
+                                                        <span class="monthly-ac-reg">{{ $reg }}</span>
+                                                        <span class="monthly-ac-type">{{ $acData['type'] }}</span>
+                                                        <span class="monthly-ac-count">{{ $acData['count'] }}</span>
                                                     </a>
                                                 @endforeach
                                             </div>
                                         </div>
-                                    @endforeach
-
-                                    {{-- Aircraft Summary --}}
-                                    <div class="monthly-aircraft-summary">
-                                        <div class="monthly-aircraft-summary-title">Aircraft Summary:</div>
-                                        <div class="monthly-aircraft-summary-list">
-                                            @foreach($bucket['aircraft_breakdown'] as $reg => $acData)
-                                                <a href="{{ route('aircraft.show', $reg) }}" class="monthly-ac-summary-chip">
-                                                    <span class="monthly-ac-reg">{{ $reg }}</span>
-                                                    <span class="monthly-ac-type">{{ $acData['type'] }}</span>
-                                                    <span class="monthly-ac-count">{{ $acData['count'] }}</span>
-                                                </a>
-                                            @endforeach
-                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        @endforeach
-                    </div>
-                </section>
+                            @endforeach
+                        </div>
+                    </section>
                 @else
-                    <section class="replacement-section replacement-interval-section animate-view" data-interval="{{ $interval }}" id="replacement-{{ $interval }}-plan" style="padding: 4rem 2rem; text-align: center; background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border-subtle); margin-top: 1rem;">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--success); margin-bottom: 1rem; opacity: 0.6;">
-                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+                    <section class="replacement-section replacement-interval-section animate-view"
+                        data-interval="{{ $interval }}" id="replacement-{{ $interval }}-plan"
+                        style="padding: 4rem 2rem; text-align: center; background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border-subtle); margin-top: 1rem;">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" style="color: var(--success); margin-bottom: 1rem; opacity: 0.6;">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                            <polyline points="22 4 12 14.01 9 11.01" />
                         </svg>
-                        <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary); margin: 0;">All Clear!</h3>
-                        <p style="color: var(--text-muted); margin-top: 0.5rem;">No life vests are scheduled for replacement in this period.</p>
+                        <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary); margin: 0;">All Clear!
+                        </h3>
+                        <p style="color: var(--text-muted); margin-top: 0.5rem;">No life vests are scheduled for
+                            replacement in this period.</p>
                     </section>
                 @endif
             @endif
         @endforeach
-        
+
         {{-- Map specific data for Excel export function (Currently Monthly, as default) --}}
         <script>
             window.monthlyPlanData = @json($replacementPlans['monthly'] ?? []);
@@ -739,34 +1383,57 @@
 
     <!-- Quick Stats -->
     <section class="stats-section" style="margin-top: 2rem; margin-bottom: 3rem;">
-        <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.25rem; color: var(--text-primary); display: flex; align-items: center; gap: 0.5rem;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary);"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        <h3
+            style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.25rem; color: var(--text-primary); display: flex; align-items: center; gap: 0.5rem;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary);">
+                <line x1="18" y1="20" x2="18" y2="10" />
+                <line x1="12" y1="20" x2="12" y2="4" />
+                <line x1="6" y1="20" x2="6" y2="14" />
+            </svg>
             Quick Stats
         </h3>
-        <div style="display: flex; align-items: center; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 1.5rem; box-shadow: var(--shadow-sm); overflow: hidden;">
+        <div
+            style="display: flex; align-items: center; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 1.5rem; box-shadow: var(--shadow-sm); overflow: hidden;">
             <div style="flex: 1; text-align: center; border-right: 1px solid var(--border-subtle); padding: 0 1rem;">
-                <div style="font-size: 1.75rem; font-weight: 800; color: var(--text-primary); line-height: 1;">{{ count($fleetByAirline) }}</div>
-                <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.5rem;">Airlines</div>
+                <div style="font-size: 1.75rem; font-weight: 800; color: var(--text-primary); line-height: 1;">
+                    {{ count($fleetByAirline) }}</div>
+                <div
+                    style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.5rem;">
+                    Airlines</div>
             </div>
             <div style="flex: 1; text-align: center; border-right: 1px solid var(--border-subtle); padding: 0 1rem;">
-                <div style="font-size: 1.75rem; font-weight: 800; color: var(--text-primary); line-height: 1;">{{ count($fleet) }}</div>
-                <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.5rem;">Aircraft</div>
+                <div style="font-size: 1.75rem; font-weight: 800; color: var(--text-primary); line-height: 1;">
+                    {{ count($fleet) }}</div>
+                <div
+                    style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.5rem;">
+                    Aircraft</div>
             </div>
             <div style="flex: 1.5; text-align: center; border-right: 1px solid var(--border-subtle); padding: 0 1rem;">
-                <div style="font-size: 1.75rem; font-weight: 800; color: var(--text-primary); line-height: 1;">{{ number_format(array_sum($totalStats)) }}</div>
-                <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.5rem;">Total Seats Tracked</div>
+                <div style="font-size: 1.75rem; font-weight: 800; color: var(--text-primary); line-height: 1;">
+                    {{ number_format(array_sum($totalStats)) }}</div>
+                <div
+                    style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.5rem;">
+                    Total Seats Tracked</div>
             </div>
             <div style="flex: 1; text-align: center; border-right: 1px solid var(--border-subtle); padding: 0 1rem;">
                 @php
-                    $totalTracked = $totalStats['safe'] + $totalStats['warning'] + $totalStats['critical'] + $totalStats['expired'];
+                    $totalTracked =
+                        $totalStats['safe'] + $totalStats['warning'] + $totalStats['critical'] + $totalStats['expired'];
                     $healthScore = $totalTracked > 0 ? round(($totalStats['safe'] / $totalTracked) * 100) : 0;
                 @endphp
-                <div style="font-size: 1.75rem; font-weight: 800; color: var(--success); line-height: 1;">{{ $healthScore }}%</div>
-                <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.5rem;">Health Score</div>
+                <div style="font-size: 1.75rem; font-weight: 800; color: var(--success); line-height: 1;">
+                    {{ $healthScore }}%</div>
+                <div
+                    style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.5rem;">
+                    Health Score</div>
             </div>
             <div style="flex: 1; text-align: center; padding: 0 1rem;">
-                <div style="font-size: 1.75rem; font-weight: 800; color: var(--danger); line-height: 1;">{{ $totalStats['critical'] + $totalStats['expired'] }}</div>
-                <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.5rem;">Needs Attention</div>
+                <div style="font-size: 1.75rem; font-weight: 800; color: var(--danger); line-height: 1;">
+                    {{ $totalStats['critical'] + $totalStats['expired'] }}</div>
+                <div
+                    style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.5rem;">
+                    Needs Attention</div>
             </div>
         </div>
     </section>
@@ -778,9 +1445,24 @@
         // ============================================
         // Seat Status Detail Modal (Fleet Card Stat Boxes)
         // ============================================
-        const statusLabels = { safe: 'Safe', warning: 'Warning', critical: 'Critical', expired: 'Expired' };
-        const statusEmojis = { safe: '🟢', warning: '🟡', critical: '🔴', expired: '🟣' };
-        const statusColors = { safe: 'var(--success)', warning: 'var(--warning)', critical: 'var(--danger)', expired: 'var(--expired)' };
+        const statusLabels = {
+            safe: 'Safe',
+            warning: 'Warning',
+            critical: 'Critical',
+            expired: 'Expired'
+        };
+        const statusEmojis = {
+            safe: '🟢',
+            warning: '🟡',
+            critical: '🔴',
+            expired: '🟣'
+        };
+        const statusColors = {
+            safe: 'var(--success)',
+            warning: 'var(--warning)',
+            critical: 'var(--danger)',
+            expired: 'var(--expired)'
+        };
 
         function openSeatStatusModal(registration, status, event) {
             event.preventDefault();
@@ -791,7 +1473,8 @@
             const subtitle = document.getElementById('seatModalSubtitle');
             const body = document.getElementById('seatModalBody');
 
-            title.innerHTML = `${statusEmojis[status] || ''} ${registration} — <span style="color: ${statusColors[status]}">${statusLabels[status] || status}</span>`;
+            title.innerHTML =
+                `${statusEmojis[status] || ''} ${registration} — <span style="color: ${statusColors[status]}">${statusLabels[status] || status}</span>`;
             subtitle.textContent = 'Memuat data...';
             body.innerHTML = `
                 <div style="display: flex; align-items: center; justify-content: center; padding: 3rem; gap: 0.75rem;">
@@ -838,13 +1521,14 @@
                             <tbody>`;
 
                     allSeats.forEach((seat, idx) => {
-                        const daysColor = seat.days_remaining === null ? 'var(--text-muted)' 
-                            : seat.days_remaining < 0 ? 'var(--expired)' 
-                            : seat.days_remaining < 90 ? 'var(--danger)' 
-                            : seat.days_remaining < 180 ? 'var(--warning)' 
-                            : 'var(--success)';
-                        const daysText = seat.days_remaining === null ? '-' : 
-                            (seat.days_remaining < 0 ? `${Math.abs(seat.days_remaining)}d overdue` : `${seat.days_remaining}d`);
+                        const daysColor = seat.days_remaining === null ? 'var(--text-muted)' :
+                            seat.days_remaining < 0 ? 'var(--expired)' :
+                            seat.days_remaining < 90 ? 'var(--danger)' :
+                            seat.days_remaining < 180 ? 'var(--warning)' :
+                            'var(--success)';
+                        const daysText = seat.days_remaining === null ? '-' :
+                            (seat.days_remaining < 0 ? `${Math.abs(seat.days_remaining)}d overdue` :
+                                `${seat.days_remaining}d`);
 
                         html += `
                                 <tr>
@@ -882,7 +1566,7 @@
     </script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
 
             // Fleet Overview Multi-Select Logic
             const fleetCheckboxes = document.querySelectorAll('.fleet-checkbox');
@@ -901,7 +1585,10 @@
             };
 
             function updateOverview() {
-                let totalSafe = 0, totalWarning = 0, totalCritical = 0, totalExpired = 0;
+                let totalSafe = 0,
+                    totalWarning = 0,
+                    totalCritical = 0,
+                    totalExpired = 0;
                 let checkedCount = 0;
 
                 fleetCheckboxes.forEach(cb => {
@@ -942,7 +1629,7 @@
             }
 
             // "Check All" Event Listener
-            checkAllBox?.addEventListener('change', function () {
+            checkAllBox?.addEventListener('change', function() {
                 const isChecked = this.checked;
                 fleetCheckboxes.forEach(cb => {
                     cb.checked = isChecked;
@@ -990,7 +1677,7 @@
             const airlineMasterOverview = document.getElementById('airline-master-overview');
 
             // Toggle filter panel
-            toggleBtn?.addEventListener('click', function () {
+            toggleBtn?.addEventListener('click', function() {
                 const isHidden = filterPanel.style.display === 'none';
                 filterPanel.style.display = isHidden ? 'flex' : 'none';
                 filterArrow.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
@@ -1056,7 +1743,7 @@
                 airlineSections.forEach(section => {
                     const sectionAirline = (section.dataset.airline || '').trim().toLowerCase();
                     const currentFilter = (airlineFilter || '').trim().toLowerCase();
-                    
+
                     if (currentFilter) {
                         if (sectionAirline === currentFilter) {
                             section.style.display = 'block';
@@ -1069,12 +1756,15 @@
                         }
                     } else {
                         // Overview mode
-                        const visibleCards = section.querySelectorAll('.fleet-card:not([style*="display: none"])');
+                        const visibleCards = section.querySelectorAll(
+                            '.fleet-card:not([style*="display: none"])');
                         section.style.display = (visibleCards.length > 0 || searchQuery) ? 'block' : 'none';
-                        
+
                         section.querySelectorAll('.fleet-section').forEach(fs => {
-                            const cardsInType = fs.querySelectorAll('.fleet-card:not([style*="display: none"])');
-                            fs.style.display = (cardsInType.length > 0 || searchQuery) ? 'block' : 'none';
+                            const cardsInType = fs.querySelectorAll(
+                                '.fleet-card:not([style*="display: none"])');
+                            fs.style.display = (cardsInType.length > 0 || searchQuery) ? 'block' :
+                                'none';
                         });
                     }
                 });
@@ -1088,7 +1778,7 @@
             function updateTypeDropdown() {
                 const selectedAirline = filterAirline?.value || '';
                 const currentSelectedType = filterType?.value || '';
-                
+
                 // Get all valid types for the selected airline
                 const validTypes = new Set();
                 cards.forEach(card => {
@@ -1098,14 +1788,14 @@
                         if (cardType) validTypes.add(cardType);
                     }
                 });
-                
+
                 // Update dropdown options
                 if (filterType) {
                     // Keep the first option "All Types"
                     while (filterType.options.length > 1) {
                         filterType.remove(1);
                     }
-                    
+
                     // Populate with valid types, sorted alphabetically
                     Array.from(validTypes).sort().forEach(type => {
                         const option = document.createElement('option');
@@ -1113,7 +1803,7 @@
                         option.textContent = type;
                         filterType.appendChild(option);
                     });
-                    
+
                     // Maintain previous selection if still valid, otherwise reset
                     if (validTypes.has(currentSelectedType)) {
                         filterType.value = currentSelectedType;
@@ -1133,7 +1823,7 @@
             filterHealth?.addEventListener('change', applyFilters);
             searchInput?.addEventListener('input', applyFilters); // Real-time search
 
-            clearBtn?.addEventListener('click', function () {
+            clearBtn?.addEventListener('click', function() {
                 if (filterAirline) filterAirline.value = '';
                 if (filterType) filterType.value = '';
                 if (filterStatus) filterStatus.value = '';
@@ -1145,18 +1835,20 @@
 
             // Replacement Summary - Clickable Badge Filtering
             document.querySelectorAll('.badge-btn').forEach(btn => {
-                btn.addEventListener('click', function () {
+                btn.addEventListener('click', function() {
                     const cardIdx = this.dataset.card;
                     const tab = this.dataset.tab;
 
                     // Toggle active badge
-                    document.querySelectorAll(`.badge-btn[data-card="${cardIdx}"]`).forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll(`.badge-btn[data-card="${cardIdx}"]`).forEach(b => b
+                        .classList.remove('active'));
                     this.classList.add('active');
 
                     // Toggle breakdown visibility
-                    document.querySelectorAll(`.replacement-breakdown[data-card="${cardIdx}"]`).forEach(bd => {
-                        bd.style.display = bd.dataset.type === tab ? '' : 'none';
-                    });
+                    document.querySelectorAll(`.replacement-breakdown[data-card="${cardIdx}"]`)
+                        .forEach(bd => {
+                            bd.style.display = bd.dataset.type === tab ? '' : 'none';
+                        });
                 });
             });
 
@@ -1171,12 +1863,13 @@
                 sidebarLinks.forEach(l => {
                     l.classList.remove('active');
                     if (l.href) {
-                        const isTarget = l.href.includes(`view=${targetView}`) || 
-                                       (targetView === 'fleet-overview' && !l.href.includes('view=') && l.href.includes('/dashboard'));
-                        
+                        const isTarget = l.href.includes(`view=${targetView}`) ||
+                            (targetView === 'fleet-overview' && !l.href.includes('view=') && l.href
+                                .includes('/dashboard'));
+
                         if (isTarget) {
                             l.classList.add('active');
-                            
+
                             // Handle parent dropdown highlight
                             if (targetView.startsWith('replacement-')) {
                                 const parentDropdownMenu = l.closest('.dropdown-submenu');
@@ -1191,9 +1884,9 @@
 
                 // 2. Hide all main dashboard sections
                 const sections = [
-                    '.summary-section', '.airline-section', '.master-airline-section', 
-                    '#airline-fleet-details', '#life-vest-summary-section', 
-                    '#top-pn-insights-section', '.replacement-interval-section', 
+                    '.summary-section', '.airline-section', '.master-airline-section',
+                    '#airline-fleet-details', '#life-vest-summary-section',
+                    '#top-pn-insights-section', '.replacement-interval-section',
                     '.stats-section', '.view-back-btn'
                 ];
                 sections.forEach(s => {
@@ -1215,7 +1908,8 @@
                 }
 
                 if (targetView === 'life-vest-summary' || targetView === 'all') {
-                    document.querySelectorAll('#life-vest-summary-section').forEach(el => el.style.display = 'block');
+                    document.querySelectorAll('#life-vest-summary-section').forEach(el => el.style.display =
+                        'block');
                 }
 
                 if (targetView === 'top-pn-insights' || targetView === 'all') {
@@ -1237,39 +1931,48 @@
                 }
 
                 // Scroll behavior
-                window.scrollTo({top: 0, behavior: 'instant'});
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'instant'
+                });
             }
-            
+
             sidebarLinks.forEach(link => {
                 link.addEventListener('click', (e) => {
                     // Check if the link points to the dashboard
-                    const isDashboardLink = link.href.includes('view=') && (link.href.includes('/dashboard') || link.href.includes('localhost') || link.href.includes('127.0.0.1'));
+                    const isDashboardLink = link.href.includes('view=') && (link.href.includes(
+                            '/dashboard') || link.href.includes('localhost') || link.href
+                        .includes('127.0.0.1'));
                     if (isDashboardLink) {
                         try {
                             const url = new URL(link.href);
                             const targetView = url.searchParams.get('view') || 'fleet-overview';
-                            
+
                             // Only handle the dashboard views
-                            if (['fleet-overview', 'life-vest-summary', 'top-pn-insights', 'replacement-weekly', 'replacement-monthly', 'replacement-yearly', 'all'].includes(targetView)) {
+                            if (['fleet-overview', 'life-vest-summary', 'top-pn-insights',
+                                    'replacement-weekly', 'replacement-monthly',
+                                    'replacement-yearly', 'all'
+                                ].includes(targetView)) {
                                 const currentUrl = new URL(window.location.href);
-                                const currentView = currentUrl.searchParams.get('view') || 'fleet-overview';
-                                
+                                const currentView = currentUrl.searchParams.get('view') ||
+                                    'fleet-overview';
+
                                 // Prevent full page reload
                                 e.preventDefault();
-                                
+
                                 if (targetView !== currentView) {
                                     // Change the URL without reloading
                                     history.pushState(null, '', url.href);
                                     syncDashboardView(targetView);
                                 }
                             }
-                        } catch(err) {
+                        } catch (err) {
                             console.error('Routing error:', err);
                         }
                     }
                 });
             });
-            
+
             // Handle browser back/forward buttons
             window.addEventListener('popstate', (e) => {
                 const url = new URL(window.location.href);
@@ -1298,6 +2001,7 @@
 
         // Monthly Plan - Toggle All (global function for onclick)
         const _planExpandState = {};
+
         function toggleAllPlan(interval) {
             _planExpandState[interval] = !_planExpandState[interval];
             const allExpanded = _planExpandState[interval];
@@ -1352,9 +2056,9 @@
         function sortMasterAirlines(criteria) {
             const container = document.getElementById('airline-master-overview');
             if (!container) return;
-            
+
             const cards = Array.from(container.querySelectorAll('.airline-master-card'));
-            
+
             cards.sort((a, b) => {
                 const nameA = a.dataset.name;
                 const nameB = b.dataset.name;
@@ -1384,22 +2088,30 @@
             const fleetDetails = document.getElementById('airline-fleet-details');
             const summarySection = document.querySelector('.summary-section');
             const statsSection = document.querySelector('.stats-section');
-            
+
             if (masterOverview) masterOverview.style.display = 'none';
             if (summarySection) summarySection.style.display = 'none';
             if (statsSection) statsSection.style.display = 'block';
             if (fleetDetails) fleetDetails.style.display = 'block';
-            
-            // Set Titles
-            const titleEl = document.getElementById('airline-details-title');
-            const subtitleEl = document.getElementById('airline-details-subtitle');
-            if (titleEl) titleEl.textContent = airlineName;
-            
+
+            // Update top-left title dynamically
+            const mainTitle = document.getElementById('dashboard-main-title');
+            if (mainTitle) {
+                mainTitle.textContent = airlineName;
+            }
+
+            // Update top-left back button dynamically
+            const backBtn = document.getElementById('dashboard-back-btn');
+            if (backBtn) {
+                backBtn.href = 'javascript:void(0)';
+                backBtn.setAttribute('onclick', 'hideAirlineDetails()');
+            }
+
             // Show only the target airline section
             document.querySelectorAll('.airline-section').forEach(section => {
                 const sectionName = (section.dataset.airline || '').trim().toLowerCase();
                 const targetName = (airlineName || '').trim().toLowerCase();
-                
+
                 if (sectionName === targetName) {
                     section.style.display = 'block';
                     // Show all fleet type groups inside
@@ -1410,8 +2122,11 @@
                     section.style.display = 'none';
                 }
             });
-            
-            window.scrollTo({top: 0, behavior: 'smooth'});
+
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
         }
 
         function hideAirlineDetails() {
@@ -1419,22 +2134,38 @@
             const fleetDetails = document.getElementById('airline-fleet-details');
             const summarySection = document.querySelector('.summary-section');
             const statsSection = document.querySelector('.stats-section');
-            
+
             if (masterOverview) masterOverview.style.display = 'grid';
             if (summarySection) summarySection.style.display = 'block';
             if (statsSection) statsSection.style.display = 'block';
             if (fleetDetails) fleetDetails.style.display = 'none';
-            
+
+            // Restore top-left title
+            const mainTitle = document.getElementById('dashboard-main-title');
+            if (mainTitle) {
+                mainTitle.textContent = 'Fleet Overview';
+            }
+
+            // Restore top-left back button route
+            const backBtn = document.getElementById('dashboard-back-btn');
+            if (backBtn) {
+                backBtn.href = "{{ route('dashboard') }}";
+                backBtn.removeAttribute('onclick');
+            }
+
             // Reset airline filter to ALL
             const filterAirline = document.getElementById('filterAirline');
-            if(filterAirline) {
+            if (filterAirline) {
                 filterAirline.value = '';
                 filterAirline.dispatchEvent(new Event('change'));
             }
-            
+
             // View sections will be hidden by applyFilters() when filterAirline is empty
-            
-            window.scrollTo({top: 0, behavior: 'smooth'});
+
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
         }
 
         // ====================================================
@@ -1482,8 +2213,7 @@
                     type: 'bar',
                     data: {
                         labels: labels,
-                        datasets: [
-                            {
+                        datasets: [{
                                 label: 'Expired',
                                 data: data.map(d => d.expired),
                                 backgroundColor: 'rgba(139, 92, 246, 0.8)',
@@ -1518,7 +2248,11 @@
                                 position: 'top',
                                 labels: {
                                     color: dark ? '#cbd5e1' : '#000000',
-                                    font: { family: "'Plus Jakarta Sans', sans-serif", size: 13, weight: '900' },
+                                    font: {
+                                        family: "'Plus Jakarta Sans', sans-serif",
+                                        size: 13,
+                                        weight: '900'
+                                    },
                                     usePointStyle: true,
                                     pointStyle: 'rectRounded',
                                     padding: 16,
@@ -1532,8 +2266,13 @@
                                 borderWidth: 1,
                                 padding: 12,
                                 displayColors: true,
-                                titleFont: { family: "'Plus Jakarta Sans', sans-serif", weight: '700' },
-                                bodyFont: { family: "'Plus Jakarta Sans', sans-serif" },
+                                titleFont: {
+                                    family: "'Plus Jakarta Sans', sans-serif",
+                                    weight: '700'
+                                },
+                                bodyFont: {
+                                    family: "'Plus Jakarta Sans', sans-serif"
+                                },
                             }
                         },
                         scales: {
@@ -1542,7 +2281,11 @@
                                 beginAtZero: true,
                                 ticks: {
                                     color: dark ? '#94a3b8' : '#000000',
-                                    font: { family: "'Plus Jakarta Sans', sans-serif", size: 12, weight: '800' },
+                                    font: {
+                                        family: "'Plus Jakarta Sans', sans-serif",
+                                        size: 12,
+                                        weight: '800'
+                                    },
                                     stepSize: 1,
                                 },
                                 grid: {
@@ -1553,7 +2296,11 @@
                                 stacked: true,
                                 ticks: {
                                     color: dark ? '#e2e8f0' : '#000000',
-                                    font: { family: "'Plus Jakarta Sans', sans-serif", size: 13, weight: '900' },
+                                    font: {
+                                        family: "'Plus Jakarta Sans', sans-serif",
+                                        size: 13,
+                                        weight: '900'
+                                    },
                                 },
                                 grid: {
                                     display: false,
@@ -1569,7 +2316,8 @@
                 if (!tbody) return;
 
                 if (data.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="8" class="fleet-td" style="text-align: center; color: var(--text-muted); padding: 2rem;">Semua Part Number dalam kondisi aman untuk kategori ini.</td></tr>';
+                    tbody.innerHTML =
+                        '<tr><td colspan="8" class="fleet-td" style="text-align: center; color: var(--text-muted); padding: 2rem;">Semua Part Number dalam kondisi aman untuk kategori ini.</td></tr>';
                     return;
                 }
 
@@ -1581,7 +2329,8 @@
                         .map(ac => ac.reg)
                         .slice(0, 8)
                         .join(', ');
-                    const moreCount = (item.aircraft || []).length > 8 ? ' +' + ((item.aircraft || []).length - 8) + ' more' : '';
+                    const moreCount = (item.aircraft || []).length > 8 ? ' +' + ((item.aircraft || []).length -
+                        8) + ' more' : '';
 
                     html += `<tr>
                         <td class="fleet-td" style="font-weight: 600; color: var(--text-secondary);">${idx + 1}</td>

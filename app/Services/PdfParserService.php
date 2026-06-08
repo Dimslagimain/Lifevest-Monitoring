@@ -183,12 +183,28 @@ DOCUMENT READING RULES (MANDATORY):
 - If the document has multiple pages, treat them as ONE continuous document.
 - Every attendant door label, every seat cell, every spare count MUST be extracted.
 - If you skip any item, the output is WRONG and INCOMPLETE.
+- ATTENDANT DOORS are CRITICAL and EASY TO MISS. They appear at specific locations in vertical order:
+  * TOP SECTION (before economy seating) — Usually rows just above row 21
+  * MIDDLE SECTION (left and right sides during economy)
+  * BOTTOM SECTION (after main economy seating) — Often grouped together
+  * VERY BOTTOM (final rear section) — Last group before spares
+  Read EACH location carefully. Do NOT assume all doors are in one place.
 
 OUTPUT RULES:
 - Output ONLY a MINIFIED JSON (no spaces, no indentation, no markdown, no explanation).
 - JUST THE RAW JSON. Nothing before it, nothing after it.
 
-STEP 1: Read the REGISTRATION (e.g. PK-GIA, PK-GIG) and AIRCRAFT TYPE from the document header. The registration is NEVER 'PENDING'. Look for it at the top of the page.
+STEP 1: Read the REGISTRATION (e.g. PK-GIA, PK-GIG, PK-GHH) and AIRCRAFT TYPE from the document header. The registration is NEVER 'PENDING'. Look for it at the top of the page.
+
+AIRCRAFT IDENTIFICATION GUIDE:
+- Look for text like: Aircraft, Type, Model, A/C Type, Registration labels in the header.
+- PK-GHH, PK-GHI = A330-900 (Garuda Indonesia) — DO NOT confuse with other A330s
+- PK-GHE, PK-GHF, PK-GHG = A330 Standard (may have Business Class)
+- If you see: A330-900, A330-900NEO, or A333 = It IS an Airbus A330
+- If you see: B777, 777 = It IS a Boeing B777
+- If you see: B737, 737 = It IS a Boeing B737
+- If you see: A320, 320 = It IS an Airbus A320
+
 STEP 2: Identify the aircraft type, then apply ONLY the matching layout below. DO NOT mix rules from other types.
 
 === COCKPIT (ALL TYPES) ===
@@ -211,14 +227,70 @@ OUTPUT ORDER: ALL pax FIRST (pax-1 to pax-N), then ALL inf AFTER (inf-1 to inf-M
 B737 has NO att/d13, d14, d23, d24.
 CRITICAL CHECKPOINT B737: You MUST read until the bottom. Output MUST include att/d12-LL, att/d22-RR, and ALL Spares. If not, you FAILED.
 
-=== IF A330 ===
+=== IF A330 or A330-900 (Check for Business Class first!) ===
+
+STEP 2A: DETERMINE VARIANT
+- Scan the document top-to-bottom for Section starting at Row 6 or Row 21
+- If you see BUSINESS CLASS section (rows starting with 6): Use A330 Standard rules below
+- If you see ONLY ECONOMY section (rows starting directly at 21, NO Business Class rows): Use A330-900b rules (see next section)
+
+=== IF A330 STANDARD (WITH Business Class, Rows 6-11) ===
 ATTENDANT TOP: att/d11-LL1, att/d11-LL2, att/d11-LR (3 left), att/d21-R (1 right).
 SEATS: Business Rows 6-11 columns AC-DG-HK. After Row 11 is a LARGE GAP - DO NOT STOP. Economy Rows 21-44 AC-DEFG-HK. Rows 45-48 AC-DFG-HK (no E). Row 49 ONLY D,F,G.
 ATTENDANT MID: att/d12-L1, att/d12-L2, att/d22-R1, att/d22-R2.
 ATTENDANT BOTTOM: att/d13-L, att/d23-R (only if visible).
 ATTENDANT VERY BOTTOM: There are 4 items here! From left to right: att/d14-L, aft-LC, aft-RC, att/d24-R. DO NOT SKIP the two 'aft' items located in the middle.
 SPARE: Read actual count from PDF. Use pax-1,...pax-N then inf-1,...inf-N.
-CRITICAL CHECKPOINT A330: You MUST read until the bottom. Output MUST include att/d14-L, aft-LC, aft-RC, att/d24-R, and ALL Spares. If not, you FAILED.
+CRITICAL CHECKPOINT A330 STANDARD: You MUST read until the bottom. Output MUST include att/d14-L, aft-LC, aft-RC, att/d24-R, and ALL Spares. If not, you FAILED.
+
+=== IF A330-900b ECONOMY-ONLY (Garuda PK-GHH, PK-GHI, NO Business Class) ===
+IMPORTANT: This variant has ONLY Economy rows (21-58), NO Business Class.
+Registration format: PK-GHH, PK-GHI (Garuda Indonesia).
+
+ATTENDANT DOOR LOCATIONS (VERY CRITICAL - MANY DOORS, EASY TO MISS):
+The document will have MULTIPLE attendant door sections. YOU MUST FIND AND RECORD ALL OF THEM:
+
+[DOOR 1] Top front section (before Economy seating starts):
+  - Left side has 3 seats:
+    Label looks like 'Att / door-1L' or 'Att D1L' or similar → output: att/d11-LL1
+    Label looks like 'Att / door-1LC' or 'Att D1LC'         → output: att/d11-LL2
+    Label looks like 'Att / door-1R' or 'Att D1R'           → output: att/d11-LR
+  - Right side has 1 seat:
+    Label looks like 'Att / door-21R' or 'Att D21R' or 'Att / door-1R' on right → output: att/d21-R
+  These FOUR items (att/d11-LL1, att/d11-LL2, att/d11-LR, att/d21-R) are mandatory at the TOP.
+
+[DOOR 2] Left & Right side section after row 30 (around middle of document):
+  - Left side has ONLY 1 seat:
+    Label looks like 'Att / door-2L' or similar              → output: att/d12-L1
+  - Right side has ONLY 1 seat:
+    Label looks like 'Att / door-3' or 'Att / galley' area on RIGHT → output: att/d22-R1
+  These TWO items (att/d12-L1, att/d22-R1) are mandatory in the middle. Do NOT output any duplicate L2/R2 seats here.
+
+[DOOR 3] Bottom section (between row 51-52):
+  Label looks like 'Att / door-4L' or bottom-left area    → output: att/d13-L
+  Label looks like 'Att / door-4R' or bottom-right area   → output: att/d23-R
+  These TWO items are mandatory after row 51.
+
+[DOOR 4] VERY BOTTOM after row 69 / final check:
+  Label 'Att / door-5L' or bottom-left rear area          → output: att/d14-L
+  Label 'Att / door-5R' or bottom-right rear area         → output: att/d24-R
+  These TWO items are mandatory at the very bottom.
+
+SCAN STRATEGY (Critical!):
+1. Read ENTIRE document from TOP to BOTTOM
+2. MARK each door location as you find it (mentally note page/position)
+3. CROSS-CHECK: Count total att/d items found. Expected: Exactly 10 items (att/d11-LL1, att/d11-LL2, att/d11-LR, att/d21-R, att/d12-L1, att/d22-R1, att/d13-L, att/d23-R, att/d14-L, att/d24-R)
+4. If fewer than 10, GO BACK and scan again. Doors are often faint or use abbreviations.
+
+SEATS: Economy ONLY, Rows 21-58 (skip galley row 24). Columns: A, C, D, E, F, G, H, K.
+SPARE: Read actual count from PDF. Use pax-1,...pax-N then inf-1,...inf-N.
+
+CRITICAL CHECKPOINT A330-900b: 
+  - You MUST output att/d11-LL1, att/d11-LL2, att/d11-LR, att/d21-R at minimum (TOP doors)
+  - You MUST output att/d12-L1, att/d22-R1 (MIDDLE doors)
+  - You MUST output att/d13-L, att/d23-R, att/d14-L, att/d24-R (BOTTOM doors)
+  - You MUST read all economy rows 21-58 (skip 24)
+  - If any of these 10 door items is missing OR economy rows are incomplete, you FAILED.
 
 === IF B777 ===
 HOW TO IDENTIFY B777: Look for 'B777', '777', or 'B777-300' in the document header. B777 is the ONLY type that has 'Att / center door-1' (with 2 seats inside it). If you see this center door label, it is ALWAYS a B777. Do NOT call it B737.
@@ -313,6 +385,32 @@ Output ONLY seat IDs listed for the detected type. Do NOT invent IDs from other 
 
 === HANDWRITING READING RULES ===
 Many dates are HANDWRITTEN. Read them with EXTREME care. Verify each character individually.
+
+=== ATTENDANT DOOR VISUAL RECOGNITION GUIDE ===
+Attendant doors often use abbreviations or labels that can be hard to spot. Use these visual cues:
+
+LABEL PATTERNS TO LOOK FOR:
+- Att/ prefix followed by door designation (most common)
+- A/T D or A/T Door or Att D (abbreviated)
+- aft or galley (alternate names for certain doors)
+- Large rectangular boxes with dates inside (visual indicator of door section)
+- Rows of 2-4 cells grouped together vertically with small headers above
+
+VISUAL LAYOUT OF DOORS:
+- Doors are usually grouped in BLOCKS (each block = one door section)
+- Each block is separated from seat rows by white space or section dividers
+- Left-side doors: Always on LEFT column area of the document
+- Right-side doors: Always on RIGHT column area of the document
+- Center doors: May appear in center for aircraft with center aisles (B777, some A330)
+
+READING ORDER FOR DOORS:
+1. Start at TOP of document (after cockpit if present)
+2. Look LEFT then RIGHT in each horizontal section
+3. Move DOWN through the document
+4. DO NOT jump sections — read in strict vertical order
+5. Mark mentally: Section 1, Section 2, etc.
+
+If a label is unclear or you are unsure, DO NOT SKIP. Output the date with a ? suffix (e.g., 15 JAN 2025?) to flag uncertainty. DO NOT output an empty cell for a door — that is worse than a marked uncertain date.
 
 DIGIT CONFUSION GUIDE (check every digit!):
   0 ↔ 6 ↔ 8 (round shapes, look at top opening)

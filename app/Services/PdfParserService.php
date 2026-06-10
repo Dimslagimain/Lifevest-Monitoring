@@ -9,11 +9,13 @@ class PdfParserService
 {
     protected string $ghostscriptPath;
     protected ?string $apiKey;
+    protected OcrPreprocessService $ocrPreprocess;
 
     public function __construct()
     {
         $this->ghostscriptPath = env('GHOSTSCRIPT_PATH', 'C:/Program Files/gs/gs10.07.0/bin/gswin64c.exe');
         $this->apiKey = env('OPENROUTER_API_KEY');
+        $this->ocrPreprocess = new OcrPreprocessService();
     }
 
     public function processFile(string $filePath): array
@@ -173,7 +175,6 @@ class PdfParserService
 
         // Priority: Snifox > Gemini > Anthropic > OpenAI > OpenRouter
         $provider = !empty($snifoxKey) ? 'openrouter' : (!empty($geminiKey) ? 'gemini' : (!empty($anthropicKey) ? 'anthropic' : (!empty($openaiKey) ? 'openai' : 'openrouter')));
-        
         $prompt = "You are a specialized Aircraft LOPA (Layout of Passenger Accommodations) extractor.
 Your job is to EXTRACT, not summarize. You must output EVERY item visible in the document.
 
@@ -191,10 +192,21 @@ DOCUMENT READING RULES (MANDATORY):
   Read EACH location carefully. Do NOT assume all doors are in one place.
 
 OUTPUT RULES:
-- Output ONLY a MINIFIED JSON (no spaces, no indentation, no markdown, no explanation).
-- JUST THE RAW JSON. Nothing before it, nothing after it.
+- Berikan hasil akhir dalam format JSON yang valid di dalam blok markdown ```json (JANGAN gunakan format minified string tanpa baris baru, karena akan membuat AI mengalami kegagalan memori/truncation di tengah dokumen).
+- Jangan berikan kalimat penjelasan, pembuka, atau penutup apa pun di luar blok JSON tersebut. Hanya kirimkan RAW JSON di dalam blok markdown.
 
 STEP 1: Read the REGISTRATION (e.g. PK-GIA, PK-GIG, PK-GHH) and AIRCRAFT TYPE from the document header. The registration is NEVER 'PENDING'. Look for it at the top of the page.
+
+=== UNIVERSAL TABLE ALIGNMENT & ANTI-DRIFT RULES (CRITICAL) ===
+1. DETEKSI DAN ISOLASI KOLOM NOMOR BARIS 'NO':
+   - Perhatikan bahwa di dalam tabel terdapat kolom vertikal khusus bernama 'NO' yang berisi angka urut baris (seperti 6, 7, 8, 9... atau 21, 22, 23, 24...).
+   - Kolom 'NO' ini terletak di antara kolom kursi (misalnya di antara kolom F/G dan kolom H).
+   - JANGAN PERNAH mengambil angka dari kolom 'NO' ini untuk digabungkan atau disisipkan ke dalam teks tanggal kursi! (Contoh kesalahan: Angka '6' dari kolom NO dibaca masuk ke kursi H menjadi '6 JAN 2034' atau '6 SEP 2034'. Ini SALAH).
+   - Angka di kolom 'NO' HANYA digunakan untuk mengidentifikasi nomor baris (row_no), bukan nilai tanggal kedaluwarsa.
+
+2. VERIFIKASI KONSISTENSI STEMPEL:
+   - Tanggal pada sel kursi yang berdekatan dalam satu baris sering kali menggunakan stempel yang sama secara massal. Jika kamu mendeteksi bulan/tahun yang aneh atau tidak sinkron dengan sel tetangganya, periksa kembali apakah kamu tidak sengaja membaca garis tabel atau angka dari kolom 'NO'.
+   - Format tanggal wajib: 3 huruf bulan (Bahasa Inggris) + 4 digit tahun (Contoh: 'JAN 2035', 'MAR 2034').
 
 AIRCRAFT IDENTIFICATION GUIDE:
 - Look for text like: Aircraft, Type, Model, A/C Type, Registration labels in the header.
@@ -293,65 +305,61 @@ CRITICAL CHECKPOINT A330-900b:
   - If any of these 10 door items is missing OR economy rows are incomplete, you FAILED.
 
 === IF B777 ===
-HOW TO IDENTIFY B777: Look for 'B777', '777', or 'B777-300' in the document header. B777 is the ONLY type that has 'Att / center door-1' (with 2 seats inside it). If you see this center door label, it is ALWAYS a B777. Do NOT call it B737.
+HOW TO IDENTIFY B777: Look for 'B777', '777', or 'B777-300' in the document header.
 
-ATTENDANT DOORS — YOU MUST OUTPUT ALL OF THESE. NO EXCEPTIONS.
-Scan the entire document for these labels and output each one:
+SPLIT DOCUMENT SYSTEM FOR B777:
+The B777 LOPA is usually split into TWO separate documents. Identify which document you are processing based on the rows and contents present:
 
-[MANDATORY - DOOR 1, 4 items]
-  Label 'Att / door-1L'        → output: att/d1-L
-  Label 'Att / center door-1'  → TWO dates inside: left date = att/d1-CL, right date = att/d1-CR
-  Label 'Att / door-1R'        → output: att/d1-R
+1. DOCUMENT 1 (Cockpit, Business, and Economy Rows 21-49):
+   - COCKPIT: pilot, copilot, observer1, observer2.
+   - BUSINESS CLASS (Rows 6-12, STAGGERED - follow EXACTLY):
+     === Boeing B777 BUSINESS CLASS STAGGERED MAPPING RULES (CRITICAL) ===
+     Perhatikan dengan sangat teliti! Layout Business Class pada B777 bersifat selang-seling (Staggered). Kamu WAJIB memetakan koordinat visual kolom secara kaku. Jangan pernah menggeser nilai ke kolom tetangga!
 
-[MANDATORY - DOOR 2, 2 items, located between Business and Economy section]
-  Label 'Att / door-2L'        → output: att/d2-L
-  Label 'Att / door-2R'        → output: att/d2-R
+     Aturan Baris Spesifik (Wajib Diikuti):
+     * Row 6: Hanya memiliki kolom C, E, F, H (CEFH).
+       - Nilai kolom C adalah tanggal pertama dari kiri.
+       - Nilai kolom E adalah tanggal kedua dari kiri.
+       - Nilai kolom F adalah tanggal ketiga dari kiri.
+       - Nilai kolom H adalah tanggal keempat dari kiri (Paling kanan, TEPAT di sebelah kiri kolom nomor 'NO').
+     * Row 7: Hanya memiliki kolom A, D, G, K (ADGK). Jangan masukkan data Row 7 ke kolom milik Row 6!
+     * Row 8: Hanya memiliki kolom C, E, F, H (CEFH).
+     * Row 9: Hanya memiliki kolom A, D, G, K (ADGK).
+     * Row 10: Hanya memiliki kolom C, E, F, H (CEFH).
+     * Row 11: Hanya memiliki kolom A, D, G, K (ADGK).
+     * Row 12: Hanya memiliki kolom E, F.
 
-[MANDATORY - DOOR 3, 2 items, located near GALLEY row]
-  Label 'Att / door-3L' or similar on LEFT side  → output: att/d3-L
-  Label 'Att / door-3R' or similar on RIGHT side → output: att/d3-R
-  NOTE: Door 3R appears on the FAR RIGHT. Do NOT miss it!
+     DETEKSI DAN ISOLASI KOLOM NOMOR BARIS 'NO' (ANTI-HALUSINASI):
+     1. Kolom bertuliskan angka '6', '7', '8', '9', '10', '11', '12' di bagian tengah-kanan tabel adalah kolom 'NO' (Nomor Baris Dokumen).
+     2. JANGAN PERNAH mengambil angka dari kolom 'NO' ini untuk digabungkan ke dalam string tanggal! (Contoh Kesalahan: Angka '6' pada kolom NO dibaca menjadi '6 JAN 2024' atau '6 SEP 2034' untuk kursi H. Ini SALAH BESAR!).
+     3. Angka '6' pada kolom NO hanyalah penanda baris, abaikan angka tersebut saat mengekstrak tanggal kedaluwarsa di kursi H. Tanggal di kursi 6H berdiri sendiri secara terpisah.
 
-DOOR 4 & 5: Include ONLY if visible. Do NOT fabricate.
+     VERIFIKASI KEMBAR (DOUBLE-CHECK):
+     Sebelum menuliskan hasil akhir untuk kursi 6F dan 6H, pastikan kamu melihat stempel aslinya. Jika stempel pada 6F dan 6H adalah stempel yang sama dan identik di dokumen, maka nilainya harus sama (yaitu '08 JAN 2035'). Jangan menciptakan bulan atau tahun baru (seperti SEP atau 2034) jika tidak ada tinta stempel yang menunjukkan kata tersebut secara jelas!
+   - ECONOMY CLASS (Rows 21-49, skip row 24):
+     * Rows 21-35: ALL columns A,B,C,D,F,G,H,J,K
+     * Row 36: ONLY seats D, F, G (No A,B,C,H,J,K)
+     * Rows 37-48: ALL columns A,B,C,D,F,G,H,J,K
+     * Row 49: ONLY seats A, B, C, H, J, K (No D,F,G)
+   - ATTENDANT DOORS (Expected in Document 1):
+     * Door 1 (4 items): att/d1-L, att/d1-CL, att/d1-CR, att/d1-R
+     * Door 2 (2 items): att/d2-L, att/d2-R
+     * Door 3 (2 items): att/d3-L, att/d3-R (might be at the very bottom or not fully visible; extract if present)
+   - CRITICAL CHECKPOINT B777 DOCUMENT 1: You MUST output all elements from Cockpit through Row 49.
 
-PRE-OUTPUT SELF-CHECK (do this before writing JSON):
-  Count your att/ items. Expected: att/d1-L, att/d1-CL, att/d1-CR, att/d1-R, att/d2-L, att/d2-R, att/d3-L, att/d3-R = 8 items.
-  If you have fewer than 8, go back and find the missing ones NOW.
-  Only proceed to write JSON when all 8 are found.
+2. DOCUMENT 2 (Economy Rows 50-63 only):
+   - COCKPIT & BUSINESS: Do NOT extract (not present).
+   - ECONOMY CLASS (Rows 50-63):
+     * Rows 50-62: ALL columns A,B,C,D,F,G,H,J,K
+     * Row 63: ONLY seats A, C, D, F, G, H, K (No B, no J)
+   - ATTENDANT DOORS (Expected in Document 2):
+     * Door 3 (2 items): att/d3-L, att/d3-R (usually near Row 50-51)
+     * Posterior doors (Door 4, Door 5) if visible.
+     * Do NOT extract Door 1 or Door 2 (not present).
+   - CRITICAL CHECKPOINT B777 DOCUMENT 2: You MUST output all elements from Row 50 through Row 63.
 
-SEATING LAYOUT (Check if First Class Row 1 exists):
-IF NO FIRST CLASS (Document starts at Row 6):
-  BUSINESS CLASS (Rows 6-12, STAGGERED - follow EXACTLY):
-    Row 6: ONLY seats C, E, F, H
-    Row 7: ONLY seats A, D, G, K
-    Row 8: ONLY seats C, E, F, H
-    Row 9: ONLY seats A, D, G, K
-    Row 10: ONLY seats C, E, F, H
-    Row 11: ONLY seats A, D, G, K
-    Row 12: ONLY seats E, F
-  ECONOMY CLASS (Rows 21-63, skip row 24) — READ EVERY ROW, DO NOT STOP EARLY:
-    Rows 21-35: ALL columns A,B,C,D,F,G,H,J,K
-    Row 36: ONLY seats D, F, G (3 seats only! No A,B,C,H,J,K!)
-    Rows 37-48: ALL columns A,B,C,D,F,G,H,J,K
-    Row 49: ONLY seats A, B, C, H, J, K (6 seats only! No D,F,G!)
-    Rows 50-62: ALL columns A,B,C,D,F,G,H,J,K  ← MANDATORY, DO NOT SKIP!
-    Row 63: ONLY seats A, C, D, F, G, H, K (7 seats only! No B, no J!)  ← THIS IS THE LAST ROW
-
-  SEAT COUNT CHECKPOINT (No FC):
-    Business: 26 seats (4+4+4+4+4+4+2). Economy: ~367 seats (14×9 + 3 + 12×9 + 6 + 13×9 + 7).
-    TOTAL REGULAR SEATS (excl. cockpit/attendant/spare): ~393.
-    If your count is below 350, you stopped too early. Go back and extract rows 50-63 NOW.
-
-IF FIRST CLASS EXISTS (Document starts at Row 1):
-  First Class Rows 1-2: A,D,G,K.
-  Business Rows 6-16 staggered: Row6 A,E,F,K; Row7 C,D,G,H; Row8 A,K only; Row9 A,E,F,K; Row10 C,D,G,H; Row11 A,E,F,K; Row12 C,D,G,H; Row14 A,E,F,K; Row15 C,D,G,H; Row16 A,E,F,K.
-  Economy Rows 21-52 (skip 24). Row 25 only DFG. Row 38 no DFG. Row 52 no B,J.  ← Row 52 IS THE LAST ROW for this variant.
-
-  SEAT COUNT CHECKPOINT (With FC):
-    If your economy count is below 200, you stopped too early. Go back and extract until row 52.
-
-SPARE TABLE READING RULES (B777):
-The spare table is on the RIGHT SIDE of the document. It has these columns:
+SPARE TABLE (Expected at the end of Document 2 or Document 1):
+The spare table has these columns:
   - No. column = row number (1, 2, 3...) — DO NOT use this as the count!
   - INFANT column = expiry date for infant spare life vests
   - SPARE column = may show count or be a label — IGNORE this column
@@ -365,7 +373,7 @@ HOW TO COUNT SPARES (READ THIS CAREFULLY):
 - DO NOT use the row number in the 'No.' column as your count. Count only filled date cells.
 - SPARE COUNT CHECKPOINT: If you output pax-1 and inf-1 only (just 1 each), that is almost certainly WRONG. Re-examine the spare table carefully.
 
-CRITICAL CHECKPOINT B777: You MUST output ALL 8 door items (att/d1-L, att/d1-CL, att/d1-CR, att/d1-R, att/d2-L, att/d2-R, att/d3-L, att/d3-R). You MUST read the ENTIRE document including ALL economy rows. If any door is missing OR economy rows stop before 52/63, you FAILED.
+CRITICAL CHECKPOINT B777: Extract either Document 1 or Document 2 structure completely depending on which one is shown. Do not invent missing sections that belong to the other document.
 
 === IF A320 ===
 ATTENDANT FWD: att/d11-LL, att/d11-LR (2 seats).
@@ -412,39 +420,29 @@ READING ORDER FOR DOORS:
 
 If a label is unclear or you are unsure, DO NOT SKIP. Output the date with a ? suffix (e.g., 15 JAN 2025?) to flag uncertainty. DO NOT output an empty cell for a door — that is worse than a marked uncertain date.
 
-DIGIT CONFUSION GUIDE (check every digit!):
-  0 ↔ 6 ↔ 8 (round shapes, look at top opening)
-  1 ↔ 7 (straight strokes, check for crossbar on 7 or serif on 1)
-  2 ↔ 7 ↔ Z (curved vs angular, check bottom stroke)
-  3 ↔ 8 ↔ 5 (look at closed vs open loops)
-  4 ↔ 9 (look at top closure and bottom stroke)
-  5 ↔ 6 ↔ S (check if bottom is round or flat)
-  9 ↔ 4 ↔ 7 (look at tail direction)
+=== STAMP & HANDWRITING DIGIT/MONTH AUTO-CORRECTION RULES ===
+Lakukan koreksi mandiri yang ketat terhadap hasil pembacaan teks stempel/tulisan tangan yang sering rusak akibat bersinggungan dengan garis hitam kisi-kisi tabel:
 
-MONTH CONFUSION GUIDE (check every letter!):
-  JAN ↔ JUN (A vs U — very common confusion!)
-  MAR ↔ MAY (R vs Y — look at bottom stroke carefully)
-  APR ↔ AUG (P vs U, R vs G — check second/third letter)
-  JUL ↔ JUN (L vs N — check last letter shape)
-  MAR ↔ MAY ↔ MAI (some write MAI for MAY)
-  SEP ↔ FEB (S vs F, P vs B — check each letter)
-  OCT ↔ OKT (some use K instead of C)
-  NOV ↔ DEC (completely different — look at first letter N vs D)
-  Valid months are ONLY: JAN, FEB, MAR, APR, MAY, JUN, JUL, AUG, SEP, OCT, NOV, DEC.
+KOREKSI TAHUN (Wajib Berupa 4 Digit Angka):
+- Jika digit TERAKHIR dari tahun terdeteksi sebagai huruf 'O', 'o', atau 'Q', ubah paksa menjadi angka '0' (Contoh: '203O' -> '2030', '203o' -> '2030').
+- Jika digit dari tahun terdeteksi berupa huruf 'l' (L kecil), 'i', 'I' (i besar), atau karakter vertikal '|', ubah paksa menjadi angka '1' (Contoh: '203l' -> '2031', '203I' -> '2031').
+- Jika digit dari tahun terdeteksi berupa huruf 'S' atau 's', ubah paksa menjadi angka '5' (Contoh: '203S' -> '2035').
+- Jika digit dari tahun terdeteksi berupa huruf 'b', ubah paksa menjadi angka '6' (Contoh: '203b' -> '2036').
 
-YEAR RULES:
-  - Years should be 4 digits (2024-2040 range is typical).
-  - If only 2 digits (e.g. '28'), interpret as '2028'. Never '1928'.
-  - Check: 2025 vs 2026, 2029 vs 2024, 2030 vs 2036.
+KOREKSI NAMA BULAN (Wajib Berupa 3 Huruf Valid: JAN, FEB, MAR, APR, MAY, JUN, JUL, AUG, SEP, OCT, NOV, DEC):
+- Jika terdeteksi angka '4' di dalam nama bulan, ubah menjadi huruf 'A' (Contoh: 'M4R' -> 'MAR', '4PR' -> 'APR').
+- Jika terdeteksi angka '1', '7', atau huruf 'I'/'l' di tengah/akhir bulan, kembalikan ke karakter bulan alfabetis yang valid (Contoh: 'J1N' -> 'JUN' atau 'JAN', 'A1G' -> 'AUG').
+- Jika terdeteksi angka '0' di awal nama bulan, ubah menjadi huruf 'O' (Contoh: '0CT' -> 'OCT').
 
-ACCURACY RULES (VERY IMPORTANT!):
+JIKA SEL KOSONG ATAU UNREADABLE:
+- Jika sel benar-benar kosong atau coretan tinta tidak membentuk pola tanggal, isi dengan string kosong \"\".
 
 COLUMN ALIGNMENT (CRITICAL - THIS IS THE MOST COMMON ERROR!):
 - The table has column headers at the TOP (e.g. A, B, C or A, C, D, F, G, H, J, K).
 - For EACH row, read LEFT to RIGHT strictly. Match each cell to its column header by vertical alignment.
 - Do NOT drift. If row 41A = OCT 2026, then 41B is the NEXT cell to the RIGHT — a completely different cell.
 - Common mistake: reading 42A as the value from 42B or 42C because 42A handwriting is faint or unclear.
-  If a cell looks empty or unclear, output '' — do NOT substitute with the neighboring cell's value.
+- If a cell looks empty or unclear, output '' — do NOT substitute with the neighboring cell's value.
 
 1. READ EACH CELL TWICE before recording. First pass = initial read, second pass = verify.
 2. CROSS-CHECK vertically: Compare each date with 2-3 seats ABOVE and BELOW in the SAME COLUMN.
@@ -459,7 +457,55 @@ COLUMN ALIGNMENT (CRITICAL - THIS IS THE MOST COMMON ERROR!):
 DATA FORMAT (MINIFIED JSON):
 {\"registration\":\"PK-GIA\",\"aircraft_type\":\"B777-300\",\"seats\":[[\"pilot\",\"31 MAY 2029\"],[\"copilot\",\"17 JAN 2035\"],[\"att/d1-L\",\"14 MAY 2029\"],[\"att/d1-CL\",\"17 MAY 2029\"],[\"6C\",\"12 MAR 2030\"],[\"pax-1\",\"SEP 28\"],[\"inf-1\",\"SEP 23\"]]}";
 
-        // === HYBRID APPROACH: GOOGLE CLOUD VISION API (Optional Fallback) ===
+        // === STEP A: PYTHON OCR PREPROCESSING (opencv-python + pytesseract) ===
+        // Enhance images and extract OCR text BEFORE sending to AI
+        $ocrResult = null;
+        $aiImagePaths = $imagePaths; // Default: use original images
+        try {
+            Log::info('[PDF Scanner] Running Python OCR preprocessing on ' . count($imagePaths) . ' image(s)');
+            $ocrResult = $this->ocrPreprocess->preprocess($imagePaths);
+
+            if ($ocrResult['success'] ?? false) {
+                // Use AI-enhanced images (moderate enhancement, preserves color/context)
+                $aiEnhanced = $ocrResult['ai_enhanced_images'] ?? [];
+                if (!empty($aiEnhanced) && count($aiEnhanced) === count($imagePaths)) {
+                    $aiImagePaths = $aiEnhanced;
+                    Log::info('[PDF Scanner] Using AI-enhanced images from Python OpenCV', [
+                        'count' => count($aiImagePaths),
+                        'preprocessing' => $ocrResult['preprocessing_applied'] ?? [],
+                    ]);
+                }
+
+                // Add corrected OCR text to prompt
+                $ocrText = $ocrResult['corrected_ocr_text'] ?? ($ocrResult['ocr_text'] ?? '');
+                if (!empty($ocrText)) {
+                    $prompt .= "\n\n=== PYTESSERACT OCR TRANSCRIPT (OpenCV Enhanced) ===\n";
+                    $prompt .= "Below is text extracted by Tesseract OCR from OpenCV-enhanced images. Use this as REFERENCE for reading handwriting (especially dates). Match these text strings to the table structure you see in the image:\n";
+                    $prompt .= "```\n" . substr($ocrText, 0, 8000) . "\n```\n";
+                }
+
+                // Log orientation detection results
+                $orientations = $ocrResult['orientations'] ?? [];
+                foreach ($orientations as $idx => $orient) {
+                    if ($orient['needs_rotation'] ?? false) {
+                        Log::info("[PDF Scanner] Page " . ($idx + 1) . " was auto-rotated", [
+                            'angle' => $orient['angle'],
+                            'confidence' => $orient['confidence'],
+                        ]);
+                    }
+                }
+            } else {
+                Log::warning('[PDF Scanner] Python OCR preprocessing failed, using original images', [
+                    'errors' => $ocrResult['errors'] ?? [],
+                ]);
+            }
+        } catch (\Exception $e) {
+            Log::warning('[PDF Scanner] Python OCR preprocessing exception, using original images', [
+                'error' => $e->getMessage(),
+            ]);
+        }
+
+        // === STEP B: GOOGLE CLOUD VISION API (Additional OCR Fallback) ===
         $visionText = '';
         if (!empty($geminiKey)) {
             $visionText = $this->getVisionOcrText($imagePaths, $geminiKey);
@@ -475,7 +521,8 @@ DATA FORMAT (MINIFIED JSON):
         $openRouterContent = [['type' => 'text', 'text' => $prompt]];
         $anthropicImages = [];
 
-        foreach ($imagePaths as $imagePath) {
+        // Use AI-enhanced images if available, otherwise original
+        foreach ($aiImagePaths as $imagePath) {
             // Compress to JPEG to reduce payload size (PNG at 300 DPI can be 10MB+)
             $originalSize = filesize($imagePath);
             $img = imagecreatefrompng($imagePath);
@@ -702,16 +749,26 @@ DATA FORMAT (MINIFIED JSON):
                 }
 
                 $registration = $parsedData['registration'] ?? 'PENDING';
+                $aircraftType = $parsedData['aircraft_type'] ?? 'Unknown';
                 $seats = $parsedData['seats'] ?? [];
 
-                Log::info("[PDF Scanner] Successfully parsed (attempt {$attempt})", [
+                // === STEP C: APPLY DATA DICTIONARY POST-CORRECTIONS ===
+                // Correct registration using OCR corrections dictionary
+                $registration = $this->ocrPreprocess->correctRegistration($registration);
+                // Correct aircraft type
+                $aircraftType = $this->ocrPreprocess->correctAircraftType($aircraftType);
+                // Correct all seat IDs and expiry dates
+                $seats = $this->ocrPreprocess->correctSeatsData($seats);
+
+                Log::info("[PDF Scanner] Successfully parsed + corrected (attempt {$attempt})", [
                     'registration' => $registration,
+                    'aircraft_type' => $aircraftType,
                     'seats_count' => count($seats),
                 ]);
 
                 return [
                     'registration' => $registration,
-                    'aircraft_type' => $parsedData['aircraft_type'] ?? 'Unknown',
+                    'aircraft_type' => $aircraftType,
                     'seats' => $seats
                 ];
 

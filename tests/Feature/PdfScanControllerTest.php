@@ -91,7 +91,7 @@ class PdfScanControllerTest extends TestCase
 
     public function test_scan_success_and_active_provider_detection()
     {
-        $file = UploadedFile::fake()->create('document.pdf', 100, 'application/pdf');
+        $file = UploadedFile::fake()->createWithContent('document.pdf', '%PDF-1.5');
 
         $this->mock(PdfParserService::class, function (MockInterface $mock) {
             $mock->shouldReceive('processFile')
@@ -121,7 +121,7 @@ class PdfScanControllerTest extends TestCase
 
     public function test_scan_handles_connection_timeout_gracefully()
     {
-        $file = UploadedFile::fake()->create('document.pdf', 100, 'application/pdf');
+        $file = UploadedFile::fake()->createWithContent('document.pdf', '%PDF-1.5');
 
         $this->mock(PdfParserService::class, function (MockInterface $mock) {
             $mock->shouldReceive('processFile')
@@ -142,7 +142,7 @@ class PdfScanControllerTest extends TestCase
 
     public function test_scan_handles_general_exception_gracefully()
     {
-        $file = UploadedFile::fake()->create('document.pdf', 100, 'application/pdf');
+        $file = UploadedFile::fake()->createWithContent('document.pdf', '%PDF-1.5');
 
         $this->mock(PdfParserService::class, function (MockInterface $mock) {
             $mock->shouldReceive('processFile')

@@ -50,67 +50,110 @@
     </div>
 
     <div style="display: grid; grid-template-columns: 1fr 420px; gap: 1.5rem;">
-        <!-- Data Table -->
-        <div style="background: var(--bg-card); border-radius: 16px; border: 1px solid var(--border-subtle); overflow: hidden; box-shadow: var(--shadow-md);">
+        <!-- LOPA Layout Container -->
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
             <form id="export-form" action="{{ route('superadmin.pdf-scan.export') }}" method="POST">
                 @csrf
                 <input type="hidden" name="master_registration" id="export-master-registration" value="{{ $registration }}">
-                <table style="width: 100%; border-collapse: collapse; text-align: left;">
-                    <thead>
-                        <tr style="background: var(--bg-dark); border-bottom: 1px solid var(--border-subtle);">
-                            <th style="padding: 0.75rem 1rem; font-weight: 700; color: var(--text-primary); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; width: 40px;">#</th>
-                            <th style="padding: 0.75rem 1rem; font-weight: 700; color: var(--text-primary); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">Registration</th>
-                            <th style="padding: 0.75rem 1rem; font-weight: 700; color: var(--text-primary); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">Seat ID</th>
-                            <th style="padding: 0.75rem 1rem; font-weight: 700; color: var(--text-primary); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">Expiry Date</th>
-                            <th style="padding: 0.75rem; width: 40px;"></th>
-                        </tr>
-                    </thead>
-                    <tbody id="data-rows">
-                        @forelse($extractedData as $index => $item)
-                            <tr style="border-bottom: 1px solid var(--border-subtle); transition: background 0.2s;" 
-                                onmouseover="this.style.background='var(--bg-hover)'" onmouseout="this.style.background='transparent'">
-                                <td style="padding: 0.5rem 1rem; color: var(--text-muted); font-size: 0.8rem; font-weight: 600;">{{ $index + 1 }}</td>
-                                <td style="padding: 0.5rem 0.75rem;">
-                                    <input type="text" name="data[{{ $index }}][registration]" value="{{ $item['registration'] }}" class="input-premium row-registration" style="width: 100%; padding: 0.5rem 0.75rem; border-radius: 8px; font-size: 0.9rem;">
-                                </td>
-                                <td style="padding: 0.5rem 0.75rem;">
-                                    <input type="text" name="data[{{ $index }}][seat_id]" value="{{ $item['seat_id'] }}" class="input-premium" style="width: 100%; padding: 0.5rem 0.75rem; border-radius: 8px; font-size: 0.9rem; font-weight: 600;">
-                                </td>
-                                <td style="padding: 0.5rem 0.75rem;">
-                                    <input type="text" name="data[{{ $index }}][expiry_date]" value="{{ $item['expiry_date'] }}" 
+                
+                @php
+                    $groupedData = [];
+                    $otherData = [];
+                    foreach($extractedData as $index => $item) {
+                        $item['index'] = $index;
+                        if (preg_match('/^(\d+)([A-Za-z]+)$/', trim($item['seat_id']), $matches)) {
+                            $rowNum = (int)$matches[1];
+                            $seatLetter = strtoupper($matches[2]);
+                            $groupedData[$rowNum][$seatLetter] = $item;
+                        } else {
+                            $otherData[] = $item;
+                        }
+                    }
+                    ksort($groupedData);
+                    foreach($groupedData as $r => $seats) {
+                        ksort($groupedData[$r]);
+                    }
+                @endphp
+
+                <div class="lopa-row-container" style="display: flex; flex-direction: column; gap: 1rem;" id="lopa-container">
+                    @forelse($groupedData as $rowNum => $rowSeats)
+                        <div class="lopa-row" data-row="{{ $rowNum }}" style="display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1rem; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 12px; transition: background 0.2s;">
+                            <!-- Row Label -->
+                            <div style="min-width: 60px; font-weight: 800; font-size: 1.1rem; color: var(--text-muted); border-right: 2px solid var(--border-subtle); padding-right: 0.75rem; text-align: center;">
+                                Row {{ $rowNum }}
+                            </div>
+                            <!-- Seats in this row -->
+                            <div class="row-seats" style="display: flex; flex-wrap: wrap; gap: 0.75rem; flex: 1;">
+                                @foreach($rowSeats as $seatLetter => $item)
+                                    <div class="seat-card" data-index="{{ $item['index'] }}" style="background: var(--bg-dark); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 0.5rem; display: flex; flex-direction: column; width: 110px; position: relative; gap: 0.25rem;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <input type="text" name="data[{{ $item['index'] }}][seat_id]" value="{{ $item['seat_id'] }}" 
+                                                class="seat-id-input"
+                                                style="background: transparent; border: none; font-weight: 700; font-size: 0.85rem; color: var(--primary); width: 60px; padding: 0; outline: none;"
+                                                title="Edit Seat ID">
+                                            <button type="button" class="btn-delete-row" style="color: var(--danger); border: none; background: none; cursor: pointer; padding: 0; opacity: 0.5; font-size: 0.75rem; display: flex; align-items: center; justify-content: center;" title="Hapus">
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                            </button>
+                                        </div>
+                                        <input type="text" name="data[{{ $item['index'] }}][expiry_date]" value="{{ $item['expiry_date'] }}" 
+                                            class="input-premium expiry-date-input" 
+                                            style="width: 100%; padding: 0.25rem 0.4rem; border-radius: 6px; font-size: 0.8rem; height: 28px; text-transform: uppercase;"
+                                            placeholder="EXP DATE">
+                                        <input type="hidden" name="data[{{ $item['index'] }}][registration]" value="{{ $item['registration'] }}" class="row-registration">
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @empty
+                        @if(empty($otherData))
+                            <div style="padding: 4rem 1.5rem; text-align: center; color: var(--text-muted); background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border-subtle);">
+                                <div style="font-size: 3rem; margin-bottom: 1rem;">🔍</div>
+                                Tidak ada data yang terdeteksi secara otomatis. Silakan tambah baris manual atau ulangi scan.
+                            </div>
+                        @endif
+                    @endforelse
+
+                    <!-- Others Section -->
+                    <div class="lopa-row lopa-row-others" id="others-row" style="display: {{ count($otherData) > 0 ? 'flex' : 'none' }}; flex-direction: column; gap: 0.75rem; padding: 1rem; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 12px;">
+                        <div style="font-weight: 800; font-size: 1rem; color: var(--text-muted); border-bottom: 2px solid var(--border-subtle); padding-bottom: 0.5rem; margin-bottom: 0.25rem; width: 100%;">
+                            Lain-lain (Cockpit / Spare / Attendant / Doors)
+                        </div>
+                        <div class="row-seatsothers" id="others-seats-container" style="display: flex; flex-wrap: wrap; gap: 0.75rem; width: 100%;">
+                            @foreach($otherData as $item)
+                                <div class="seat-card" data-index="{{ $item['index'] }}" style="background: var(--bg-dark); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 0.5rem; display: flex; flex-direction: column; width: 110px; position: relative; gap: 0.25rem;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <input type="text" name="data[{{ $item['index'] }}][seat_id]" value="{{ $item['seat_id'] }}" 
+                                            class="seat-id-input"
+                                            style="background: transparent; border: none; font-weight: 700; font-size: 0.85rem; color: var(--primary); width: 60px; padding: 0; outline: none;"
+                                            title="Edit Seat ID">
+                                        <button type="button" class="btn-delete-row" style="color: var(--danger); border: none; background: none; cursor: pointer; padding: 0; opacity: 0.5; font-size: 0.75rem; display: flex; align-items: center; justify-content: center;" title="Hapus">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                        </button>
+                                    </div>
+                                    <input type="text" name="data[{{ $item['index'] }}][expiry_date]" value="{{ $item['expiry_date'] }}" 
                                         class="input-premium expiry-date-input" 
-                                        style="width: 100%; padding: 0.5rem 0.75rem; border-radius: 8px; font-size: 0.9rem;">
-                                </td>
-                                <td style="padding: 0.5rem;">
-                                    <button type="button" class="btn-delete-row" style="color: var(--danger); border: none; background: none; cursor: pointer; padding: 0.5rem; opacity: 0.5; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.5'">
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                                    </button>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="5" style="padding: 4rem 1.5rem; text-align: center; color: var(--text-muted);">
-                                    <div style="font-size: 3rem; margin-bottom: 1rem;">🔍</div>
-                                    Tidak ada data yang terdeteksi secara otomatis. Silakan tambah baris manual atau ulangi scan.
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                                        style="width: 100%; padding: 0.25rem 0.4rem; border-radius: 6px; font-size: 0.8rem; height: 28px; text-transform: uppercase;"
+                                        placeholder="EXP DATE">
+                                    <input type="hidden" name="data[{{ $item['index'] }}][registration]" value="{{ $item['registration'] }}" class="row-registration">
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
             </form>
-            <div style="padding: 1rem; background: var(--bg-dark); border-top: 1px solid var(--border-subtle);">
+            <div style="padding: 1rem; background: var(--bg-dark); border-radius: 12px; border: 1px solid var(--border-subtle);">
                 <button type="button" id="add-row" class="btn btn-secondary" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem; font-weight: 700;">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                    Tambah Baris Baru
+                    Tambah Kursi Baru
                 </button>
             </div>
         </div>
 
-        <!-- Right Panel: Scan Image Viewer -->
-        <div style="display: flex; flex-direction: column; gap: 1rem;">
+        <!-- Right Panel: Scan Image Viewer (Sticky) -->
+        <div style="display: flex; flex-direction: column; gap: 1rem; position: sticky; top: 80px; align-self: start;">
             <!-- Original Scan Image -->
             @if(!empty($scanImages))
-            <div style="background: var(--bg-card); border-radius: 16px; border: 1px solid var(--border-subtle); overflow: hidden; box-shadow: var(--shadow-sm); position: sticky; top: 5rem;">
+            <div style="background: var(--bg-card); border-radius: 16px; border: 1px solid var(--border-subtle); overflow: hidden; box-shadow: var(--shadow-sm);">
                 <div style="padding: 0.75rem 1rem; background: var(--bg-dark); border-bottom: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: space-between;">
                     <h3 style="margin: 0; font-size: 0.85rem; font-weight: 700; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 0.5rem;">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
@@ -181,7 +224,6 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const addRowBtn = document.getElementById('add-row');
-        const dataRows = document.getElementById('data-rows');
         const masterRegInput = document.getElementById('master-registration');
         let rowCount = {{ count($extractedData) }};
 
@@ -197,36 +239,129 @@
         });
 
         addRowBtn.addEventListener('click', function() {
-            const tr = document.createElement('tr');
-            tr.style.borderBottom = '1px solid var(--border-subtle)';
-            tr.innerHTML = `
-                <td style="padding: 0.5rem 1rem; color: var(--text-muted); font-size: 0.8rem; font-weight: 600;">${rowCount + 1}</td>
-                <td style="padding: 0.5rem 0.75rem;">
-                    <input type="text" name="data[${rowCount}][registration]" value="${masterRegInput.value}" class="input-premium row-registration" style="width: 100%; padding: 0.5rem 0.75rem; border-radius: 8px; font-size: 0.9rem;">
-                </td>
-                <td style="padding: 0.5rem 0.75rem;">
-                    <input type="text" name="data[${rowCount}][seat_id]" placeholder="21A, pax-1, dll" class="input-premium" style="width: 100%; padding: 0.5rem 0.75rem; border-radius: 8px; font-size: 0.9rem;">
-                </td>
-                <td style="padding: 0.5rem 0.75rem;">
-                    <input type="text" name="data[${rowCount}][expiry_date]" placeholder="JAN 2030" class="input-premium expiry-date-input" style="width: 100%; padding: 0.5rem 0.75rem; border-radius: 8px; font-size: 0.9rem;">
-                </td>
-                <td style="padding: 0.5rem;">
-                    <button type="button" class="btn-delete-row" style="color: var(--danger); border: none; background: none; cursor: pointer; padding: 0.5rem; opacity: 0.5;">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                    </button>
-                </td>
-            `;
-            dataRows.appendChild(tr);
-            rowCount++;
-            
-            const emptyMsg = dataRows.querySelector('td[colspan="5"]');
-            if (emptyMsg) emptyMsg.parentElement.remove();
+            Swal.fire({
+                title: 'Tambah Kursi Baru',
+                html: `
+                    <div style="text-align: left; display: flex; flex-direction: column; gap: 1rem;">
+                        <div>
+                            <label style="font-weight: 600; font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.35rem; display: block;">Seat ID (contoh: 21A, pax-1, dll)</label>
+                            <input id="swal-seat-id" class="swal2-input" placeholder="21A" style="margin: 0; width: 100%; border-radius: 8px;">
+                        </div>
+                        <div>
+                            <label style="font-weight: 600; font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.35rem; display: block;">Expiry Date (contoh: JAN 2030)</label>
+                            <input id="swal-expiry-date" class="swal2-input" placeholder="JAN 2030" style="margin: 0; width: 100%; border-radius: 8px; text-transform: uppercase;">
+                        </div>
+                    </div>
+                `,
+                focusConfirm: false,
+                showCancelButton: true,
+                confirmButtonText: 'Tambah',
+                cancelButtonText: 'Batal',
+                background: getComputedStyle(document.documentElement).getPropertyValue('--bg-card-solid').trim() || '#ffffff',
+                color: getComputedStyle(document.documentElement).getPropertyValue('--text-primary').trim() || '#1e293b',
+                preConfirm: () => {
+                    const seatId = document.getElementById('swal-seat-id').value.trim();
+                    const expiryDate = document.getElementById('swal-expiry-date').value.trim();
+                    if (!seatId) {
+                        Swal.showValidationMessage('Seat ID harus diisi');
+                        return false;
+                    }
+                    return { seatId, expiryDate };
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const { seatId, expiryDate } = result.value;
+                    addSeatToLopa(seatId, expiryDate);
+                }
+            });
         });
 
-        dataRows.addEventListener('click', function(e) {
+        function addSeatToLopa(seatId, expiryDate) {
+            const match = seatId.match(/^(\d+)([A-Za-z]+)$/);
+            let targetContainer;
+            
+            const seatCard = document.createElement('div');
+            seatCard.className = 'seat-card';
+            seatCard.dataset.index = rowCount;
+            seatCard.style.cssText = 'background: var(--bg-dark); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 0.5rem; display: flex; flex-direction: column; width: 110px; position: relative; gap: 0.25rem;';
+            
+            seatCard.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <input type="text" name="data[${rowCount}][seat_id]" value="${seatId}" 
+                        class="seat-id-input"
+                        style="background: transparent; border: none; font-weight: 700; font-size: 0.85rem; color: var(--primary); width: 60px; padding: 0; outline: none;"
+                        title="Edit Seat ID">
+                    <button type="button" class="btn-delete-row" style="color: var(--danger); border: none; background: none; cursor: pointer; padding: 0; opacity: 0.5; font-size: 0.75rem; display: flex; align-items: center; justify-content: center;" title="Hapus">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
+                </div>
+                <input type="text" name="data[${rowCount}][expiry_date]" value="${expiryDate.toUpperCase()}" 
+                    class="input-premium expiry-date-input" 
+                    style="width: 100%; padding: 0.25rem 0.4rem; border-radius: 6px; font-size: 0.8rem; height: 28px; text-transform: uppercase;"
+                    placeholder="EXP DATE">
+                <input type="hidden" name="data[${rowCount}][registration]" value="${masterRegInput.value}" class="row-registration">
+            `;
+            
+            if (match) {
+                const rowNum = parseInt(match[1]);
+                let rowDiv = document.querySelector(`.lopa-row[data-row="${rowNum}"]`);
+                if (!rowDiv) {
+                    rowDiv = document.createElement('div');
+                    rowDiv.className = 'lopa-row';
+                    rowDiv.dataset.row = rowNum;
+                    rowDiv.style.cssText = 'display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1rem; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 12px; transition: background 0.2s;';
+                    rowDiv.innerHTML = `
+                        <div style="min-width: 60px; font-weight: 800; font-size: 1.1rem; color: var(--text-muted); border-right: 2px solid var(--border-subtle); padding-right: 0.75rem; text-align: center;">
+                            Row ${rowNum}
+                        </div>
+                        <div class="row-seats" style="display: flex; flex-wrap: wrap; gap: 0.75rem; flex: 1;"></div>
+                    `;
+                    
+                    const lopaContainer = document.getElementById('lopa-container');
+                    const existingRows = Array.from(lopaContainer.querySelectorAll('.lopa-row[data-row]'));
+                    let inserted = false;
+                    for (let existing of existingRows) {
+                        const existingRowVal = parseInt(existing.dataset.row);
+                        if (existingRowVal > rowNum) {
+                            lopaContainer.insertBefore(rowDiv, existing);
+                            inserted = true;
+                            break;
+                        }
+                    }
+                    if (!inserted) {
+                        const othersRow = document.getElementById('others-row');
+                        lopaContainer.insertBefore(rowDiv, othersRow);
+                    }
+                }
+                targetContainer = rowDiv.querySelector('.row-seats');
+            } else {
+                const othersRow = document.getElementById('others-row');
+                othersRow.style.display = 'flex';
+                targetContainer = document.getElementById('others-seats-container');
+            }
+            
+            targetContainer.appendChild(seatCard);
+            rowCount++;
+            
+            markUncertainDates();
+        }
+
+        document.getElementById('export-form').addEventListener('click', function(e) {
             const deleteBtn = e.target.closest('.btn-delete-row');
             if (deleteBtn) {
-                deleteBtn.closest('tr').remove();
+                const seatCard = deleteBtn.closest('.seat-card');
+                if (seatCard) {
+                    const rowSeatsContainer = seatCard.parentElement;
+                    seatCard.remove();
+                    
+                    if (rowSeatsContainer && rowSeatsContainer.classList.contains('row-seats') && rowSeatsContainer.children.length === 0) {
+                        rowSeatsContainer.closest('.lopa-row').remove();
+                    } else if (rowSeatsContainer && rowSeatsContainer.id === 'others-seats-container' && rowSeatsContainer.children.length === 0) {
+                        document.getElementById('others-row').style.display = 'none';
+                    }
+                    
+                    markUncertainDates();
+                }
             }
         });
 
@@ -255,7 +390,7 @@
 
         markUncertainDates();
 
-        dataRows.addEventListener('input', function(e) {
+        document.getElementById('export-form').addEventListener('input', function(e) {
             if (e.target.classList.contains('expiry-date-input')) {
                 markUncertainDates();
             }
@@ -342,10 +477,10 @@
 
         // === ULANGI SCAN CONFIRMATION ===
         document.getElementById('btn-ulangi-scan')?.addEventListener('click', function() {
-            const rowCount = document.querySelectorAll('#data-rows tr').length;
+            const totalSeats = document.querySelectorAll('.seat-card').length;
             Swal.fire({
                 title: 'Ulangi Scan?',
-                text: `Data hasil ekstraksi (${rowCount} baris) akan dihapus dan tidak bisa dikembalikan. Pastikan Anda sudah download Excel jika diperlukan.`,
+                text: `Data hasil ekstraksi (${totalSeats} baris) akan dihapus dan tidak bisa dikembalikan. Pastikan Anda sudah download Excel jika diperlukan.`,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Ya, Ulangi Scan',

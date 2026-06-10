@@ -211,7 +211,7 @@ STEP 1: Read the REGISTRATION (e.g. PK-GIA, PK-GIG, PK-GHH) and AIRCRAFT TYPE fr
 AIRCRAFT IDENTIFICATION GUIDE:
 - Look for text like: Aircraft, Type, Model, A/C Type, Registration labels in the header.
 - PK-GHH, PK-GHI = A330-900 (Garuda Indonesia) — DO NOT confuse with other A330s
-- PK-GHE, PK-GHF, PK-GHG = A330 Standard (may have Business Class)
+- PK-GHE, PK-GHF, PK-GHG = A330-900a (WITH Business Class, 1-1-1-1 stagger)
 - If you see: A330-900, A330-900NEO, or A333 = It IS an Airbus A330
 - If you see: B777, 777 = It IS a Boeing B777
 - If you see: B737, 737 = It IS a Boeing B737
@@ -243,17 +243,53 @@ CRITICAL CHECKPOINT B737: You MUST read until the bottom. Output MUST include at
 
 STEP 2A: DETERMINE VARIANT
 - Scan the document top-to-bottom for Section starting at Row 6 or Row 21
-- If you see BUSINESS CLASS section (rows starting with 6): Use A330 Standard rules below
+- If you see BUSINESS CLASS section (rows starting with 6): Use A330-900a rules below
 - If you see ONLY ECONOMY section (rows starting directly at 21, NO Business Class rows): Use A330-900b rules (see next section)
 
-=== IF A330 STANDARD (WITH Business Class, Rows 6-11) ===
-ATTENDANT TOP: att/d11-LL1, att/d11-LL2, att/d11-LR (3 left), att/d21-R (1 right).
-SEATS: Business Rows 6-11 columns AC-DG-HK. After Row 11 is a LARGE GAP - DO NOT STOP. Economy Rows 21-44 AC-DEFG-HK. Rows 45-48 AC-DFG-HK (no E). Row 49 ONLY D,F,G.
-ATTENDANT MID: att/d12-L1, att/d12-L2, att/d22-R1, att/d22-R2.
-ATTENDANT BOTTOM: att/d13-L, att/d23-R (only if visible).
-ATTENDANT VERY BOTTOM: There are 4 items here! From left to right: att/d14-L, aft-LC, aft-RC, att/d24-R. DO NOT SKIP the two 'aft' items located in the middle.
+=== IF A330-900a (WITH Business Class) — PK-GHE, PK-GHF, PK-GHG ===
+ATTENDANT TOP (4 seats): att/d11-LL1, att/d11-LL2, att/d11-LR (3 left), att/d21-R (1 right).
+
+BUSINESS CLASS (Rows 6-11, 1-1-1-1 STAGGER layout — NOT 2-4-2!):
+  Each row has ONLY 4 seats in columns: A, D, G, K.
+  Read LEFT→RIGHT for each row: A first, then D, then G, then K.
+  Total: 6 rows × 4 seats = 24 business class seats.
+  Seat IDs: 6A, 6D, 6G, 6K, 7A, 7D, 7G, 7K, 8A, 8D, 8G, 8K, 9A, 9D, 9G, 9K, 10A, 10D, 10G, 10K, 11A, 11D, 11G, 11K.
+  WARNING: Do NOT output columns C, E, F, H for business class — they DO NOT EXIST in this layout!
+
+ATTENDANT MID (4 seats, between Business and Economy): att/d12-LL1, att/d12-LL2 (2 left), att/d22-RR1, att/d22-RR2 (2 right).
+  WARNING: The IDs use double-L and double-R (LL1, LL2, RR1, RR2). Do NOT output att/d12-L1 or att/d22-R1 (single letter = WRONG).
+
+After Row 11 is a LARGE GAP — DO NOT STOP. Economy section starts at Row 21.
+
+ECONOMY SECTION 1 (Rows 21-40, skip row 24, 2-4-2 layout):
+  Standard columns: A, C, D, E, F, G, H, K (8 seats per row).
+  Row 40 EXCEPTION: ONLY columns A, C, H, K (no D, E, F, G).
+
+ATTENDANT D13/D23 (2 seats, between Row 40 and Row 41): att/d13-L, att/d23-R.
+  These are ALWAYS present — do NOT skip.
+
+ECONOMY SECTION 2 (Rows 41-58, 2-4-2 layout):
+  Standard columns: A, C, D, E, F, G, H, K.
+  Row 41 EXCEPTION: ONLY columns D, E, F, G (no A, C, H, K).
+  Rows 42-53: ALL columns A, C, D, E, F, G, H, K.
+  Rows 54-56 EXCEPTION: ONLY columns A, C, D, F, G, H, K (no E).
+  Row 57 EXCEPTION: ONLY columns A, C, D, F, G.
+  Row 58 EXCEPTION: ONLY columns D, F, G.
+
+ATTENDANT BOTTOM (2 seats ONLY): att/d14-L, att/d24-R.
+  WARNING: There is NO aft-LC or aft-RC in this layout! Only 2 seats here.
+
 SPARE: Read actual count from PDF. Use pax-1,...pax-N then inf-1,...inf-N.
-CRITICAL CHECKPOINT A330 STANDARD: You MUST read until the bottom. Output MUST include att/d14-L, aft-LC, aft-RC, att/d24-R, and ALL Spares. If not, you FAILED.
+
+CRITICAL CHECKPOINT A330-900a: You MUST output ALL of the following:
+  - 4 top attendants (att/d11-LL1, att/d11-LL2, att/d11-LR, att/d21-R)
+  - 24 business seats (rows 6-11, cols A/D/G/K)
+  - 4 mid attendants (att/d12-LL1, att/d12-LL2, att/d22-RR1, att/d22-RR2)
+  - Economy rows 21-58 (skip 24, with per-row column exceptions)
+  - 2 bottom-mid attendants (att/d13-L, att/d23-R)
+  - 2 bottom attendants (att/d14-L, att/d24-R)
+  - ALL spares (pax + inf)
+  If any of these is missing, you FAILED.
 
 === IF A330-900b ECONOMY-ONLY (Garuda PK-GHH, PK-GHI, NO Business Class) ===
 IMPORTANT: This variant has ONLY Economy rows (21-58), NO Business Class.

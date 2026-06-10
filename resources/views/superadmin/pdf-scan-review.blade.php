@@ -57,11 +57,23 @@
                 <input type="hidden" name="master_registration" id="export-master-registration" value="{{ $registration }}">
                 
                 @php
+                    $cockpitData = [];
                     $groupedData = [];
+                    $attendantData = [];
+                    $spareData = [];
                     $otherData = [];
+                    
                     foreach($extractedData as $index => $item) {
                         $item['index'] = $index;
-                        if (preg_match('/^(\d+)([A-Za-z]+)$/', trim($item['seat_id']), $matches)) {
+                        $id = strtolower(trim($item['seat_id']));
+                        
+                        if (preg_match('/pilot|copil|observer/i', $id)) {
+                            $cockpitData[] = $item;
+                        } elseif (preg_match('/^(att\/d|aft-|door)/i', $id)) {
+                            $attendantData[] = $item;
+                        } elseif (preg_match('/^(pax-|inf-|spare)/i', $id)) {
+                            $spareData[] = $item;
+                        } elseif (preg_match('/^(\d+)([A-Za-z]+)$/', trim($item['seat_id']), $matches)) {
                             $rowNum = (int)$matches[1];
                             $seatLetter = strtoupper($matches[2]);
                             $groupedData[$rowNum][$seatLetter] = $item;
@@ -76,6 +88,66 @@
                 @endphp
 
                 <div class="lopa-row-container" style="display: flex; flex-direction: column; gap: 1rem;" id="lopa-container">
+                    
+                    <!-- Cockpit Section -->
+                    @if(count($cockpitData) > 0)
+                        <div class="lopa-section" id="cockpit-section" style="display: flex; flex-direction: column; gap: 0.75rem; padding: 1rem; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 12px; margin-bottom: 1rem;">
+                            <div style="font-weight: 800; font-size: 1rem; color: var(--text-muted); border-bottom: 2px solid var(--border-subtle); padding-bottom: 0.5rem; margin-bottom: 0.25rem;">
+                                👨‍✈️ Cockpit / Flight Deck
+                            </div>
+                            <div class="row-seats" id="cockpit-seats-container" style="display: flex; flex-wrap: wrap; gap: 0.75rem;">
+                                @foreach($cockpitData as $item)
+                                    <div class="seat-card" data-index="{{ $item['index'] }}" style="background: var(--bg-dark); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 0.5rem; display: flex; flex-direction: column; width: 110px; position: relative; gap: 0.25rem;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <input type="text" name="data[{{ $item['index'] }}][seat_id]" value="{{ $item['seat_id'] }}" 
+                                                class="seat-id-input"
+                                                style="background: transparent; border: none; font-weight: 700; font-size: 0.85rem; color: var(--primary); width: 60px; padding: 0; outline: none;"
+                                                title="Edit Seat ID">
+                                            <button type="button" class="btn-delete-row" style="color: var(--danger); border: none; background: none; cursor: pointer; padding: 0; opacity: 0.5; font-size: 0.75rem; display: flex; align-items: center; justify-content: center;" title="Hapus">
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                            </button>
+                                        </div>
+                                        <input type="text" name="data[{{ $item['index'] }}][expiry_date]" value="{{ $item['expiry_date'] }}" 
+                                            class="input-premium expiry-date-input" 
+                                            style="width: 100%; padding: 0.25rem 0.4rem; border-radius: 6px; font-size: 0.8rem; height: 28px; text-transform: uppercase;"
+                                            placeholder="EXP DATE">
+                                        <input type="hidden" name="data[{{ $item['index'] }}][registration]" value="{{ $item['registration'] }}" class="row-registration">
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+
+                    <!-- Attendant Section -->
+                    @if(count($attendantData) > 0)
+                        <div class="lopa-section" id="attendant-section" style="display: flex; flex-direction: column; gap: 0.75rem; padding: 1rem; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 12px; margin-bottom: 1rem;">
+                            <div style="font-weight: 800; font-size: 1rem; color: var(--text-muted); border-bottom: 2px solid var(--border-subtle); padding-bottom: 0.5rem; margin-bottom: 0.25rem;">
+                                🚪 Attendant Stations / Doors
+                            </div>
+                            <div class="row-seats" id="attendant-seats-container" style="display: flex; flex-wrap: wrap; gap: 0.75rem;">
+                                @foreach($attendantData as $item)
+                                    <div class="seat-card" data-index="{{ $item['index'] }}" style="background: var(--bg-dark); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 0.5rem; display: flex; flex-direction: column; width: 110px; position: relative; gap: 0.25rem;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <input type="text" name="data[{{ $item['index'] }}][seat_id]" value="{{ $item['seat_id'] }}" 
+                                                class="seat-id-input"
+                                                style="background: transparent; border: none; font-weight: 700; font-size: 0.85rem; color: var(--primary); width: 60px; padding: 0; outline: none;"
+                                                title="Edit Seat ID">
+                                            <button type="button" class="btn-delete-row" style="color: var(--danger); border: none; background: none; cursor: pointer; padding: 0; opacity: 0.5; font-size: 0.75rem; display: flex; align-items: center; justify-content: center;" title="Hapus">
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                            </button>
+                                        </div>
+                                        <input type="text" name="data[{{ $item['index'] }}][expiry_date]" value="{{ $item['expiry_date'] }}" 
+                                            class="input-premium expiry-date-input" 
+                                            style="width: 100%; padding: 0.25rem 0.4rem; border-radius: 6px; font-size: 0.8rem; height: 28px; text-transform: uppercase;"
+                                            placeholder="EXP DATE">
+                                        <input type="hidden" name="data[{{ $item['index'] }}][registration]" value="{{ $item['registration'] }}" class="row-registration">
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+
+                    <!-- Cabin Passenger Rows -->
                     @forelse($groupedData as $rowNum => $rowSeats)
                         <div class="lopa-row" data-row="{{ $rowNum }}" style="display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1rem; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 12px; transition: background 0.2s;">
                             <!-- Row Label -->
@@ -105,7 +177,7 @@
                             </div>
                         </div>
                     @empty
-                        @if(empty($otherData))
+                        @if(empty($otherData) && empty($cockpitData) && empty($attendantData) && empty($spareData))
                             <div style="padding: 4rem 1.5rem; text-align: center; color: var(--text-muted); background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border-subtle);">
                                 <div style="font-size: 3rem; margin-bottom: 1rem;">🔍</div>
                                 Tidak ada data yang terdeteksi secara otomatis. Silakan tambah baris manual atau ulangi scan.
@@ -113,32 +185,34 @@
                         @endif
                     @endforelse
 
-                    <!-- Others Section -->
-                    <div class="lopa-row lopa-row-others" id="others-row" style="display: {{ count($otherData) > 0 ? 'flex' : 'none' }}; flex-direction: column; gap: 0.75rem; padding: 1rem; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 12px;">
-                        <div style="font-weight: 800; font-size: 1rem; color: var(--text-muted); border-bottom: 2px solid var(--border-subtle); padding-bottom: 0.5rem; margin-bottom: 0.25rem; width: 100%;">
-                            Lain-lain (Cockpit / Spare / Attendant / Doors)
-                        </div>
-                        <div class="row-seatsothers" id="others-seats-container" style="display: flex; flex-wrap: wrap; gap: 0.75rem; width: 100%;">
-                            @foreach($otherData as $item)
-                                <div class="seat-card" data-index="{{ $item['index'] }}" style="background: var(--bg-dark); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 0.5rem; display: flex; flex-direction: column; width: 110px; position: relative; gap: 0.25rem;">
-                                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                                        <input type="text" name="data[{{ $item['index'] }}][seat_id]" value="{{ $item['seat_id'] }}" 
-                                            class="seat-id-input"
-                                            style="background: transparent; border: none; font-weight: 700; font-size: 0.85rem; color: var(--primary); width: 60px; padding: 0; outline: none;"
-                                            title="Edit Seat ID">
-                                        <button type="button" class="btn-delete-row" style="color: var(--danger); border: none; background: none; cursor: pointer; padding: 0; opacity: 0.5; font-size: 0.75rem; display: flex; align-items: center; justify-content: center;" title="Hapus">
-                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                                        </button>
+                    <!-- Spares & Others Section -->
+                    @if(count($spareData) > 0 || count($otherData) > 0)
+                        <div class="lopa-section" id="others-row" style="display: flex; flex-direction: column; gap: 0.75rem; padding: 1rem; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 12px; margin-top: 1rem;">
+                            <div style="font-weight: 800; font-size: 1rem; color: var(--text-muted); border-bottom: 2px solid var(--border-subtle); padding-bottom: 0.5rem; margin-bottom: 0.25rem; width: 100%;">
+                                📦 Spares & Others
+                            </div>
+                            <div class="row-seatsothers" id="others-seats-container" style="display: flex; flex-wrap: wrap; gap: 0.75rem; width: 100%;">
+                                @foreach(array_merge($spareData, $otherData) as $item)
+                                    <div class="seat-card" data-index="{{ $item['index'] }}" style="background: var(--bg-dark); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 0.5rem; display: flex; flex-direction: column; width: 110px; position: relative; gap: 0.25rem;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <input type="text" name="data[{{ $item['index'] }}][seat_id]" value="{{ $item['seat_id'] }}" 
+                                                class="seat-id-input"
+                                                style="background: transparent; border: none; font-weight: 700; font-size: 0.85rem; color: var(--primary); width: 60px; padding: 0; outline: none;"
+                                                title="Edit Seat ID">
+                                            <button type="button" class="btn-delete-row" style="color: var(--danger); border: none; background: none; cursor: pointer; padding: 0; opacity: 0.5; font-size: 0.75rem; display: flex; align-items: center; justify-content: center;" title="Hapus">
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                            </button>
+                                        </div>
+                                        <input type="text" name="data[{{ $item['index'] }}][expiry_date]" value="{{ $item['expiry_date'] }}" 
+                                            class="input-premium expiry-date-input" 
+                                            style="width: 100%; padding: 0.25rem 0.4rem; border-radius: 6px; font-size: 0.8rem; height: 28px; text-transform: uppercase;"
+                                            placeholder="EXP DATE">
+                                        <input type="hidden" name="data[{{ $item['index'] }}][registration]" value="{{ $item['registration'] }}" class="row-registration">
                                     </div>
-                                    <input type="text" name="data[{{ $item['index'] }}][expiry_date]" value="{{ $item['expiry_date'] }}" 
-                                        class="input-premium expiry-date-input" 
-                                        style="width: 100%; padding: 0.25rem 0.4rem; border-radius: 6px; font-size: 0.8rem; height: 28px; text-transform: uppercase;"
-                                        placeholder="EXP DATE">
-                                    <input type="hidden" name="data[{{ $item['index'] }}][registration]" value="{{ $item['registration'] }}" class="row-registration">
-                                </div>
-                            @endforeach
+                                @endforeach
+                            </div>
                         </div>
-                    </div>
+                    @endif
                 </div>
             </form>
             <div style="padding: 1rem; background: var(--bg-dark); border-radius: 12px; border: 1px solid var(--border-subtle);">
@@ -277,7 +351,6 @@
         });
 
         function addSeatToLopa(seatId, expiryDate) {
-            const match = seatId.match(/^(\d+)([A-Za-z]+)$/);
             let targetContainer;
             
             const seatCard = document.createElement('div');
@@ -302,7 +375,51 @@
                 <input type="hidden" name="data[${rowCount}][registration]" value="${masterRegInput.value}" class="row-registration">
             `;
             
-            if (match) {
+            const isCockpit = /pilot|copil|observer/i.test(seatId);
+            const isAttendant = /^(att\/d|aft-|door)/i.test(seatId);
+            const isSpare = /^(pax-|inf-|spare)/i.test(seatId);
+            const match = seatId.match(/^(\d+)([A-Za-z]+)$/);
+            
+            if (isCockpit) {
+                let sect = document.getElementById('cockpit-section');
+                if (!sect) {
+                    sect = document.createElement('div');
+                    sect.id = 'cockpit-section';
+                    sect.className = 'lopa-section';
+                    sect.style.cssText = 'display: flex; flex-direction: column; gap: 0.75rem; padding: 1rem; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 12px; margin-bottom: 1rem;';
+                    sect.innerHTML = `
+                        <div style="font-weight: 800; font-size: 1rem; color: var(--text-muted); border-bottom: 2px solid var(--border-subtle); padding-bottom: 0.5rem; margin-bottom: 0.25rem;">
+                            👨‍✈️ Cockpit / Flight Deck
+                        </div>
+                        <div class="row-seats" id="cockpit-seats-container" style="display: flex; flex-wrap: wrap; gap: 0.75rem;"></div>
+                    `;
+                    const container = document.getElementById('lopa-container');
+                    container.insertBefore(sect, container.firstChild);
+                }
+                targetContainer = document.getElementById('cockpit-seats-container');
+            } else if (isAttendant) {
+                let sect = document.getElementById('attendant-section');
+                if (!sect) {
+                    sect = document.createElement('div');
+                    sect.id = 'attendant-section';
+                    sect.className = 'lopa-section';
+                    sect.style.cssText = 'display: flex; flex-direction: column; gap: 0.75rem; padding: 1rem; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 12px; margin-bottom: 1rem;';
+                    sect.innerHTML = `
+                        <div style="font-weight: 800; font-size: 1rem; color: var(--text-muted); border-bottom: 2px solid var(--border-subtle); padding-bottom: 0.5rem; margin-bottom: 0.25rem;">
+                            🚪 Attendant Stations / Doors
+                        </div>
+                        <div class="row-seats" id="attendant-seats-container" style="display: flex; flex-wrap: wrap; gap: 0.75rem;"></div>
+                    `;
+                    const container = document.getElementById('lopa-container');
+                    const cockpit = document.getElementById('cockpit-section');
+                    if (cockpit && cockpit.nextSibling) {
+                        container.insertBefore(sect, cockpit.nextSibling);
+                    } else {
+                        container.insertBefore(sect, container.firstChild);
+                    }
+                }
+                targetContainer = document.getElementById('attendant-seats-container');
+            } else if (match) {
                 const rowNum = parseInt(match[1]);
                 let rowDiv = document.querySelector(`.lopa-row[data-row="${rowNum}"]`);
                 if (!rowDiv) {
@@ -330,13 +447,30 @@
                     }
                     if (!inserted) {
                         const othersRow = document.getElementById('others-row');
-                        lopaContainer.insertBefore(rowDiv, othersRow);
+                        if (othersRow) {
+                            lopaContainer.insertBefore(rowDiv, othersRow);
+                        } else {
+                            lopaContainer.appendChild(rowDiv);
+                        }
                     }
                 }
                 targetContainer = rowDiv.querySelector('.row-seats');
             } else {
-                const othersRow = document.getElementById('others-row');
-                othersRow.style.display = 'flex';
+                let sect = document.getElementById('others-row');
+                if (!sect) {
+                    sect = document.createElement('div');
+                    sect.id = 'others-row';
+                    sect.className = 'lopa-section';
+                    sect.style.cssText = 'display: flex; flex-direction: column; gap: 0.75rem; padding: 1rem; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 12px; margin-top: 1rem;';
+                    sect.innerHTML = `
+                        <div style="font-weight: 800; font-size: 1rem; color: var(--text-muted); border-bottom: 2px solid var(--border-subtle); padding-bottom: 0.5rem; margin-bottom: 0.25rem;">
+                            📦 Spares & Others
+                        </div>
+                        <div class="row-seatsothers" id="others-seats-container" style="display: flex; flex-wrap: wrap; gap: 0.75rem;"></div>
+                    `;
+                    document.getElementById('lopa-container').appendChild(sect);
+                }
+                sect.style.display = 'flex';
                 targetContainer = document.getElementById('others-seats-container');
             }
             

@@ -105,43 +105,17 @@
         <p id="scan-subtitle" style="margin: 0; color: rgba(255,255,255,0.5); font-size: 0.95rem;">Mohon tunggu, AI sedang membaca dokumen Anda</p>
     </div>
 
-    <!-- Progress Steps -->
-    <div style="display: flex; flex-direction: column; gap: 0.75rem; width: 340px; max-width: 90vw;">
-        <div class="scan-step" data-step="0" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; border-radius: 12px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08); transition: all 0.4s ease;">
-            <div class="step-icon" style="width: 32px; height: 32px; border-radius: 50%; background: rgba(var(--primary-rgb), 0.15); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.4s ease;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-            </div>
-            <div>
-                <div class="step-label" style="font-size: 0.85rem; font-weight: 700; color: rgba(255,255,255,0.7); transition: color 0.3s;">Mengunggah file...</div>
-                <div class="step-desc" style="font-size: 0.75rem; color: rgba(255,255,255,0.35);">Mengirim file ke server</div>
-            </div>
+    <!-- Progress Bar Container -->
+    <div style="width: 380px; max-width: 90vw; text-align: center;">
+        <!-- Glowing Progress Bar Outer -->
+        <div style="width: 100%; height: 10px; background: rgba(255, 255, 255, 0.08); border-radius: 99px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.1); position: relative; box-shadow: inset 0 1px 2px rgba(0,0,0,0.4);">
+            <!-- Inner Progress with Blue/Cyan Gradient and Glow -->
+            <div id="scan-progress-bar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #3b82f6, #06b6d4); border-radius: 99px; transition: width 0.15s linear; box-shadow: 0 0 12px rgba(6, 182, 212, 0.8), 0 0 4px rgba(59, 130, 246, 0.6);"></div>
         </div>
-        <div class="scan-step" data-step="1" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; border-radius: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); transition: all 0.4s ease;">
-            <div class="step-icon" style="width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.4s ease;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-            </div>
-            <div>
-                <div class="step-label" style="font-size: 0.85rem; font-weight: 700; color: rgba(255,255,255,0.35); transition: color 0.3s;">Konversi ke gambar</div>
-                <div class="step-desc" style="font-size: 0.75rem; color: rgba(255,255,255,0.2);">PDF → gambar per halaman</div>
-            </div>
-        </div>
-        <div class="scan-step" data-step="2" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; border-radius: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); transition: all 0.4s ease;">
-            <div class="step-icon" style="width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.4s ease;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
-            </div>
-            <div>
-                <div class="step-label" style="font-size: 0.85rem; font-weight: 700; color: rgba(255,255,255,0.35); transition: color 0.3s;">AI menganalisis dokumen</div>
-                <div class="step-desc" style="font-size: 0.75rem; color: rgba(255,255,255,0.2);">Membaca seat ID & tanggal expiry</div>
-            </div>
-        </div>
-        <div class="scan-step" data-step="3" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; border-radius: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); transition: all 0.4s ease;">
-            <div class="step-icon" style="width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.4s ease;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-            </div>
-            <div>
-                <div class="step-label" style="font-size: 0.85rem; font-weight: 700; color: rgba(255,255,255,0.35); transition: color 0.3s;">Menyusun hasil</div>
-                <div class="step-desc" style="font-size: 0.75rem; color: rgba(255,255,255,0.2);">Memformat data untuk review</div>
-            </div>
+        <!-- Percentage & Current Status Text -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.75rem; padding: 0 0.25rem; gap: 1rem;">
+            <span id="scan-status-text" style="font-size: 0.85rem; font-weight: 600; color: rgba(255, 255, 255, 0.85); text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Mengunggah file ke server...</span>
+            <span id="scan-percentage-text" style="font-size: 1rem; font-weight: 800; color: var(--primary); font-variant-numeric: tabular-nums; flex-shrink: 0;">0%</span>
         </div>
     </div>
 
@@ -159,31 +133,6 @@
 @keyframes pulse {
     0%, 100% { opacity: 1; transform: scale(1); }
     50% { opacity: 0.6; transform: scale(0.92); }
-}
-.scan-step.active {
-    background: rgba(var(--primary-rgb), 0.1) !important;
-    border-color: rgba(var(--primary-rgb), 0.25) !important;
-}
-.scan-step.active .step-icon {
-    background: rgba(var(--primary-rgb), 0.2) !important;
-}
-.scan-step.active .step-icon svg {
-    stroke: var(--primary) !important;
-}
-.scan-step.active .step-label {
-    color: white !important;
-}
-.scan-step.active .step-desc {
-    color: rgba(255,255,255,0.45) !important;
-}
-.scan-step.done .step-icon {
-    background: rgba(16, 185, 129, 0.15) !important;
-}
-.scan-step.done .step-icon svg {
-    stroke: #10b981 !important;
-}
-.scan-step.done .step-label {
-    color: rgba(255,255,255,0.5) !important;
 }
 </style>
 
@@ -302,36 +251,57 @@
         const overlay = document.getElementById('scan-loading-overlay');
         const elapsedEl = document.getElementById('scan-elapsed');
         const subtitleEl = document.getElementById('scan-subtitle');
-        const steps = document.querySelectorAll('.scan-step');
+        const progressBar = document.getElementById('scan-progress-bar');
+        const statusText = document.getElementById('scan-status-text');
+        const percentageText = document.getElementById('scan-percentage-text');
 
-        const subtitleMessages = [
-            'Mengunggah file ke server...',
-            'Mengkonversi halaman PDF menjadi gambar...',
-            'AI sedang membaca & menganalisis dokumen Anda...',
-            'Hampir selesai, menyusun data...',
-        ];
-
-        let currentStep = 0;
         let startTime;
         let timerInterval;
-
-        function activateStep(idx) {
-            steps.forEach((step, i) => {
-                step.classList.remove('active', 'done');
-                if (i < idx) step.classList.add('done');
-                if (i === idx) step.classList.add('active');
-            });
-            if (subtitleMessages[idx]) {
-                subtitleEl.textContent = subtitleMessages[idx];
-            }
-            currentStep = idx;
-        }
+        let progressInterval;
+        let currentProgress = 0;
 
         function updateElapsed() {
             const elapsed = Math.floor((Date.now() - startTime) / 1000);
             const mins = String(Math.floor(elapsed / 60)).padStart(2, '0');
             const secs = String(elapsed % 60).padStart(2, '0');
             elapsedEl.textContent = `${mins}:${secs}`;
+        }
+
+        function simulateProgress() {
+            let targetProgress = 0;
+            let speed = 0.5;
+
+            progressInterval = setInterval(() => {
+                const elapsed = (Date.now() - startTime) / 1000;
+
+                if (elapsed < 3) {
+                    targetProgress = 15;
+                    statusText.textContent = "Mengunggah file ke server...";
+                    speed = 2;
+                } else if (elapsed < 10) {
+                    targetProgress = 35;
+                    statusText.textContent = "Mengkonversi halaman dokumen...";
+                    speed = 1;
+                } else if (elapsed < 45) {
+                    targetProgress = 85;
+                    statusText.textContent = "AI sedang menganalisis & membaca stempel...";
+                    speed = 0.25;
+                } else {
+                    targetProgress = 98;
+                    statusText.textContent = "Menyusun hasil & memvalidasi layout...";
+                    speed = 0.05;
+                }
+
+                if (currentProgress < targetProgress) {
+                    currentProgress += speed;
+                    if (currentProgress > targetProgress) {
+                        currentProgress = targetProgress;
+                    }
+                    const displayProgress = Math.min(Math.floor(currentProgress), 99);
+                    progressBar.style.width = displayProgress + '%';
+                    percentageText.textContent = displayProgress + '%';
+                }
+            }, 100);
         }
 
         if (form) {
@@ -349,13 +319,8 @@
                 startTime = Date.now();
                 timerInterval = setInterval(updateElapsed, 1000);
 
-                // Activate first step immediately
-                activateStep(0);
-
-                // Auto-advance steps on realistic intervals
-                setTimeout(() => activateStep(1), 3000);   // 3s: converting PDF
-                setTimeout(() => activateStep(2), 10000);  // 10s: AI analyzing
-                setTimeout(() => activateStep(3), 60000);  // 60s: formatting results
+                // Start progress bar simulation
+                simulateProgress();
             });
         }
     });

@@ -140,11 +140,12 @@ def enhance_image(img):
     
     Steps:
     1. Convert to grayscale
-    2. Apply CLAHE (Contrast Limited Adaptive Histogram Equalization)
-    3. Bilateral filter (reduce noise while keeping edges)
-    4. Adaptive thresholding (separate ink from background)
-    5. Morphological cleanup (remove small noise)
-    6. Sharpen the result
+    2. Shadow removal / background illumination flattening
+    3. Apply CLAHE (Contrast Limited Adaptive Histogram Equalization)
+    4. Bilateral filter (reduce noise while keeping edges)
+    5. Adaptive thresholding (separate ink from background)
+    6. Morphological cleanup (remove small noise)
+    7. Sharpen the result
     """
     preprocessing_steps = []
     
@@ -154,31 +155,49 @@ def enhance_image(img):
         preprocessing_steps.append("grayscale")
     else:
         gray = img.copy()
+        
+    # --- Step 2: Shadow Removal / Background Illumination Correction ---
+    # This removes camera shadows and makes background pure white
+    try:
+        dilated = cv2.dilate(gray, np.ones((7, 7), np.uint8))
+        bg_img = cv2.medianBlur(dilated, 21)
+        diff = cv2.absdiff(gray, bg_img)
+        diff = 255 - diff
+        gray = cv2.normalize(diff, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U)
+        preprocessing_steps.append("shadow_removal")
+    except Exception as e:
+        # Fallback if morphological shadow removal fails
+        pass
     
-    # --- Step 2: CLAHE (Contrast Limited Adaptive Histogram Equalization) ---
+    # --- Step 3: CLAHE (Contrast Limited Adaptive Histogram Equalization) ---
     # This dramatically improves contrast for faint handwriting
     clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
     enhanced = clahe.apply(gray)
     preprocessing_steps.append("clahe_contrast")
     
-    # --- Step 3: Bilateral Filter ---
+    # --- Step 4: Bilateral Filter ---
     # Reduce noise while preserving edges (important for handwriting strokes)
     denoised = cv2.bilateralFilter(enhanced, d=9, sigmaColor=75, sigmaSpace=75)
     preprocessing_steps.append("bilateral_denoise")
     
-    # --- Step 4: Adaptive Thresholding ---
+    # --- Step 5: Adaptive Thresholding ---
     # Better than global threshold for documents with uneven lighting
-    # Use a large block size to handle varying ink density
+    # Use block size adjusted to image resolution
+    h, w = denoised.shape[:2]
+    block_size = 25 if h > 3000 else 15
+    if block_size % 2 == 0:
+        block_size += 1
+        
     thresh = cv2.adaptiveThreshold(
         denoised, 255,
         cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
         cv2.THRESH_BINARY,
-        blockSize=15,  # Large block for table cells
-        C=8            # Constant subtracted from mean
+        blockSize=block_size,
+        C=8
     )
     preprocessing_steps.append("adaptive_threshold")
     
-    # --- Step 5: Morphological Operations ---
+    # --- Step 6: Morphological Operations ---
     # Clean up small noise dots while preserving text strokes
     kernel_small = np.ones((2, 2), np.uint8)
     # Open: remove small white noise
@@ -187,7 +206,7 @@ def enhance_image(img):
     cleaned = cv2.morphologyEx(cleaned, cv2.MORPH_CLOSE, kernel_small, iterations=1)
     preprocessing_steps.append("morphological_cleanup")
     
-    # --- Step 6: Sharpening ---
+    # --- Step 7: Sharpening ---
     # Unsharp mask to make text edges crisp
     blurred = cv2.GaussianBlur(cleaned, (0, 0), 3)
     sharpened = cv2.addWeighted(cleaned, 1.5, blurred, -0.5, 0)
@@ -208,10 +227,21 @@ def enhance_for_ai(img):
     
     # Work in color if available (AI benefits from color context)
     if len(img.shape) == 3:
-        # --- CLAHE on L channel of LAB color space ---
+        # --- Convert to LAB and flatten background on L channel ---
         lab = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
         l_channel, a_channel, b_channel = cv2.split(lab)
         
+        try:
+            # Flatten background lighting on L channel (removes shadows)
+            dilated = cv2.dilate(l_channel, np.ones((7, 7), np.uint8))
+            bg_l = cv2.medianBlur(dilated, 21)
+            diff = cv2.absdiff(l_channel, bg_l)
+            diff = 255 - diff
+            l_channel = cv2.normalize(diff, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U)
+            ai_steps.append("shadow_removal_lab")
+        except:
+            pass
+            
         clahe = cv2.createCLAHE(clipLimit=2.5, tileGridSize=(8, 8))
         l_enhanced = clahe.apply(l_channel)
         
@@ -219,6 +249,17 @@ def enhance_for_ai(img):
         enhanced = cv2.cvtColor(enhanced_lab, cv2.COLOR_LAB2BGR)
         ai_steps.append("clahe_lab_contrast")
     else:
+        # Grayscale shadow removal
+        try:
+            dilated = cv2.dilate(img, np.ones((7, 7), np.uint8))
+            bg_img = cv2.medianBlur(dilated, 21)
+            diff = cv2.absdiff(img, bg_img)
+            diff = 255 - diff
+            img = cv2.normalize(diff, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U)
+            ai_steps.append("shadow_removal")
+        except:
+            pass
+            
         clahe = cv2.createCLAHE(clipLimit=2.5, tileGridSize=(8, 8))
         enhanced = clahe.apply(img)
         ai_steps.append("clahe_contrast")
@@ -335,6 +376,13 @@ def process_image(image_path, output_dir, tesseract_path=None):
         return result
     
     all_steps = []
+    
+    # --- Step 0: Upscale (if resolution is low or standard) ---
+    # This increases detail resolution of small handwritten letters and stencils
+    h, w = img.shape[:2]
+    if h < 3500:
+        img = cv2.resize(img, (int(w * 1.5), int(h * 1.5)), interpolation=cv2.INTER_CUBIC)
+        all_steps.append("upscaled_1.5x")
     
     # --- Step 1: Orientation Detection (OSD) ---
     orientation = detect_orientation(image_path)

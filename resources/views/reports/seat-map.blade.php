@@ -87,7 +87,7 @@
             height: 45px;
             /* Shorter height */
             border: 1px solid #ccc;
-            background: #fff;
+            background-color: #ffffff;
             display: inline-block;
             margin: 1px 2px;
             /* Small margin */
@@ -112,34 +112,35 @@
             margin-bottom: 2px;
         }
 
-        /* Status Colors (Matching Web) */
-        .status-active,
-        .status-safe {
-            background-color: #e6fffa;
-            border-color: #38b2ac;
+        /* Status Colors (Matching Web Dashboard) */
+        .seat-card.status-active,
+        .seat-card.status-safe {
+            background-color: #e6f4ea;
+            border-color: #10b981;
         }
 
-        /* Green-ish */
-        .status-prolong {
-            background-color: #fcefe7;
-            border-color: #ed8936;
+        .seat-card.status-prolong {
+            background-color: #fffbeb;
+            border-color: #f59e0b;
         }
 
-        /* Orange */
-        .status-warning {
-            background-color: #feebc8;
-            border-color: #dd6b20;
+        .seat-card.status-warning {
+            background-color: #fffbeb;
+            border-color: #f59e0b;
         }
 
-        .status-critical,
-        .status-expired {
-            background-color: #fed7d7;
-            border-color: #e53e3e;
+        .seat-card.status-critical {
+            background-color: #fef2f2;
+            border-color: #ef4444;
         }
 
-        /* Red */
-        .status-no-data {
-            background-color: #f7fafc;
+        .seat-card.status-expired {
+            background-color: #f5f3ff;
+            border-color: #8b5cf6;
+        }
+
+        .seat-card.status-no-data {
+            background-color: #f8fafc;
             border-color: #cbd5e0;
         }
 

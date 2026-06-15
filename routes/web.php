@@ -45,7 +45,6 @@ Route::middleware('auth')->group(function () {
 
     // Fleet view — semua role bisa lihat
     Route::get('/fleet', [\App\Http\Controllers\FleetController::class, 'index'])->name('fleet.index');
-    Route::get('/fleet/{fleet}', [\App\Http\Controllers\FleetController::class, 'show'])->name('fleet.show');
 
     // ============================================
     // ADMIN-ONLY ROUTES

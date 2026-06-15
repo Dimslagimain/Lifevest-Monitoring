@@ -1,5 +1,5 @@
 [![PHP](https://github.com/ragepanz/lifevest-laravel/actions/workflows/php.yml/badge.svg)](https://github.com/ragepanz/lifevest-laravel/actions/workflows/php.yml)
-# Life Vest Tracker — GMF AeroAsia
+# Life Vest Tracker - GMF AeroAsia
 ### *Pemantauan Real-Time Cerdas untuk Keselamatan Armada yang Unggul*
 
 [![Laravel](https://img.shields.io/badge/Laravel-12.x-FF2D20?style=flat-square&logo=laravel)](https://laravel.com)
@@ -36,7 +36,7 @@ Fitur unggulan untuk mempercepat input data dari lembar LOPA (*Layout of Passeng
 *   **Penyaringan Layout per Pesawat (Per-Aircraft Validation)**:
     *   Sistem melakukan pencarian registrasi di database untuk mengetahui jenis *layout* (contoh: layout `a330-900a` dengan Business Class vs `a330-900b` Economy Only).
     *   `VerificationService` mencocokkan baris yang diekstrak dengan konfigurasi baris minimum/maksimum pesawat tersebut.
-    *   Jika terdeteksi baris yang tidak sesuai (misal: stempel di baris 6 untuk armada `a330-900b` yang seharusnya mulai dari baris 21), baris tersebut akan ditandai dengan bendera peringatan (**Uncertainty Flag** ⚠️).
+    *   Jika terdeteksi baris yang tidak sesuai (misal: stempel di baris 6 untuk armada `a330-900b` yang seharusnya mulai dari baris 21), baris tersebut akan ditandai dengan bendera peringatan (**Uncertainty Flag** [Warning]).
 *   **Smart Sorting & Grouping**: Hasil ekstraksi otomatis diurutkan dari kabin paling depan (Cockpit), Business, Economy, dan menempatkan semua life vest cadangan (*Infant/Spare*) di bagian paling bawah tabel secara rapi.
 *   **Review Page & Eksport**: Halaman review menampilkan visual file asli di samping tabel ekstraksi. Pengguna dapat mengunduh hasilnya langsung ke Excel atau melakukan ekspor ke template *Bulk Import*.
 
@@ -50,7 +50,7 @@ Representasi grafis 2D dari tata letak kursi pesawat yang sesungguhnya:
     *   *Klik Huruf Kolom (Atas)*: Memilih seluruh kolom kursi secara vertikal.
     *   *Ctrl + A*: Memilih seluruh kursi di dalam pesawat.
 *   **Part Number Info Bar**: Menampilkan tipe part number yang digunakan pada pesawat tersebut (Adult, Crew, Infant), jumlah total pelampung terpasang, dan indikator merah jika terdeteksi ada yang kedaluwarsa.
-*   **Bulk Update & Expiry Setter**: Klik tombol **📅 Set Date** (atau tekan **Enter**) untuk menetapkan tanggal kedaluwarsa secara massal bagi seluruh kursi terpilih. Data langsung tersimpan secara asinkron ke database.
+*   **Bulk Update & Expiry Setter**: Klik tombol [Set Date] (atau tekan **Enter**) untuk menetapkan tanggal kedaluwarsa secara massal bagi seluruh kursi terpilih. Data langsung tersimpan secara asinkron ke database.
 
 ### 4. Ekspor PDF Berwarna & Blank Form Inspeksi
 *   **Export PDF (Colored Seat Map)**: Menghasilkan dokumen PDF layout pesawat berwarna yang menyajikan warna status visual (Hijau, Kuning, Merah, Ungu) beserta tanggal kedaluwarsa yang tertera di setiap kotak kursi. Siap di-print atau diarsipkan.
@@ -85,22 +85,58 @@ Setiap modifikasi data expiry pada kursi direkam secara otomatis oleh sistem ke 
 
 ---
 
+## Struktur Proyek & Folder Penting
+
+Sistem ini diorganisasikan secara sistematis untuk mempermudah pengembangan dan pemeliharaan struktur LOPA:
+
+```text
+lifevest-laravel/
+├── app/
+│   ├── Http/Controllers/              # Pengendali logika (Dashboard, Seat Map, PDF Scan, Bulk Import)
+│   ├── Models/                        # Model Eloquent (Airline, Aircraft, Seat, User)
+│   └── Services/                      # Layanan bisnis (OcrPreprocessService, PdfParserService, VerificationService)
+├── config/
+│   ├── aircraft_class_rows.php        # Pemetaan Cabin Class per layout pesawat
+│   ├── aircraft_columns.php           # Konfigurasi kolom kursi per layout pesawat
+│   ├── aircraft_economy_sections.php  # Konfigurasi bagian batch input per layout pesawat
+│   └── ocr_corrections.php            # Aturan koreksi otomatis OCR (substitusi digit/huruf, bulan)
+├── database/
+│   ├── migrations/                    # Skema tabel database (airlines, aircraft, seats, users)
+│   └── seeders/                       # Data awal (seeder maskapai, registrasi pesawat, user default)
+├── dokumentasi/                       # Panduan manual resmi (User Manual & Developer Manual)
+├── resources/
+│   ├── css/
+│   │   ├── style.css                  # Desain tema utama (Premium UI & Dark/Light Mode)
+│   │   └── dashboard.css              # Gaya visual khusus dashboard
+│   ├── js/
+│   │   └── app.js                     # Logika interaksi frontend & shortcut seat map
+│   └── views/
+│       ├── aircraft/                  # Template visual detail seat map per layout pesawat
+│       │   └── partials/              # Struktur grid layout kursi pesawat (A320, A330, B737, B777, ATR)
+│       ├── components/                # Komponen Blade reusable (toolbar, seat-cell, modal)
+│       └── reports/                   # Template cetak PDF dan Blank Form lapangan
+├── routes/
+│   └── web.php                        # Seluruh routing aplikasi (RBAC protected)
+```
+
+---
+
 ## Legenda Status (Arti Warna)
 
-| Warna | Status | Deskripsi Masa Berlaku |
-| :--- | :--- | :--- |
-| 🟢 **Hijau** | Aman (*Safe*) | Masa berlaku pelampung > 6 bulan dari sekarang |
-| 🟡 **Kuning** | Peringatan (*Warning*) | Masa berlaku tersisa 3 sampai 6 bulan |
-| 🔴 **Merah** | Kritis (*Critical*) | Masa berlaku tersisa kurang dari 3 bulan |
-| 🟣 **Ungu** | Kedaluwarsa (*Expired*) | Tanggal masa berlaku telah terlewati |
-| ⚪ **Abu-abu** | Kosong (*No Data*) | Data tanggal kedaluwarsa belum dimasukkan |
+Di bawah ini adalah status masa berlaku pelampung beserta representasi warna pada antarmuka sistem:
+
+*   **Hijau (Safe / Aman)**: Masa berlaku pelampung > 6 bulan dari sekarang.
+*   **Kuning (Warning / Peringatan)**: Masa berlaku tersisa 3 sampai 6 bulan.
+*   **Merah (Critical / Kritis)**: Masa berlaku tersisa kurang dari 3 bulan.
+*   **Ungu (Expired / Kadaluarsa)**: Tanggal masa berlaku telah terlewati (perlu diganti segera).
+*   **Abu-abu (No Data / Kosong)**: Data tanggal kedaluwarsa belum dimasukkan ke sistem.
 
 ---
 
 ## Pintasan Keyboard (Shortcuts)
 Gunakan pintasan berikut di halaman **Seat Map** untuk mempercepat alur kerja:
 *   **Ctrl + A**: Memilih seluruh kursi dalam peta visual.
-*   **Enter**: Membuka dialog pemilih tanggal kedaluwarsa (**Set Date**) ketika ada kursi yang sedang dipilih.
+*   **Enter**: Membuka dialog pemilih tanggal kedaluwarsa (Set Date) ketika ada kursi yang sedang dipilih.
 *   **Escape (ESC)**: Menghapus semua pilihan kursi aktif atau menutup jendela modal yang terbuka.
 
 ---
@@ -183,5 +219,4 @@ Tersedia tiga akun default hasil dari proses database seeder untuk melakukan pen
 | **User (Viewer)** | `user@tnp.com` | `usertnp` |
 
 ---
-*© 2026 GMF AeroAsia — Life Vest Tracker — Engineering Excellence*
-� Engineering Excellence*
+*(c) 2026 GMF AeroAsia - Life Vest Tracker - Engineering Excellence*

@@ -1,25 +1,6 @@
-# 📚 Dokumentasi — Life Vest Tracker
+# Dokumentasi - Life Vest Tracker
 
-Folder ini berisi panduan lengkap untuk pengguna, developer, dan proposal kerangka acuan kerja proyek.
-
----
-
-## 📝 Terms of Reference (TOR) / Proposal Proyek
-
-Kerangka Acuan Kerja (KAK) dan proposal pengembangan sistem Life Vest Tracker.
-
-| Format | File |
-|--------|------|
-| Markdown | [TERMS_OF_REFERENCE.md](TERMS_OF_REFERENCE.md) (Lokal / Git Ignored) |
-
-**Isi:**
-- Latar Belakang & Masalah
-- Tujuan Proyek
-- Ruang Lingkup Pekerjaan (Sistem Login, Dashboard Admin, dll)
-- Fitur yang Dibutuhkan (Smart PDF Scanner, dll)
-- Target Pengguna (Karyawan internal GMF AeroAsia)
-- Deliverables (Source Code, Database, Dokumentasi, User Manual)
-- Kriteria Keberhasilan
+Folder ini berisi panduan lengkap untuk pengguna dan pengembang sistem.
 
 ---
 

@@ -130,8 +130,10 @@ class PdfScanController extends Controller
 
             // Detect active provider for display
             $activeProvider = 'Unknown AI';
-            if (!empty(env('SNIFOX_API_KEY'))) {
-                $activeProvider = 'Snifox (' . env('SNIFOX_MODEL', 'google/gemini-3-flash-preview') . ')';
+            if (!empty(env('FLAZ_API_KEY'))) {
+                $activeProvider = 'Flaz.id (' . env('FLAZ_MODEL', 'claude-sonnet-4-6') . ')';
+            } elseif (!empty(env('SNIFOX_API_KEY'))) {
+                $activeProvider = 'Snifox (' . env('SNIFOX_MODEL', 'claude-sonnet-4-6') . ')';
             } elseif (!empty(env('GEMINI_API_KEY'))) {
                 $activeProvider = 'Google Gemini';
             } elseif (!empty(env('ANTHROPIC_API_KEY'))) {
@@ -142,7 +144,20 @@ class PdfScanController extends Controller
                 $activeProvider = 'OpenRouter';
             }
 
+            // Check if refinement was applied
+            $refinementApplied = $parsed['refinement_applied'] ?? false;
+            $refinementModel = $parsed['refinement_model'] ?? '';
+            $refinementCorrections = $parsed['refinement_corrections'] ?? 0;
+
+            if ($refinementApplied) {
+                $activeProvider .= " → {$refinementModel}";
+            }
+
             $rawText = "Data diekstrak menggunakan AI ({$activeProvider})\n";
+            if ($refinementApplied) {
+                $rawText .= "🔄 Multi-Stage OCR: Stage 2 refinement aktif ({$refinementModel})\n";
+                $rawText .= "   Koreksi dari refinement: {$refinementCorrections} field\n";
+            }
             $rawText .= "Registration: {$registration}\n";
             $rawText .= "Aircraft Type: " . ($verificationResult['aircraft_type'] ?? 'Unknown') . "\n";
             $rawText .= "Total seats terdeteksi: " . count($seats) . "\n";

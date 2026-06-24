@@ -14,6 +14,7 @@
 8. [Keyboard Shortcuts](#8--keyboard-shortcuts)
 9. [Arti Warna Status](#9--arti-warna-status)
 10. [Tips & FAQ](#10--tips--faq)
+11. [Smart PDF Scanner](#11-smart-pdf-scanner)
 
 > 💡 Fitur utama: Dashboard → klik kartu pesawat → Seat Map → Set Date / Batch Input / Export PDF
 
@@ -497,5 +498,41 @@ A: Tiga format: `Oct-25`, `24-Jan-25`, dan `01/03/2030`. Format lain tidak diken
 
 **Q: Ada error setelah Save, apa yang harus dilakukan?**
 A: Periksa format tanggal. Coba paste ulang satu kolom untuk identifikasi data yang bermasalah.
+
+---
+
+## 11. Smart PDF Scanner
+
+Smart PDF Scanner adalah fitur khusus bagi pengguna dengan peran Superadmin untuk mengunggah lembar LOPA ("Inventory Check" formulir GMF/Q-447) fisik dalam bentuk file PDF dan mengekstrak tanggal kedaluwarsa secara otomatis menggunakan kecerdasan buatan.
+
+### Cara Menggunakan
+
+1. Masuk menggunakan akun Superadmin.
+2. Klik menu "PDF Scanner" pada bilah navigasi (navbar) bagian atas.
+3. Klik tombol "Choose File" dan pilih berkas PDF LOPA yang ingin dipindai.
+4. Klik tombol "Upload & Scan LOPA".
+5. Sistem akan menampilkan bilah kemajuan (progress bar) yang menunjukkan status pengerjaan:
+   - Tahap awal: Mengunggah berkas dan melakukan konversi resolusi tinggi.
+   - Stage 1: Kecerdasan buatan (Claude) membaca citra gambar LOPA.
+   - Stage 2: Kecerdasan buatan (GPT-5) memvalidasi dan memverifikasi data (Refinement).
+6. Setelah proses selesai (biasanya memakan waktu 60-180 detik tergantung jumlah halaman), Anda akan diarahkan ke halaman "Review & Verification".
+
+### Halaman Review & Verifikasi
+
+Halaman review menyajikan perbandingan bersisian untuk validasi data:
+- **Bagian Kiri**: Menampilkan visualisasi dokumen PDF asli per halaman agar Anda dapat mencocokkan stempel/tulisan tangan secara langsung.
+- **Bagian Kanan**: Menampilkan tabel data hasil ekstraksi AI.
+
+#### Fitur Tabel Hasil Ekstraksi:
+- **Pengurutan Otomatis**: Data kursi diurutkan dari kabin paling depan (Cockpit), Business, Economy, hingga cadangan (PAX/INF Spare) di bagian terbawah.
+- **Penanda Ketidakpastian (Uncertainty Flag)**: Baris data yang dicurigai salah letak atau tidak sesuai dengan spesifikasi armada akan diberi bendera peringatan berwarna kuning/merah.
+- **Statistik Refinement**: Menampilkan informasi model AI yang aktif dan jumlah koreksi otomatis yang dilakukan oleh Stage 2 (Refinement).
+
+### Ekspor Hasil Scan
+
+Setelah memeriksa kecocokan data pada tabel, Anda dapat memilih tindakan di bagian atas tabel:
+- **Download Excel**: Mengunduh tabel hasil scan ke dalam berkas spreadsheet Excel (.xlsx).
+- **Export to Bulk Import Template**: Mengunduh data ke dalam template resmi yang siap diunggah langsung ke sistem melalui menu Bulk Import untuk memperbarui database pesawat secara massal.
+
 
 

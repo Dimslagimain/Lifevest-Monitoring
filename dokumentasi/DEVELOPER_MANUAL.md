@@ -15,6 +15,7 @@
 9. [CSS & Theming](#9--css--theming)
 10. [Sistem PDF](#10--sistem-pdf)
 11. [Alur Request](#11--alur-request)
+12. [Smart PDF Scanner dan Multi-Stage OCR Refinement](#12-smart-pdf-scanner-dan-multi-stage-ocr-refinement)
 
 ---
 
@@ -582,11 +583,59 @@ User klik "Export PDF" → GET /aircraft/{reg}/report
     ↓
 ReportController@exportPdf
     ↓
-Seat::where(registration) → keyBy(seat_id)
+Seat::where(registration) -> keyBy(seat_id)
     ↓
 Pdf::loadView('reports.seat-map', $data)
     ↓
-DomPDF render HTML → PDF
+DomPDF render HTML -> PDF
     ↓
-$pdf->stream() → Browser menampilkan PDF
+$pdf->stream() -> Browser menampilkan PDF
+```
+
+---
+
+## 12. Smart PDF Scanner dan Multi-Stage OCR Refinement
+
+Fitur Smart PDF Scanner mengotomatiskan input data dari lembar LOPA fisik menggunakan pipeline pemrosesan citra dan kecerdasan buatan multi-tahap.
+
+### Arsitektur dan Komponen
+
+Fitur ini didukung oleh tiga layanan utama di folder app/Services:
+
+1. **OcrPreprocessService**: Menghubungkan Laravel dengan script Python.
+2. **PdfParserService**: Mengelola komunikasi dengan API AI (Flaz.id) untuk ekstraksi dan perbaikan data.
+3. **VerificationService**: Memvalidasi data hasil ekstraksi terhadap tata letak (layout) kursi resmi di database.
+
+### Preprocessing Citra (Python & OpenCV)
+
+Script Python di `scripts/ocr_preprocess.py` bertanggung jawab atas:
+- **Konversi PDF ke PNG**: Menggunakan Ghostscript dengan resolusi 300 DPI.
+- **Koreksi Kemiringan (Deskew & Rotate)**: Mendeteksi sudut kemiringan teks dan merotasi gambar secara otomatis agar tegak lurus.
+- **Tiling Gambar (Pemotongan Horizontal)**: Memecah gambar LOPA halaman penuh menjadi 3 potongan gambar horizontal (strips) dengan overlap sebesar 80px. Tiling ini sangat krusial untuk mencegah "row drift" (masalah di mana model AI salah memetakan baris karena halaman terlalu panjang).
+- **Peningkatan Kontras**: Menggunakan algoritma CLAHE OpenCV untuk memperjelas stempel tinta dan tulisan tangan pulpen tanpa menghilangkan garis tabel pembatas.
+
+### Alur Ekstraksi Multi-Tahap (Multi-Stage OCR)
+
+Proses ekstraksi berjalan dalam dua tahap utama melalui API Flaz.id:
+
+#### Tahap 1: Ekstraksi Struktur LOPA (Stage 1 OCR)
+- Gambar potongan (tiles) dikirim ke model utama (default: Claude via Flaz API).
+- AI membaca setiap baris dan kolom sesuai panduan prompt ketat dan menghasilkan struktur JSON awal yang berisi baris kursi, tanggal kedaluwarsa yang terbaca, dan status keyakinan (confidence).
+
+#### Tahap 2: Refinement Data (Stage 2 Refinement)
+- Jika opsi `FLAZ_REFINEMENT_ENABLED` bernilai true, hasil ekstraksi Tahap 1 akan dikirim kembali bersama file gambar asli ke model penalaran tingkat tinggi (default: GPT-5 via Flaz API).
+- Model GPT-5 membandingkan data teks hasil Tahap 1 dengan gambar asli untuk mencari ketidakcocokan, memperbaiki penulisan bulan (misalnya konversi dari bahasa Indonesia ke Inggris), dan memperbaiki karakter yang kurang terbaca (seperti huruf O yang dibaca sebagai angka 0).
+- Tahap ini menghasilkan metadata tambahan berupa jumlah field yang dikoreksi (`refinement_corrections`).
+
+### Konfigurasi Environment (.env)
+
+Pengembang harus mengatur variabel berikut agar sistem pemindaian berfungsi:
+- `PYTHON_PATH`: Jalur eksekusi Python lokal (misal: "python").
+- `TESSERACT_PATH`: Jalur file tesseract.exe.
+- `GHOSTSCRIPT_PATH`: Jalur file gswin64c.exe.
+- `FLAZ_API_KEY`: Kunci API untuk akses layanan Flaz.id.
+- `FLAZ_MODEL`: Model untuk Stage 1 (contoh: `claude-sonnet-4-6`).
+- `FLAZ_REFINEMENT_ENABLED`: `true` atau `false` untuk mengontrol Stage 2.
+- `FLAZ_REFINEMENT_MODEL`: Model untuk Stage 2 (contoh: `gpt-5`).
+
 ```

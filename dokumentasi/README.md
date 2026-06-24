@@ -61,3 +61,16 @@ Panduan teknis untuk developer yang ingin mengembangkan atau maintain aplikasi.
 - CSS Theming (Dark/Light Mode)
 - Sistem PDF (DomPDF)
 - Alur Request (Seat Map, Batch Input, Export PDF)
+
+---
+
+## 🛠️ Spesifikasi & Pemetaan Teknis (Technical Specs)
+
+Dokumen pendukung arsitektur, pemetaan tata letak armada, dan log riwayat perubahan sistem.
+
+| Dokumen | Deskripsi |
+|---------|-----------|
+| 🌐 [AIRCRAFT_LAYOUT_MAPPING.md](AIRCRAFT_LAYOUT_MAPPING.md) | Pemetaan rinci baris, kolom, dan kapasitas kursi untuk tipe armada A330-900 (Business/Economy) dan spesifikasi LOPA lainnya. |
+| 🧠 [SMART_PDF_SCANNER_DESIGN.md](SMART_PDF_SCANNER_DESIGN.md) | Penjelasan arsitektur *Hybrid AI OCR*, pipeline pemrosesan citra OpenCV, integrasi API Flaz (Claude/GPT-5), serta penanganan *row drift*. |
+| 📝 [CHANGES_SUMMARY.md](CHANGES_SUMMARY.md) | Rangkuman seluruh riwayat pembaruan, refaktorisasi kode, penambahan fitur utama, dan pengujian sistem. |
+

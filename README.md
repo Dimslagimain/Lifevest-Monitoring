@@ -103,7 +103,7 @@ lifevest-laravel/
 ├── database/
 │   ├── migrations/                    # Skema tabel database (airlines, aircraft, seats, users)
 │   └── seeders/                       # Data awal (seeder maskapai, registrasi pesawat, user default)
-├── dokumentasi/                       # Panduan manual resmi (User Manual & Developer Manual)
+├── dokumentasi/                       # Panduan manual resmi & spesifikasi teknis (User/Developer Manual, LOPA Layout Mapping, dll)
 ├── resources/
 │   ├── css/
 │   │   ├── style.css                  # Desain tema utama (Premium UI & Dark/Light Mode)

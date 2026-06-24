@@ -8,13 +8,15 @@ use Illuminate\Support\Facades\Log;
 
 class VerificationService
 {
-    protected ?string $geminiKey;
+    protected ?string $flazKey;
+    protected ?string $flazModel;
     protected array $imageData; // base64-encoded images for AI validation
     protected float $confidenceThreshold; // min confidence for auto-accept (0.85 = 85%)
 
     public function __construct(float $confidenceThreshold = 0.85)
     {
-        $this->geminiKey = env('GEMINI_API_KEY');
+        $this->flazKey  = env('FLAZ_API_KEY');
+        $this->flazModel = env('FLAZ_MODEL', 'claude-sonnet-4-6');
         $this->confidenceThreshold = $confidenceThreshold;
     }
 
@@ -62,7 +64,7 @@ class VerificationService
         $verifiedSeats = $this->applyRuleBasedCorrections($extractedData['seats'] ?? []);
 
         // Step 3: Apply AI validation if images provided
-        if (!empty($imagePaths) && !empty($this->geminiKey)) {
+        if (!empty($imagePaths) && !empty($this->flazKey)) {
             try {
                 $this->imageData = $this->prepareImageData($imagePaths);
                 $aiValidation = $this->applyAiValidation($extractedData, $verifiedSeats);
@@ -468,7 +470,8 @@ class VerificationService
     }
 
     /**
-     * Prepare base64-encoded images for AI validation
+     * Prepare base64-encoded images for AI validation.
+     * Returns array of ['data' => base64string, 'mime_type' => 'image/jpeg']
      */
     protected function prepareImageData(array|string $imagePaths): array
     {
@@ -478,14 +481,26 @@ class VerificationService
 
         $images = [];
         foreach ($imagePaths as $path) {
+            // Convert web-relative path (/storage/...) to absolute filesystem path
+            if (str_starts_with($path, '/storage/')) {
+                $path = public_path($path);
+            } elseif (str_starts_with($path, '/')) {
+                $path = public_path($path);
+            }
+
+            if (!file_exists($path)) {
+                Log::warning('[Verification] Image file not found', ['path' => $path]);
+                continue;
+            }
+
             try {
                 $content = file_get_contents($path);
                 if ($content === false) continue;
 
-                // Compress to JPEG (same as in PdfParserService)
-                $img = imagecreatefrompng($path);
+                // Compress to JPEG (same as PdfParserService)
+                $img = @imagecreatefrompng($path);
                 if ($img === false) {
-                    $img = imagecreatefromstring($content);
+                    $img = @imagecreatefromstring($content);
                 }
 
                 if ($img !== false) {
@@ -493,15 +508,16 @@ class VerificationService
                     $sharpenMatrix = [[0, -1, 0], [-1, 9, -1], [0, -1, 0]];
                     $divisor = array_sum(array_map('array_sum', $sharpenMatrix));
                     imageconvolution($img, $sharpenMatrix, $divisor, 0);
-                    
+
                     ob_start();
                     imagejpeg($img, null, 92);
                     $compressedData = ob_get_clean();
                     imagedestroy($img);
-                    
-                    $images[] = base64_encode($compressedData);
+
+                    $images[] = ['data' => base64_encode($compressedData), 'mime_type' => 'image/jpeg'];
                 } else {
-                    $images[] = base64_encode($content);
+                    $mimeType = mime_content_type($path) ?: 'image/jpeg';
+                    $images[] = ['data' => base64_encode($content), 'mime_type' => $mimeType];
                 }
             } catch (\Exception $e) {
                 Log::warning('[Verification] Failed to prepare image', ['path' => $path, 'error' => $e->getMessage()]);
@@ -513,8 +529,8 @@ class VerificationService
     }
 
     /**
-     * Apply AI validation pass using Gemini
-     * Re-examine original images and provide confidence scores
+     * Apply AI validation pass using Flaz.id (OpenAI-compatible API)
+     * Re-examine original images and provide confidence scores per seat.
      */
     protected function applyAiValidation(array $extractedData, array $verifiedSeats): array
     {
@@ -523,75 +539,90 @@ class VerificationService
             return [];
         }
 
-        Log::info('[Verification] Starting AI validation with Gemini', [
+        Log::info('[Verification] Starting AI validation with Flaz.id', [
+            'model'          => $this->flazModel,
             'seats_to_validate' => count($verifiedSeats),
-            'images_count' => count($this->imageData),
+            'images_count'   => count($this->imageData),
         ]);
 
         $aircraftType = $extractedData['aircraft_type'] ?? 'Unknown';
 
         try {
             // Batch large seat lists to avoid truncated responses
-            $batchSize = 80; // Each item ~150 chars output, 80 items ≈ 12000 chars ≈ safe under 65536 tokens
+            $batchSize = 60;
             $allResults = [];
 
             $seatChunks = array_chunk($verifiedSeats, $batchSize, true);
-            
+
             foreach ($seatChunks as $chunkIndex => $chunk) {
                 Log::info('[Verification] Processing batch', [
-                    'batch' => $chunkIndex + 1,
-                    'total_batches' => count($seatChunks),
+                    'batch'          => $chunkIndex + 1,
+                    'total_batches'  => count($seatChunks),
                     'seats_in_batch' => count($chunk),
                 ]);
 
                 $chunkSeatsJson = json_encode(array_values(array_map(fn($s) => [
-                    'seat_id' => $s['seat_id'],
+                    'seat_id'     => $s['seat_id'],
                     'expiry_date' => $s['expiry_date'],
                 ], $chunk)));
 
-                $chunkPrompt = "You are an expert auditor of aircraft maintenance records. Do NOT guess."
-                    . "\n\nTASK: Re-examine the ORIGINAL IMAGES provided and COMPARE them to the extracted values below. For each item, you must re-read the image and state the exact textual value you read from the image."
-                    . "\n\nCONTEXT: This validation is for aircraft type: {$aircraftType}."
+                $chunkPrompt = "You are an expert auditor of aircraft life-vest maintenance records."
+                    . " Do NOT guess or hallucinate values."
+                    . "\n\nTASK: Re-examine the ORIGINAL IMAGES provided and COMPARE them to the extracted values below."
+                    . " For each item, re-read the image and state the EXACT textual value you see."
+                    . "\n\nCONTEXT: Aircraft type: {$aircraftType}."
                     . "\n\nEXTRACTED DATA (for reference only):\n{$chunkSeatsJson}"
                     . "\n\nINSTRUCTIONS:"
-                    . "\n1) For each seat entry, look at the corresponding area on the image and read the value exactly as it appears."
-                    . "\n2) Provide these fields per item: `seat_id`, `original_value`, `image_value`, `match` (true/false), `confidence` (0.0-1.0), `issue` (null or short code), `suggested_correction` (YYYY-MM-DD or null)."
-                    . "\n3) If the image is illegible or ambiguous, return `image_value` as empty string and `confidence` < 0.7 with `issue`: \"illegible\"."
-                    . "\n4) Never invent a value. If you cannot read the image, set `confidence` low."
-                    . "\n\nOUTPUT: Return a MINIFIED JSON object ONLY with key `validation_items` array.";
+                    . "\n1) For each seat entry, look at the corresponding row on the image and read the expiry date value exactly as it appears in handwriting."
+                    . "\n2) Return these fields per item: seat_id, original_value, image_value, match (true/false), confidence (0.0-1.0), issue (null or short string), suggested_correction (YYYY-MM-DD or null)."
+                    . "\n3) If the image area is illegible, return image_value as empty string, confidence < 0.7, issue: illegible."
+                    . "\n4) Never invent a value. If unsure, set confidence low."
+                    . "\n\nOUTPUT: Return ONLY a minified JSON object with key validation_items containing an array.";
 
-                $batchParts = [['text' => $chunkPrompt]];
-                foreach ($this->imageData as $imageBase64) {
-                    $batchParts[] = [
-                        'inline_data' => [
-                            'mime_type' => 'image/jpeg',
-                            'data' => $imageBase64
-                        ]
+                // Build message content: text prompt + images
+                $userContent = [['type' => 'text', 'text' => $chunkPrompt]];
+                foreach ($this->imageData as $imgItem) {
+                    $mimeType = $imgItem['mime_type'] ?? 'image/jpeg';
+                    $b64      = $imgItem['data'] ?? '';
+                    $userContent[] = [
+                        'type'      => 'image_url',
+                        'image_url' => [
+                            'url'    => "data:{$mimeType};base64,{$b64}",
+                            'detail' => 'high',
+                        ],
                     ];
                 }
 
-                $response = Http::timeout(300)->post(
-                    "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={$this->geminiKey}",
-                    [
-                        'contents' => [['parts' => $batchParts]],
-                        'generationConfig' => [
-                            'temperature' => 0.1,
-                            'maxOutputTokens' => 65536,
-                            'responseMimeType' => 'application/json',
-                        ]
-                    ]
-                );
+                $response = Http::timeout(300)->withHeaders([
+                    'Authorization' => 'Bearer ' . $this->flazKey,
+                    'Content-Type'  => 'application/json',
+                ])->post('https://ai.flaz.id/v1/chat/completions', [
+                    'model'       => $this->flazModel,
+                    'temperature' => 0.05,
+                    'max_tokens'  => 16000,
+                    'messages'    => [
+                        [
+                            'role'    => 'system',
+                            'content' => 'You are a JSON-only output machine. Never output anything except valid minified JSON. No markdown, no explanation, no code blocks.',
+                        ],
+                        [
+                            'role'    => 'user',
+                            'content' => $userContent,
+                        ],
+                    ],
+                ]);
 
                 if ($response->failed()) {
                     Log::warning('[Verification] Batch API failed', [
-                        'batch' => $chunkIndex + 1,
+                        'batch'  => $chunkIndex + 1,
                         'status' => $response->status(),
+                        'body'   => substr($response->body(), 0, 500),
                     ]);
-                    continue; // Skip this batch, try next
+                    continue;
                 }
 
                 $responseData = $response->json();
-                $rawContent = $responseData['candidates'][0]['content']['parts'][0]['text'] ?? '';
+                $rawContent   = $responseData['choices'][0]['message']['content'] ?? '';
 
                 if (empty($rawContent)) {
                     Log::warning('[Verification] Empty response for batch ' . ($chunkIndex + 1));
@@ -599,16 +630,17 @@ class VerificationService
                 }
 
                 Log::info('[Verification] AI validation batch response', [
-                    'batch' => $chunkIndex + 1,
+                    'batch'          => $chunkIndex + 1,
                     'content_length' => strlen($rawContent),
-                    'preview' => substr($rawContent, 0, 300),
+                    'preview'        => substr($rawContent, 0, 300),
                 ]);
 
-                // Robust JSON extraction with truncation repair
+                // Strip markdown code fences if model wrapped the JSON
+                $rawContent = preg_replace('/^```(?:json)?\s*/i', '', trim($rawContent));
+                $rawContent = preg_replace('/```\s*$/', '', $rawContent);
+
                 $validationData = json_decode($rawContent, true);
-                
                 if (!is_array($validationData)) {
-                    // Try to fix truncated JSON
                     $validationData = $this->extractPartialJson($rawContent);
                 }
 
@@ -618,7 +650,7 @@ class VerificationService
                 }
 
                 $validationItems = $validationData['validation_items'] ?? [];
-                
+
                 // Index by seat_id for quick lookup
                 $validationBySeatId = [];
                 foreach ($validationItems as $item) {
@@ -631,29 +663,29 @@ class VerificationService
                     if (isset($validationBySeatId[$seatId])) {
                         $aiData = $validationBySeatId[$seatId];
                         $allResults[$idx] = [
-                            'confidence'       => $aiData['confidence'] ?? 0.5,
-                            'match'            => $aiData['match'] ?? null,
-                            'issue'            => $aiData['issue'] ?? null,
-                            'issue_detected'   => $aiData['issue'] ?? null,
-                            'image_value'      => $aiData['image_value'] ?? null,
-                            'original_value'   => $aiData['original_value'] ?? null,
+                            'confidence'           => $aiData['confidence'] ?? 0.5,
+                            'match'                => $aiData['match'] ?? null,
+                            'issue'                => $aiData['issue'] ?? null,
+                            'issue_detected'       => $aiData['issue'] ?? null,
+                            'image_value'          => $aiData['image_value'] ?? null,
+                            'original_value'       => $aiData['original_value'] ?? null,
                             'suggested_correction' => $aiData['suggested_correction'] ?? null,
-                            'suggestion'       => $aiData['suggested_correction'] ?? null,
-                            'correction_type'  => 'ai_validation',
+                            'suggestion'           => $aiData['suggested_correction'] ?? null,
+                            'correction_type'      => 'ai_validation',
                         ];
                     }
                 }
 
                 Log::info('[Verification] Batch processed', [
-                    'batch' => $chunkIndex + 1,
-                    'ai_items_parsed' => count($validationItems),
+                    'batch'            => $chunkIndex + 1,
+                    'ai_items_parsed'  => count($validationItems),
                     'matched_to_seats' => count(array_intersect_key($allResults, $chunk)),
                 ]);
             }
 
             Log::info('[Verification] All batches complete', [
                 'total_ai_results' => count($allResults),
-                'total_seats' => count($verifiedSeats),
+                'total_seats'      => count($verifiedSeats),
             ]);
 
             return $allResults;

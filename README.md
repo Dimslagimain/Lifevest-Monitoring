@@ -26,13 +26,13 @@ Dasbor interaktif yang bertindak sebagai pusat kendali untuk memantau kesehatan 
 *   **Life Vest Replacement Summary**: Ringkasan per *Part Number* (Adult, Crew, Infant) yang menunjukkan jumlah total dan jumlah yang telah kedaluwarsa beserta *breakdown* registrasi pesawat yang memerlukannya. Dilengkapi indikator kartu merah jika terdapat item kedaluwarsa.
 *   **Quick Stats**: Ringkasan performa armada seperti *Health Score* persentase keselamatan, total kursi yang dilacak, jumlah pesawat/maskapai aktif, serta item yang memerlukan perhatian.
 
-### 2. Smart PDF Scanner (Hybrid AI OCR)
-Fitur unggulan untuk mempercepat input data dari lembar LOPA (*Layout of Passenger Accommodations*) "Inventory Check" (formulir GMF/Q-447) berbasis tulisan tangan atau stempel:
+### 2. Smart PDF Scanner (Hybrid AI OCR & Multi-Stage Refinement)
+Fitur unggulan untuk mempercepat input data dari lembar LOPA ("Inventory Check" (formulir GMF/Q-447) berbasis tulisan tangan atau stempel secara instan:
 *   **Pipeline Ekstraksi Multi-Tahap**:
     1.  **Ghostscript Integration**: PDF diubah menjadi gambar beresolusi tinggi (300 DPI) untuk kejelasan penulisan tangan.
-    2.  **Pre-processing OpenCV & PyTesseract**: Gambar ditingkatkan kontrasnya dan dipertajam menggunakan filter OpenCV. Arah orientasi halaman diperiksa dan diputar otomatis (*auto-rotate*).
-    3.  **Google Cloud Vision Fallback**: Digunakan sebagai OCR sekunder berkemampuan tinggi untuk transkrip teks stempel.
-    4.  **AI Engine Mapping**: Memakai model bahasa besar (Claude 3.5 Sonnet / Gemini 3.1 Pro / GPT-4o) untuk memetakan teks terdeteksi ke struktur layout LOPA yang sesuai.
+    2.  **Pre-processing OpenCV & Tiling**: Gambar dipertajam menggunakan filter OpenCV dan diputar otomatis (*auto-rotate*). Gambar dipecah menjadi **3 horizontal strips (tiling)** dengan overlap 80px untuk menghindari masalah *row drift* (pergeseran baris data) pada AI.
+    3.  **Stage 1 AI OCR**: Mengirimkan pecahan potongan gambar ke model AI Vision canggih (seperti Claude 3.5 Sonnet via Flaz API) untuk mendeteksi stempel dan tulisan tangan awal secara terstruktur.
+    4.  **Stage 2 AI Refinement (GPT-5)**: Hasil ekstraksi awal divalidasi dan disempurnakan menggunakan model penalaran GPT-5 dengan membandingkannya kembali ke visual asli untuk mengoreksi ketidakcocokan data, format tanggal, maupun kesalahan baca (*refinement*).
 *   **Penyaringan Layout per Pesawat (Per-Aircraft Validation)**:
     *   Sistem melakukan pencarian registrasi di database untuk mengetahui jenis *layout* (contoh: layout `a330-900a` dengan Business Class vs `a330-900b` Economy Only).
     *   `VerificationService` mencocokkan baris yang diekstrak dengan konfigurasi baris minimum/maksimum pesawat tersebut.
@@ -188,7 +188,10 @@ Konfigurasi layout kursi pesawat didasarkan pada empat file pengaturan utama di 
     Untuk mengaktifkan fitur Smart PDF Scanner, pastikan variabel berikut terisi di file `.env` Anda:
     ```env
     GHOSTSCRIPT_PATH="C:/Program Files/gs/gs10.07.0/bin/gswin64c.exe"  # Sesuaikan folder instalasi GS
-    GEMINI_API_KEY="AIzaSy..."  # Wajib diisi (atau ANTHROPIC_API_KEY / SNIFOX_API_KEY)
+    FLAZ_API_KEY="your-flaz-api-key"
+    FLAZ_MODEL="claude-sonnet-4-6"          # Model utama OCR (Stage 1)
+    FLAZ_REFINEMENT_ENABLED=true            # Set true untuk mengaktifkan perbaikan AI
+    FLAZ_REFINEMENT_MODEL="gpt-5"           # Model perbaikan hasil (Stage 2)
     ```
 6.  **Migrasi Database & Isi Data Seed**:
     ```bash

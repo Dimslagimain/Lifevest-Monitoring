@@ -102,7 +102,7 @@
     <!-- Title -->
     <div style="text-align: center;">
         <h2 style="margin: 0 0 0.5rem; font-size: 1.6rem; font-weight: 800; color: white; letter-spacing: -0.02em;">Mengekstrak Data...</h2>
-        <p id="scan-subtitle" style="margin: 0; color: rgba(255,255,255,0.5); font-size: 0.95rem;">Mohon tunggu, AI sedang membaca dokumen Anda</p>
+        <p id="scan-subtitle" style="margin: 0; color: rgba(255,255,255,0.5); font-size: 0.95rem;">Mohon tunggu, AI multi-stage sedang membaca dokumen Anda</p>
     </div>
 
     <!-- Progress Bar Container -->
@@ -122,7 +122,7 @@
     <!-- Elapsed Time -->
     <div style="text-align: center; margin-top: 0.5rem;">
         <span id="scan-elapsed" style="font-size: 0.8rem; color: rgba(255,255,255,0.3); font-variant-numeric: tabular-nums;">00:00</span>
-        <p style="margin: 0.5rem 0 0; font-size: 0.75rem; color: rgba(255,255,255,0.2);">Proses biasanya memakan waktu 30-120 detik</p>
+        <p style="margin: 0.5rem 0 0; font-size: 0.75rem; color: rgba(255,255,255,0.2);">Multi-Stage OCR: proses biasanya 60-180 detik</p>
     </div>
 </div>
 
@@ -275,20 +275,28 @@
                 const elapsed = (Date.now() - startTime) / 1000;
 
                 if (elapsed < 3) {
-                    targetProgress = 15;
+                    targetProgress = 10;
                     statusText.textContent = "Mengunggah file ke server...";
                     speed = 2;
-                } else if (elapsed < 10) {
-                    targetProgress = 35;
+                } else if (elapsed < 8) {
+                    targetProgress = 20;
                     statusText.textContent = "Mengkonversi halaman dokumen...";
                     speed = 1;
-                } else if (elapsed < 45) {
-                    targetProgress = 85;
-                    statusText.textContent = "AI sedang menganalisis & membaca stempel...";
-                    speed = 0.25;
+                } else if (elapsed < 40) {
+                    targetProgress = 55;
+                    statusText.textContent = "⚡ Stage 1: AI membaca dokumen (Claude)...";
+                    speed = 0.3;
+                } else if (elapsed < 50) {
+                    targetProgress = 60;
+                    statusText.textContent = "📋 Mempersiapkan data untuk verifikasi...";
+                    speed = 0.5;
+                } else if (elapsed < 100) {
+                    targetProgress = 90;
+                    statusText.textContent = "🔄 Stage 2: GPT-5 memverifikasi & menyempurnakan...";
+                    speed = 0.15;
                 } else {
                     targetProgress = 98;
-                    statusText.textContent = "Menyusun hasil & memvalidasi layout...";
+                    statusText.textContent = "✅ Menyusun hasil & memvalidasi layout...";
                     speed = 0.05;
                 }
 

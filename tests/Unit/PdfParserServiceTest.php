@@ -98,4 +98,86 @@ class PdfParserServiceTest extends TestCase
         $extracted2 = $this->invokeMethod('extractJson', [$content2]);
         $this->assertEquals('PK-XYZ', $extracted2['registration']);
     }
+
+    public function test_refine_with_gpt5_success()
+    {
+        // Mock Flaz.id API response
+        \Illuminate\Support\Facades\Http::fake([
+            'https://ai.flaz.id/v1/chat/completions' => \Illuminate\Support\Facades\Http::response([
+                'choices' => [
+                    [
+                        'message' => [
+                            'content' => json_encode([
+                                'registration' => 'PK-GIA',
+                                'aircraft_type' => 'B777',
+                                'seats' => [
+                                    ['seat_id' => '1A', 'expiry_date' => '05 JAN 2035'], // corrected date
+                                    ['seat_id' => '1B', 'expiry_date' => '20 JAN 2030'], // unchanged
+                                ]
+                            ])
+                        ]
+                    ]
+                ]
+            ], 200)
+        ]);
+
+        $stage1Result = [
+            'registration' => 'PK-GIA',
+            'aircraft_type' => 'B777',
+            'seats' => [
+                ['seat_id' => '1A', 'expiry_date' => '05 JAN 2025?'], // uncertain date
+                ['seat_id' => '1B', 'expiry_date' => '20 JAN 2030'],
+            ]
+        ];
+
+        // Create temporary image path for mock test
+        $tempFile = tempnam(sys_get_temp_dir(), 'test_img');
+        imagepng(imagecreatetruecolor(10, 10), $tempFile);
+
+        $refinedResult = $this->invokeMethod('refineWithGPT5', [
+            $stage1Result,
+            [$tempFile],
+            'mock-api-key',
+            'gpt-5'
+        ]);
+
+        @unlink($tempFile);
+
+        $this->assertTrue($refinedResult['refinement_applied']);
+        $this->assertEquals('gpt-5', $refinedResult['refinement_model']);
+        $this->assertEquals(1, $refinedResult['refinement_corrections']);
+        $this->assertEquals('5 JAN 2035', $refinedResult['seats'][0]['expiry_date']);
+        $this->assertEquals('20 JAN 2030', $refinedResult['seats'][1]['expiry_date']);
+    }
+
+    public function test_refine_with_gpt5_api_failure_throws_exception()
+    {
+        \Illuminate\Support\Facades\Http::fake([
+            'https://ai.flaz.id/v1/chat/completions' => \Illuminate\Support\Facades\Http::response('API Error', 500)
+        ]);
+
+        $stage1Result = [
+            'registration' => 'PK-GIA',
+            'aircraft_type' => 'B777',
+            'seats' => [
+                ['seat_id' => '1A', 'expiry_date' => '05 JAN 2025?'],
+            ]
+        ];
+
+        $tempFile = tempnam(sys_get_temp_dir(), 'test_img');
+        imagepng(imagecreatetruecolor(10, 10), $tempFile);
+
+        $this->expectException(\Exception::class);
+        
+        try {
+            $this->invokeMethod('refineWithGPT5', [
+                $stage1Result,
+                [$tempFile],
+                'mock-api-key',
+                'gpt-5'
+            ]);
+        } finally {
+            @unlink($tempFile);
+        }
+    }
 }

@@ -2078,7 +2078,10 @@
                 }
             });
 
-            cards.forEach(card => container.appendChild(card));
+            const tbody = container.querySelector('.premium-table tbody') || (cards.length ? cards[0].parentNode : null);
+            if (tbody) {
+                cards.forEach(card => tbody.appendChild(card));
+            }
         }
 
 

@@ -10,7 +10,7 @@ Kerangka Acuan Kerja (KAK) dan proposal pengembangan sistem Life Vest Tracker.
 
 | Format | File |
 |--------|------|
-| 📄 Markdown | [TERMS_OF_REFERENCE.md](TERMS_OF_REFERENCE.md) ← baca langsung di GitHub |
+| Markdown | [TERMS_OF_REFERENCE.md](TERMS_OF_REFERENCE.md) (Lokal / Git Ignored) |
 
 **Isi:**
 - Latar Belakang & Masalah
@@ -29,8 +29,7 @@ Panduan penggunaan aplikasi Life Vest Tracker untuk end-user / teknisi.
 
 | Format | File |
 |--------|------|
-| 📄 Markdown | [USER_MANUAL.md](USER_MANUAL.md) ← baca langsung di GitHub |
-| 📕 PDF | [User Manual.pdf](User%20Manual.pdf) ← download / print |
+| Markdown | [USER_MANUAL.md](USER_MANUAL.md) |
 
 **Isi:**
 - Dashboard, Fleet Overview, Life Vest Replacement Summary, Quick Stats
@@ -49,8 +48,7 @@ Panduan teknis untuk developer yang ingin mengembangkan atau maintain aplikasi.
 
 | Format | File |
 |--------|------|
-| 📄 Markdown | [DEVELOPER_MANUAL.md](DEVELOPER_MANUAL.md) ← baca langsung di GitHub |
-| 📕 PDF | [Developer Manual.pdf](Developer%20Manual.pdf) ← download / print |
+| Markdown | [DEVELOPER_MANUAL.md](DEVELOPER_MANUAL.md) |
 
 **Isi:**
 - Tech Stack & Setup Development

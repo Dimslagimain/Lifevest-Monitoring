@@ -22,3 +22,8 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Dokumentasi lokal / privat
+/dokumentasi/TERMS_OF_REFERENCE.md
+/dokumentasi/*.pdf
+

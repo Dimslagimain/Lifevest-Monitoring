@@ -10,8 +10,8 @@ html, body {
 }
 
 :root {
-    --primary: #1e90ff;
-    --primary-hover: #1c86ee;
+    --primary: #0891b2;        /* GMF Teal (Cyan-600) */
+    --primary-hover: #0e7490;  /* Cyan-700 */
     --text-main: #1e293b;
     --text-muted: #64748b;
     --bg-form: #ffffff;
@@ -58,12 +58,12 @@ html, body {
     left: 3rem;
     z-index: 10;
     padding: 1.2rem 2rem;
-    background: rgba(255, 255, 255, 0.15); /* Glass effect like the bottom badge */
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-radius: 14px;
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    background: rgba(15, 23, 42, 0.35); /* Darker tint for high-end contrast */
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
     transition: all 150ms ease;
 }
 
@@ -81,9 +81,9 @@ html, body {
 .auth-image-badge {
     display: inline-block;
     padding: 0.5rem 1.25rem;
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 50px;
     color: #ffffff;
     font-size: 0.85rem;
@@ -218,7 +218,7 @@ html, body {
 .input-with-icon input:focus {
     outline: none;
     border-color: var(--primary);
-    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); /* Soft shadow, not glow */
+    box-shadow: 0 0 0 4px rgba(8, 145, 178, 0.15); /* Soft shadow with new primary */
 }
 
 /* Autofill overrides */
@@ -289,7 +289,7 @@ html, body {
     color: #ffffff;
     cursor: pointer;
     transition: all 150ms ease;
-    box-shadow: 0 4px 12px rgba(30, 144, 255, 0.2);
+    box-shadow: 0 4px 12px rgba(8, 145, 178, 0.2);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -297,8 +297,7 @@ html, body {
 
 .auth-submit:hover:not(:disabled) {
     background: var(--primary-hover);
-    transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(30, 144, 255, 0.3);
+    box-shadow: 0 6px 16px rgba(8, 145, 178, 0.25);
 }
 
 .auth-submit:disabled {

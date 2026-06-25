@@ -125,11 +125,11 @@ lifevest-laravel/
 
 Di bawah ini adalah status masa berlaku pelampung beserta representasi warna pada antarmuka sistem (dengan border dan kontras tinggi untuk kejelasan):
 
-*   **Hijau (Safe / Aman)**: Masa berlaku pelampung > 6 bulan dari sekarang.
-*   **Kuning (Warning / Peringatan)**: Masa berlaku tersisa 3 sampai 6 bulan.
-*   **Merah (Critical / Kritis)**: Masa berlaku tersisa kurang dari 3 bulan.
-*   **Ungu (Expired / Kadaluarsa)**: Tanggal masa berlaku telah terlewati (perlu diganti segera).
-*   **Abu-abu (No Data / Kosong)**: Data tanggal kedaluwarsa belum dimasukkan ke sistem.
+*   ![Safe](https://img.shields.io/badge/Status-Safe-10b981) - Masa berlaku pelampung > 6 bulan dari sekarang.
+*   ![Warning](https://img.shields.io/badge/Status-Warning-f59e0b) - Masa berlaku tersisa 3 sampai 6 bulan.
+*   ![Critical](https://img.shields.io/badge/Status-Critical-ef4444) - Masa berlaku tersisa kurang dari 3 bulan.
+*   ![Expired](https://img.shields.io/badge/Status-Expired-8b5cf6) - Tanggal masa berlaku telah terlewati (perlu diganti segera).
+*   ![No Data](https://img.shields.io/badge/Status-No_Data-64748b) - Data tanggal kedaluwarsa belum dimasukkan ke sistem.
 
 ---
 

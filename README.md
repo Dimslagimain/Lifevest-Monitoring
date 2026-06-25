@@ -5,12 +5,12 @@
 [![Laravel](https://img.shields.io/badge/Laravel-12.x-FF2D20?style=flat-square&logo=laravel)](https://laravel.com)
 [![PHP](https://img.shields.io/badge/PHP-8.2+-777BB4?style=flat-square&logo=php)](https://php.net)
 [![Vite](https://img.shields.io/badge/Frontend-Vite-646CFF?style=flat-square&logo=vite)](https://vitejs.dev)
-[![UI](https://img.shields.io/badge/UX-Premium_Glassmorphism-00AEEF?style=flat-square)](https://gmf-aeroasia.co.id)
+[![UI](https://img.shields.io/badge/UX-Premium_Prominent_Design-00AEEF?style=flat-square)](https://gmf-aeroasia.co.id)
 
 ---
 
 ## Mengenal Sistem Ini
-**Life Vest Tracker** adalah ekosistem digital mutakhir yang dirancang khusus untuk tim Engineering dan Maintenance GMF AeroAsia. Sistem ini mengubah data keselamatan pesawat yang kompleks menjadi informasi visual yang siap ditindaklanjuti, memastikan setiap pesawat dalam armada dilengkapi dengan peralatan keselamatan yang patuh (*compliant*) dan aman. Menampilkan antarmuka *Dark Mode* modern berbasis *Glassmorphism*, aplikasi ini memastikan manajemen peralatan keselamatan menjadi lebih cepat, akurat, dan efisien.
+**Life Vest Tracker** adalah ekosistem digital mutakhir yang dirancang khusus untuk tim Engineering dan Maintenance GMF AeroAsia. Sistem ini mengubah data keselamatan pesawat yang kompleks menjadi informasi visual yang siap ditindaklanjuti, memastikan setiap pesawat dalam armada dilengkapi dengan peralatan keselamatan yang patuh (*compliant*) dan aman. Menampilkan antarmuka *Dark Mode* dan *Light Mode* modern dengan desain border prominent dan kontras tinggi, aplikasi ini memastikan manajemen peralatan keselamatan menjadi lebih cepat, akurat, dan efisien.
 
 ---
 

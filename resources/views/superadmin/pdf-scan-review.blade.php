@@ -51,7 +51,7 @@
         {{-- Uncertainty Banner (shown only if dates have ?) --}}
         <div id="uncertainty-banner"
             style="display: none; background: linear-gradient(135deg, rgba(120, 53, 15, 0.08), rgba(146, 64, 14, 0.06)); border: 1px solid #d97706; border-radius: 12px; padding: 0.75rem 1.25rem; margin-bottom: 1.5rem; align-items: center; gap: 0.75rem;">
-            <span style="font-size: 1.3rem;">⚠️</span>
+            <span style="font-size: 1.3rem;"></span>
             <div>
                 <span style="color: #d97706; font-weight: 700; font-size: 0.9rem;">Perhatian: </span>
                 <span style="color: var(--text-secondary); font-size: 0.85rem;">Tanggal yang ditandai <span
@@ -61,10 +61,9 @@
             </div>
         </div>
 
-        {{-- Info banner --}}
         <div
-            style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(59, 130, 246, 0.04)); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 12px; padding: 0.75rem 1.25rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
-            <span style="font-size: 1.3rem;">📋</span>
+            style="background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.08), rgba(var(--primary-rgb), 0.04)); border: 1px solid rgba(var(--primary-rgb), 0.3); border-radius: 12px; padding: 0.75rem 1.25rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
+            <span style="font-size: 1.3rem;"></span>
             <span style="color: var(--text-secondary); font-size: 0.85rem;">Bandingkan data di tabel dengan <strong>gambar
                     scan asli</strong> di sebelah kanan. Edit langsung di tabel jika ada yang salah, lalu Download
                 Excel.</span>
@@ -246,7 +245,7 @@
                             @if (empty($otherData) && empty($cockpitData) && empty($attendantData) && empty($spareData))
                                 <div
                                     style="padding: 4rem 1.5rem; text-align: center; color: var(--text-muted); background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border-subtle);">
-                                    <div style="font-size: 3rem; margin-bottom: 1rem;">🔍</div>
+                                    <div style="font-size: 3rem; margin-bottom: 1rem;"></div>
                                     Tidak ada data yang terdeteksi secara otomatis. Silakan tambah baris manual atau ulangi
                                     scan.
                                 </div>
@@ -721,7 +720,7 @@
                             const page = this.dataset.page;
                             container.querySelectorAll('.scan-page-img').forEach(img => {
                                 img.style.display = img.dataset.page === page ? 'block' :
-                                'none';
+                                    'none';
                             });
                             document.querySelectorAll('.page-btn').forEach(b => {
                                 b.style.background = 'transparent';

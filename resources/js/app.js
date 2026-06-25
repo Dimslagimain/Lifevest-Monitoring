@@ -465,7 +465,7 @@ function handleKeyboard(e) {
 function showToast(message, type = 'success') {
     if (!elements.toast) return;
 
-    const icon = type === 'success' ? '✓' : type === 'error' ? '✗' : 'ℹ';
+    const icon = '';
     elements.toast.querySelector('.toast-icon').textContent = icon;
     elements.toast.querySelector('.toast-message').textContent = message;
     elements.toast.className = `toast ${type} show`;
@@ -754,19 +754,19 @@ function initPnInsightsChart() {
                     {
                         label: 'Expired',
                         data: expiredData,
-                        backgroundColor: '#8b5cf6', // purple
+                        backgroundColor: '#7c3aed', // violet
                         borderRadius: 4,
                     },
                     {
                         label: 'Critical (< 3m)',
                         data: criticalData,
-                        backgroundColor: '#ef4444', // red
+                        backgroundColor: '#dc2626', // red
                         borderRadius: 4,
                     },
                     {
                         label: 'Warning (3-6m)',
                         data: warningData,
-                        backgroundColor: '#f59e0b', // amber
+                        backgroundColor: '#d97706', // amber
                         borderRadius: 4,
                     }
                 ]
@@ -819,16 +819,16 @@ function initPnInsightsChart() {
 
         tableBody.innerHTML = data.map((item, index) => `
             <tr>
-                <td class="fleet-td">${index + 1}</td>
-                <td class="fleet-td"><strong>${item.pn}</strong></td>
-                <td class="fleet-td"><span class="replacement-category ${item.category}">${item.category.toUpperCase()}</span></td>
-                <td class="fleet-td" style="text-align: center;"><span style="color: #8b5cf6; font-weight: 700;">${item.expired}</span></td>
-                <td class="fleet-td" style="text-align: center;"><span style="color: #ef4444; font-weight: 700;">${item.critical}</span></td>
-                <td class="fleet-td" style="text-align: center;"><span style="color: #f59e0b; font-weight: 700;">${item.warning}</span></td>
-                <td class="fleet-td" style="text-align: center;"><strong>${item.expired + item.critical + item.warning}</strong></td>
+                <td class="fleet-td" style="font-family: 'JetBrains Mono', monospace;">${index + 1}</td>
+                <td class="fleet-td"><strong style="font-family: 'JetBrains Mono', monospace; font-size: 0.85rem;">${item.pn}</strong></td>
+                <td class="fleet-td"><span class="replacement-category ${item.category}" style="margin-left: 0; font-size: 0.7rem;">${item.category.toUpperCase()}</span></td>
+                <td class="fleet-td" style="text-align: center;"><span style="color: #7c3aed; font-weight: 700; font-family: 'JetBrains Mono', monospace;">${item.expired}</span></td>
+                <td class="fleet-td" style="text-align: center;"><span style="color: #dc2626; font-weight: 700; font-family: 'JetBrains Mono', monospace;">${item.critical}</span></td>
+                <td class="fleet-td" style="text-align: center;"><span style="color: #d97706; font-weight: 700; font-family: 'JetBrains Mono', monospace;">${item.warning}</span></td>
+                <td class="fleet-td" style="text-align: center;"><strong style="color: var(--primary); font-family: 'JetBrains Mono', monospace;">${item.expired + item.critical + item.warning}</strong></td>
                 <td class="fleet-td">
                     <div style="display: flex; flex-wrap: wrap; gap: 4px;">
-                        ${item.aircraft.slice(0, 3).map(ac => `<span class="monthly-aircraft-chip" style="font-size: 0.75rem; padding: 2px 6px;">${ac.reg}</span>`).join('')}
+                        ${item.aircraft.slice(0, 3).map(ac => `<span class="monthly-aircraft-chip" style="font-size: 0.75rem; padding: 2px 6px; font-family: 'JetBrains Mono', monospace;">${ac.reg}</span>`).join('')}
                         ${item.aircraft.length > 3 ? `<span style="font-size: 0.75rem; color: var(--text-muted);">+${item.aircraft.length - 3} more</span>` : ''}
                     </div>
                 </td>

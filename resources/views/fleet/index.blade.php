@@ -103,12 +103,12 @@
                     @foreach($fleet as $aircraft)
                         <tr>
                             <td class="fleet-td text-muted">{{ $loop->iteration }}</td>
-                            <td class="fleet-td font-bold" style="color: var(--primary-light);">{{ $aircraft->registration }}</td>
+                            <td class="fleet-td font-bold" style="color: var(--primary-light); font-family: 'JetBrains Mono', monospace;">{{ $aircraft->registration }}</td>
                             <td class="fleet-td">
                                 {{ $aircraft->airline?->name ?? '-' }}
                             </td>
                             <td class="fleet-td">{{ $aircraft->type }}</td>
-                            <td class="fleet-td font-mono" style="font-size: 0.85rem; opacity: 0.8;">{{ $aircraft->layout }}</td>
+                            <td class="fleet-td" style="font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; opacity: 0.8;">{{ $aircraft->layout }}</td>
                             <td class="fleet-td">
                                 <span class="status-badge {{ $aircraft->status }}">
                                     {{ strtoupper($aircraft->status) }}

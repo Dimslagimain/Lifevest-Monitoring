@@ -81,11 +81,11 @@
         <div class="seat-grid grid-business">
             <div class="grid-header-business">
                 <span class="col-label">A</span>
-                <span class="aisle-gap">🚶</span>
+                <span class="aisle-gap"></span>
                 <span class="col-label">D</span>
                 <span class="col-label row-label">Row</span>
                 <span class="col-label">G</span>
-                <span class="aisle-gap">🚶</span>
+                <span class="aisle-gap"></span>
                 <span class="col-label">K</span>
             </div>
             @foreach([6, 7, 8, 9, 10, 11] as $row)

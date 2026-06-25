@@ -52,11 +52,11 @@
         <div class="seat-grid grid-business">
             <div class="grid-header-business">
                 <span class="col-label">A</span>
-                <span class="aisle-gap">🚶</span>
+                <span class="aisle-gap"></span>
                 <span class="col-label">D</span>
                 <span class="col-label row-label">Row</span>
                 <span class="col-label">G</span>
-                <span class="aisle-gap">🚶</span>
+                <span class="aisle-gap"></span>
                 <span class="col-label">K</span>
             </div>
             @foreach([1, 2] as $row)
@@ -103,11 +103,11 @@
         <div class="seat-grid grid-business">
             <div class="grid-header-business">
                 <span class="col-label">A/C</span>
-                <span class="aisle-gap">🚶</span>
+                <span class="aisle-gap"></span>
                 <span class="col-label">D/E</span>
                 <span class="col-label row-label">Row</span>
                 <span class="col-label">G/F</span>
-                <span class="aisle-gap">🚶</span>
+                <span class="aisle-gap"></span>
                 <span class="col-label">K/H</span>
             </div>
             @php
@@ -246,11 +246,11 @@
         <div class="seat-grid grid-business">
             <div class="grid-header-business">
                 <span class="col-label">A/C</span>
-                <span class="aisle-gap">🚶</span>
+                <span class="aisle-gap"></span>
                 <span class="col-label">D/E</span>
                 <span class="col-label row-label">Row</span>
                 <span class="col-label">G/F</span>
-                <span class="aisle-gap">🚶</span>
+                <span class="aisle-gap"></span>
                 <span class="col-label">K/H</span>
             </div>
             @php

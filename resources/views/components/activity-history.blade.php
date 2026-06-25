@@ -27,7 +27,7 @@
                 <div class="activity-item" style="display: flex; gap: 1rem; position: relative; z-index: 1;">
                     {{-- Status Dot --}}
                     @php
-                        $dotColor = $log->action === 'delete' ? '#ef4444' : ($log->action === 'add' ? '#10b981' : '#3b82f6');
+                        $dotColor = $log->action === 'delete' ? 'var(--danger)' : ($log->action === 'add' ? 'var(--success)' : 'var(--primary)');
                     @endphp
                     <div style="width: 12px; height: 12px; border-radius: 50%; background: var(--bg-card); border: 2.5px solid {{ $dotColor }}; flex-shrink: 0; margin-top: 5px; box-shadow: 0 0 0 3px var(--bg-card);"></div>
 

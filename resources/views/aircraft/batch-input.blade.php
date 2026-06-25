@@ -16,7 +16,7 @@
             </a>
         </div>
 
-        <div style="background: rgba(59, 130, 246, 0.05); border: 1px solid rgba(59, 130, 246, 0.1); padding: 1.25rem 2rem; margin-bottom: 2.5rem; border-radius: var(--radius-lg); display: flex; align-items: flex-start; gap: 1rem;">
+        <div style="background: rgba(var(--primary-rgb), 0.05); border: 1px solid rgba(var(--primary-rgb), 0.1); padding: 1.25rem 2rem; margin-bottom: 2.5rem; border-radius: var(--radius-lg); display: flex; align-items: flex-start; gap: 1rem;">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" style="margin-top: 2px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
             <div>
                 <p style="color: var(--primary-light); font-weight: 700; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Quick Instructions:</p>
@@ -42,7 +42,7 @@
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 1.5rem;">
                         @foreach($section['columns'] as $col)
                             <div class="form-group-premium" style="margin-bottom: 0;">
-                                <label style="text-align: center; font-size: 0.9rem; background: rgba(59, 130, 246, 0.1); color: var(--primary-light); padding: 6px; border-radius: 6px; display: block; margin-bottom: 12px; border: 1px solid rgba(59, 130, 246, 0.15);">Column {{ $col }}</label>
+                                <label style="text-align: center; font-size: 0.9rem; background: var(--primary-glow); color: var(--primary-light); padding: 6px; border-radius: 6px; display: block; margin-bottom: 12px; border: 1px solid rgba(var(--primary-rgb), 0.15);">Column {{ $col }}</label>
                                 <textarea name="section_{{ $sectionIndex }}_col_{{ $col }}"
                                     id="section_{{ $sectionIndex }}_col_{{ $col }}" rows="{{ min(count($section['rows']), 15) }}"
                                     class="input-premium"

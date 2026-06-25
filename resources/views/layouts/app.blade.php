@@ -209,7 +209,7 @@
 
     <!-- Toast -->
     <div class="toast" id="toast">
-        <span class="toast-icon">✓</span>
+
         <span class="toast-message">Success!</span>
     </div>
 
@@ -388,21 +388,20 @@
         .swal2-variant-primary {
             background-color: var(--primary) !important;
             color: white !important;
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
+            box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.3) !important;
         }
         .swal2-variant-success {
             background-color: var(--success) !important;
             color: white !important;
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3) !important;
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3) !important;
         }
         .swal2-variant-danger {
             background-color: var(--danger) !important;
             color: white !important;
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3) !important;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3) !important;
         }
         
         .swal2-premium-confirm:hover {
-            transform: translateY(-2px) !important;
             filter: brightness(1.1) !important;
         }
         

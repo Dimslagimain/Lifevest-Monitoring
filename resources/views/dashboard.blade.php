@@ -368,15 +368,18 @@
         <!-- Header & Back Button Combined -->
         <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem;">
             @if ($isFullScreenView)
-                <a href="{{ route('dashboard') }}" id="dashboard-back-btn" class="view-back-btn" style="margin-bottom: 0; padding: 0.4rem 0.75rem; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.35rem; text-decoration: none;">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <a href="{{ route('dashboard') }}" id="dashboard-back-btn" class="view-back-btn"
+                    style="margin-bottom: 0; padding: 0.4rem 0.75rem; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.35rem; text-decoration: none;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
                         <polyline points="15 18 9 12 15 6"></polyline>
                     </svg>
                     <span>Back</span>
                 </a>
             @endif
 
-            <h1 id="dashboard-main-title" style="margin: 0; font-size: 1.6rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.02em;">
+            <h1 id="dashboard-main-title"
+                style="margin: 0; font-size: 1.6rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.02em;">
                 @if ($currentView === 'fleet-overview' || $currentView === 'all')
                     Fleet Overview
                 @elseif ($currentView === 'life-vest-summary')
@@ -410,9 +413,10 @@
                             {{ $totalStats['safe'] }}</div>
                         <div class="summary-label">Safe</div>
                         <div class="summary-desc">More than 6 months</div>
-                        <svg width="100" height="40" viewBox="0 0 100 40" style="position: absolute; right: 0.5rem; bottom: 0.5rem; overflow: visible; opacity: 0.9; filter: drop-shadow(0 2px 4px rgba(16,185,129,0.4));">
-                            <path d="M 0 32 C 20 30, 40 25, 60 12 C 75 4, 85 8, 100 2" stroke="var(--success)" fill="none"
-                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+                        <svg width="100" height="40" viewBox="0 0 100 40"
+                            style="position: absolute; right: 0.5rem; bottom: 0.5rem; overflow: visible; opacity: 0.9; filter: drop-shadow(0 2px 4px rgba(16,185,129,0.4));">
+                            <path d="M 0 32 C 20 30, 40 25, 60 12 C 75 4, 85 8, 100 2" stroke="var(--success)"
+                                fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
                     </div>
 
@@ -425,9 +429,10 @@
                             {{ $totalStats['warning'] }}</div>
                         <div class="summary-label">Warning</div>
                         <div class="summary-desc">3 - 6 months</div>
-                        <svg width="100" height="40" viewBox="0 0 100 40" style="position: absolute; right: 0.5rem; bottom: 0.5rem; overflow: visible; opacity: 0.9; filter: drop-shadow(0 2px 4px rgba(245,158,11,0.4));">
-                            <path d="M 0 15 C 20 5, 35 25, 55 10 C 75 0, 85 28, 100 32" stroke="var(--warning)" fill="none"
-                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+                        <svg width="100" height="40" viewBox="0 0 100 40"
+                            style="position: absolute; right: 0.5rem; bottom: 0.5rem; overflow: visible; opacity: 0.9; filter: drop-shadow(0 2px 4px rgba(245,158,11,0.4));">
+                            <path d="M 0 15 C 20 5, 35 25, 55 10 C 75 0, 85 28, 100 32" stroke="var(--warning)"
+                                fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
                     </div>
 
@@ -440,9 +445,10 @@
                             {{ $totalStats['critical'] }}</div>
                         <div class="summary-label">Critical</div>
                         <div class="summary-desc">Less than 3 months</div>
-                        <svg width="100" height="40" viewBox="0 0 100 40" style="position: absolute; right: 0.5rem; bottom: 0.5rem; overflow: visible; opacity: 0.9; filter: drop-shadow(0 2px 4px rgba(239,68,68,0.4));">
-                            <path d="M 0 8 C 25 5, 45 32, 70 28 C 80 26, 90 35, 100 38" stroke="var(--danger)" fill="none"
-                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+                        <svg width="100" height="40" viewBox="0 0 100 40"
+                            style="position: absolute; right: 0.5rem; bottom: 0.5rem; overflow: visible; opacity: 0.9; filter: drop-shadow(0 2px 4px rgba(239,68,68,0.4));">
+                            <path d="M 0 8 C 25 5, 45 32, 70 28 C 80 26, 90 35, 100 38" stroke="var(--danger)"
+                                fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
                     </div>
 
@@ -455,9 +461,10 @@
                             {{ $totalStats['expired'] }}</div>
                         <div class="summary-label">Expired</div>
                         <div class="summary-desc">Past due date</div>
-                        <svg width="100" height="40" viewBox="0 0 100 40" style="position: absolute; right: 0.5rem; bottom: 0.5rem; overflow: visible; opacity: 0.9; filter: drop-shadow(0 2px 4px rgba(168,85,247,0.4));">
-                            <path d="M 0 28 C 15 35, 30 10, 50 20 C 70 30, 85 8, 100 5" stroke="var(--expired)" fill="none"
-                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+                        <svg width="100" height="40" viewBox="0 0 100 40"
+                            style="position: absolute; right: 0.5rem; bottom: 0.5rem; overflow: visible; opacity: 0.9; filter: drop-shadow(0 2px 4px rgba(168,85,247,0.4));">
+                            <path d="M 0 28 C 15 35, 30 10, 50 20 C 70 30, 85 8, 100 5" stroke="var(--expired)"
+                                fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
                     </div>
                 </div>
@@ -672,7 +679,7 @@
                         @if ($criticalAircraft->isEmpty())
                             <div
                                 style="padding: 1.5rem 0.5rem; text-align: center; color: var(--success); font-size: 0.85rem; font-weight: 600;">
-                                ✨ All aircraft are fully safe!
+                                All aircraft are fully safe!
                             </div>
                         @else
                             <table class="widget-table">
@@ -812,7 +819,7 @@
                                     'color' => '#10b981',
                                     'bg' => 'rgba(16, 185, 129, 0.15)',
                                     'logo' => '/images/citilink.png',
-                                ]
+                                ],
                             ];
                             $meta = $fallbackMeta[$airlineNameLower] ?? null;
                         }
@@ -820,11 +827,14 @@
                     <div class="airline-header"
                         style="display: flex; align-items: center; margin-bottom: 1.25rem; padding: 1rem 1.15rem; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 12px; box-shadow: var(--shadow-sm); flex-wrap: wrap;">
                         <div>
-                            <h2 style="margin: 0; font-size: 1.4rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.02em; line-height: 1.2;">
+                            <h2
+                                style="margin: 0; font-size: 1.4rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.02em; line-height: 1.2;">
                                 {{ $airline['name'] }}</h2>
                             <span style="color: var(--text-muted); font-size: 0.85rem; font-weight: 500;">
-                                <strong style="color: var(--primary-light);">{{ $airline['code'] }}</strong> &middot; 
-                                <span class="airline-count" style="color: var(--text-primary); font-weight: 700;">{{ $airline['aircraft_count'] }}</span> aircraft in fleet
+                                <strong style="color: var(--primary-light);">{{ $airline['code'] }}</strong> &middot;
+                                <span class="airline-count"
+                                    style="color: var(--text-primary); font-weight: 700;">{{ $airline['aircraft_count'] }}</span>
+                                aircraft in fleet
                             </span>
                         </div>
                     </div>
@@ -833,21 +843,25 @@
                         <section class="fleet-section" style="margin-left: 0.5rem;">
                             <div class="fleet-type-header"
                                 style="display: flex; align-items: center; justify-content: space-between; padding: 0.65rem 1rem; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-subtle); border-radius: 8px; margin-bottom: 0.75rem; cursor: pointer; transition: all 0.2s; user-select: none;"
-                                onmouseover="this.style.background='rgba(255,255,255,0.04)'; this.style.borderColor='rgba(59, 130, 246, 0.35)';"
+                                onmouseover="this.style.background='rgba(255,255,255,0.04)'; this.style.borderColor='rgba(var(--primary-rgb), 0.35)';"
                                 onmouseout="this.style.background='rgba(255,255,255,0.02)'; this.style.borderColor='var(--border-subtle)';"
                                 onclick="const cards = this.nextElementSibling; const isHidden = cards.style.display==='none'; cards.style.display=isHidden?(document.body.classList.contains('list-view-active')?'flex':'grid'):'none'; this.querySelector('.collapse-arrow').style.transform=isHidden?'rotate(90deg)':'rotate(0deg)';">
                                 <div style="display: flex; align-items: center; gap: 0.65rem;">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.85;">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                        stroke="var(--primary)" stroke-width="2.5" stroke-linecap="round"
+                                        stroke-linejoin="round" style="opacity: 0.85;">
                                         <polygon points="12 2 2 22 12 17 22 22 12 2"></polygon>
                                     </svg>
                                     <span style="font-size: 0.9rem; font-weight: 700; color: var(--text-primary);">
                                         {{ $typeGroup['name'] }}
                                     </span>
-                                    <span style="font-size: 0.7rem; font-weight: 700; background: rgba(255,255,255,0.05); color: var(--text-muted); padding: 1px 6px; border-radius: 20px; border: 1px solid var(--border-subtle);">
+                                    <span
+                                        style="font-size: 0.7rem; font-weight: 700; background: rgba(255,255,255,0.05); color: var(--text-muted); padding: 1px 6px; border-radius: 20px; border: 1px solid var(--border-subtle);">
                                         {{ count($typeGroup['aircraft']) }} aircraft
                                     </span>
                                 </div>
-                                <span class="collapse-arrow" style="font-size: 0.75rem; color: var(--text-muted); transition: transform 0.2s; transform: rotate(0deg); display: inline-block;">▶</span>
+                                <span class="collapse-arrow"
+                                    style="font-size: 0.75rem; color: var(--text-muted); transition: transform 0.2s; transform: rotate(0deg); display: inline-block;">▶</span>
                             </div>
                             <div class="fleet-cards" style="display: none;">
                                 @foreach ($typeGroup['aircraft'] as $registration => $aircraft)
@@ -934,7 +948,7 @@
             <!-- Empty State (No Results Found) -->
             <div id="empty-state"
                 style="display: none; padding: 4rem 2rem; text-align: center; background: var(--bg-card); border: 2px dashed var(--border); border-radius: 12px; margin: 2rem 0;">
-                <div style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;">🔍</div>
+
                 <h3 style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin: 0 0 0.5rem;">Tidak Ada
                     Hasil Ditemukan</h3>
                 <p style="color: var(--text-muted); font-size: 1rem; max-width: 400px; margin: 0 auto 1.5rem;">Maaf, tidak
@@ -971,7 +985,9 @@
     @if (count($pnSummary) > 0 && $currentView === 'life-vest-summary')
         <section class="replacement-section animate-view" id="life-vest-summary-section" style="margin-top: 0.25rem;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                <h2 style="margin: 0; font-size: 1.5rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.02em;">Life Vest Replacement Summary</h2>
+                <h2
+                    style="margin: 0; font-size: 1.5rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.02em;">
+                    Life Vest Replacement Summary</h2>
             </div>
             <div class="replacement-grid">
                 @foreach ($pnSummary as $idx => $item)
@@ -990,14 +1006,19 @@
                             $boxShadow = '0 4px 16px rgba(245, 158, 11, 0.06), inset 0 0 10px rgba(245, 158, 11, 0.03)';
                         }
                     @endphp
-                    <div class="replacement-card" style="border: 1px solid {{ $borderColor }}; box-shadow: {{ $boxShadow }}; padding: 0.9rem; border-radius: 10px; background: var(--bg-card); transition: all 0.2s;">
+                    <div class="replacement-card"
+                        style="border: 1px solid {{ $borderColor }}; box-shadow: {{ $boxShadow }}; padding: 0.9rem; border-radius: 10px; background: var(--bg-card); transition: all 0.2s;">
                         <div class="replacement-header" style="margin-bottom: 0.65rem;">
                             <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-                                <span class="replacement-pn" style="font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 0.95rem; color: var(--text-primary);">{{ $item['pn'] }}</span>
-                                <span class="replacement-category {{ $item['category'] }}" style="margin-left: 0; font-size: 0.65rem; font-weight: 800;">{{ strtoupper($item['category']) }}</span>
+                                <span class="replacement-pn"
+                                    style="font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 0.95rem; color: var(--text-primary);">{{ $item['pn'] }}</span>
+                                <span class="replacement-category {{ $item['category'] }}"
+                                    style="margin-left: 0; font-size: 0.65rem; font-weight: 800;">{{ strtoupper($item['category']) }}</span>
                             </div>
                             <div class="replacement-counts">
-                                <span class="replacement-total" style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted);">{{ number_format($item['total']) }} total</span>
+                                <span class="replacement-total"
+                                    style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted);">{{ number_format($item['total']) }}
+                                    total</span>
                             </div>
                         </div>
 
@@ -1007,29 +1028,36 @@
                                 <span class="badge-btn badge-expired {{ $item['expired'] > 0 ? 'active' : '' }}"
                                     data-tab="expired" data-card="{{ $idx }}"
                                     style="background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.25); color: #c4b5fd; font-size: 0.75rem; font-weight: 700; padding: 2px 8px; border-radius: 12px; display: inline-flex; align-items: center; gap: 0.35rem;">
-                                    <span style="display:inline-block; width: 6px; height: 6px; border-radius: 50%; background: #a855f7; box-shadow: 0 0 6px #a855f7;"></span>
+                                    <span
+                                        style="display:inline-block; width: 6px; height: 6px; border-radius: 50%; background: #a855f7; box-shadow: 0 0 6px #a855f7;"></span>
                                     {{ $item['expired'] }} expired
                                 </span>
                             @endif
                             @if ($item['critical'] > 0)
-                                <span class="badge-btn badge-critical {{ $item['expired'] == 0 && $item['critical'] > 0 ? 'active' : '' }}"
+                                <span
+                                    class="badge-btn badge-critical {{ $item['expired'] == 0 && $item['critical'] > 0 ? 'active' : '' }}"
                                     data-tab="critical" data-card="{{ $idx }}"
                                     style="background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25); color: #f87171; font-size: 0.75rem; font-weight: 700; padding: 2px 8px; border-radius: 12px; display: inline-flex; align-items: center; gap: 0.35rem;">
-                                    <span style="display:inline-block; width: 6px; height: 6px; border-radius: 50%; background: #ef4444; box-shadow: 0 0 6px #ef4444;"></span>
+                                    <span
+                                        style="display:inline-block; width: 6px; height: 6px; border-radius: 50%; background: #ef4444; box-shadow: 0 0 6px #ef4444;"></span>
                                     {{ $item['critical'] }} critical
                                 </span>
                             @endif
                             @if ($item['warning'] > 0)
-                                <span class="badge-btn badge-warning {{ $item['expired'] == 0 && $item['critical'] == 0 && $item['warning'] > 0 ? 'active' : '' }}"
+                                <span
+                                    class="badge-btn badge-warning {{ $item['expired'] == 0 && $item['critical'] == 0 && $item['warning'] > 0 ? 'active' : '' }}"
                                     data-tab="warning" data-card="{{ $idx }}"
                                     style="background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.25); color: #fbbf24; font-size: 0.75rem; font-weight: 700; padding: 2px 8px; border-radius: 12px; display: inline-flex; align-items: center; gap: 0.35rem;">
-                                    <span style="display:inline-block; width: 6px; height: 6px; border-radius: 50%; background: #f59e0b; box-shadow: 0 0 6px #f59e0b;"></span>
+                                    <span
+                                        style="display:inline-block; width: 6px; height: 6px; border-radius: 50%; background: #f59e0b; box-shadow: 0 0 6px #f59e0b;"></span>
                                     {{ $item['warning'] }} warning
                                 </span>
                             @endif
                             @if (!$hasAttention)
-                                <span class="replacement-ok" style="background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.25); color: #34d399; font-size: 0.75rem; font-weight: 700; padding: 2px 8px; border-radius: 12px; display: inline-flex; align-items: center; gap: 0.35rem;">
-                                    <span style="display:inline-block; width: 6px; height: 6px; border-radius: 50%; background: #10b981; box-shadow: 0 0 6px #10b981;"></span>
+                                <span class="replacement-ok"
+                                    style="background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.25); color: #34d399; font-size: 0.75rem; font-weight: 700; padding: 2px 8px; border-radius: 12px; display: inline-flex; align-items: center; gap: 0.35rem;">
+                                    <span
+                                        style="display:inline-block; width: 6px; height: 6px; border-radius: 50%; background: #10b981; box-shadow: 0 0 6px #10b981;"></span>
                                     All Safe
                                 </span>
                             @endif
@@ -1041,7 +1069,8 @@
                                 style="{{ $item['expired'] > 0 ? '' : 'display:none' }}; margin-top: 0.4rem; padding-top: 0.5rem; border-top: 1px solid var(--border-subtle); gap: 0.35rem;">
                                 @foreach ($item['aircraft'] as $ac)
                                     @if ($ac['expired'] > 0)
-                                        <span class="breakdown-item bd-expired" style="background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.18); color: #c4b5fd; font-size: 0.75rem; padding: 2px 6px; border-radius: 6px; font-weight: 700;">
+                                        <span class="breakdown-item bd-expired"
+                                            style="background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.18); color: #c4b5fd; font-size: 0.75rem; padding: 2px 6px; border-radius: 6px; font-weight: 700;">
                                             {{ $ac['reg'] }}: {{ $ac['expired'] }}
                                         </span>
                                     @endif
@@ -1052,7 +1081,8 @@
                                 style="{{ $item['expired'] == 0 && $item['critical'] > 0 ? '' : 'display:none' }}; margin-top: 0.4rem; padding-top: 0.5rem; border-top: 1px solid var(--border-subtle); gap: 0.35rem;">
                                 @foreach ($item['aircraft'] as $ac)
                                     @if ($ac['critical'] > 0)
-                                        <span class="breakdown-item bd-critical" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.18); color: #f87171; font-size: 0.75rem; padding: 2px 6px; border-radius: 6px; font-weight: 700;">
+                                        <span class="breakdown-item bd-critical"
+                                            style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.18); color: #f87171; font-size: 0.75rem; padding: 2px 6px; border-radius: 6px; font-weight: 700;">
                                             {{ $ac['reg'] }}: {{ $ac['critical'] }}
                                         </span>
                                     @endif
@@ -1063,7 +1093,8 @@
                                 style="{{ $item['expired'] == 0 && $item['critical'] == 0 && $item['warning'] > 0 ? '' : 'display:none' }}; margin-top: 0.4rem; padding-top: 0.5rem; border-top: 1px solid var(--border-subtle); gap: 0.35rem;">
                                 @foreach ($item['aircraft'] as $ac)
                                     @if ($ac['warning'] > 0)
-                                        <span class="breakdown-item bd-warning" style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.18); color: #fbbf24; font-size: 0.75rem; padding: 2px 6px; border-radius: 6px; font-weight: 700;">
+                                        <span class="breakdown-item bd-warning"
+                                            style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.18); color: #fbbf24; font-size: 0.75rem; padding: 2px 6px; border-radius: 6px; font-weight: 700;">
                                             {{ $ac['reg'] }}: {{ $ac['warning'] }}
                                         </span>
                                     @endif
@@ -1108,8 +1139,9 @@
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.75rem;">
                     {{-- Total Action Required --}}
                     <div class="replacement-card"
-                        style="border: 1px solid rgba(59, 130, 246, 0.45); background: linear-gradient(180deg, rgba(59, 130, 246, 0.14) 0%, rgba(59, 130, 246, 0.02) 100%); box-shadow: inset 0 0 12px rgba(59, 130, 246, 0.08); text-align: center; padding: 1.15rem; border-radius: 10px;">
-                        <div style="font-size: 1.8rem; font-weight: 800; color: var(--primary);">
+                        style="border: 1px solid rgba(var(--primary-rgb), 0.45); background: linear-gradient(180deg, rgba(var(--primary-rgb), 0.14) 0%, rgba(var(--primary-rgb), 0.02) 100%); box-shadow: inset 0 0 12px rgba(var(--primary-rgb), 0.08); text-align: center; padding: 1.15rem; border-radius: 10px;">
+                        <div
+                            style="font-size: 1.8rem; font-weight: 800; color: var(--primary); font-family: 'JetBrains Mono', monospace;">
                             {{ $totalActionRequired }}</div>
                         <div
                             style="font-size: 0.72rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 0.25rem;">
@@ -1117,24 +1149,30 @@
                     </div>
                     {{-- Expired --}}
                     <div class="replacement-card"
-                        style="border: 1px solid rgba(139, 92, 246, 0.45); background: linear-gradient(180deg, rgba(139, 92, 246, 0.14) 0%, rgba(139, 92, 246, 0.02) 100%); box-shadow: inset 0 0 12px rgba(139, 92, 246, 0.08); text-align: center; padding: 1.15rem; border-radius: 10px;">
-                        <div style="font-size: 1.8rem; font-weight: 800; color: #c4b5fd;">{{ $totalExpired }}</div>
+                        style="border: 1px solid rgba(124, 58, 237, 0.45); background: linear-gradient(180deg, rgba(124, 58, 237, 0.14) 0%, rgba(124, 58, 237, 0.02) 100%); box-shadow: inset 0 0 12px rgba(124, 58, 237, 0.08); text-align: center; padding: 1.15rem; border-radius: 10px;">
+                        <div
+                            style="font-size: 1.8rem; font-weight: 800; color: #c4b5fd; font-family: 'JetBrains Mono', monospace;">
+                            {{ $totalExpired }}</div>
                         <div
                             style="font-size: 0.72rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 0.25rem;">
                             Expired</div>
                     </div>
                     {{-- Critical --}}
                     <div class="replacement-card"
-                        style="border: 1px solid rgba(239, 68, 68, 0.45); background: linear-gradient(180deg, rgba(239, 68, 68, 0.14) 0%, rgba(239, 68, 68, 0.02) 100%); box-shadow: inset 0 0 12px rgba(239, 68, 68, 0.08); text-align: center; padding: 1.15rem; border-radius: 10px;">
-                        <div style="font-size: 1.8rem; font-weight: 800; color: #f87171;">{{ $totalCritical }}</div>
+                        style="border: 1px solid rgba(220, 38, 38, 0.45); background: linear-gradient(180deg, rgba(220, 38, 38, 0.14) 0%, rgba(220, 38, 38, 0.02) 100%); box-shadow: inset 0 0 12px rgba(220, 38, 38, 0.08); text-align: center; padding: 1.15rem; border-radius: 10px;">
+                        <div
+                            style="font-size: 1.8rem; font-weight: 800; color: #f87171; font-family: 'JetBrains Mono', monospace;">
+                            {{ $totalCritical }}</div>
                         <div
                             style="font-size: 0.72rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 0.25rem;">
                             Critical</div>
                     </div>
                     {{-- Warning --}}
                     <div class="replacement-card"
-                        style="border: 1px solid rgba(245, 158, 11, 0.45); background: linear-gradient(180deg, rgba(245, 158, 11, 0.14) 0%, rgba(245, 158, 11, 0.02) 100%); box-shadow: inset 0 0 12px rgba(245, 158, 11, 0.08); text-align: center; padding: 1.15rem; border-radius: 10px;">
-                        <div style="font-size: 1.8rem; font-weight: 800; color: #fbbf24;">{{ $totalWarning }}</div>
+                        style="border: 1px solid rgba(217, 119, 6, 0.45); background: linear-gradient(180deg, rgba(217, 119, 6, 0.14) 0%, rgba(217, 119, 6, 0.02) 100%); box-shadow: inset 0 0 12px rgba(217, 119, 6, 0.08); text-align: center; padding: 1.15rem; border-radius: 10px;">
+                        <div
+                            style="font-size: 1.8rem; font-weight: 800; color: #fbbf24; font-family: 'JetBrains Mono', monospace;">
+                            {{ $totalWarning }}</div>
                         <div
                             style="font-size: 0.72rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 0.25rem;">
                             Warning</div>
@@ -1142,7 +1180,8 @@
                 </div>
 
                 {{-- Chart --}}
-                <div class="replacement-card" style="padding: 1.25rem; border-radius: 10px; border: 1px solid var(--border-subtle);">
+                <div class="replacement-card"
+                    style="padding: 1.25rem; border-radius: 10px; border: 1px solid var(--border-subtle);">
                     <div
                         style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
                         <h3
@@ -1170,10 +1209,14 @@
                 </div>
 
                 {{-- Data Table --}}
-                <div class="replacement-card" style="padding: 1.25rem; border-radius: 10px; border: 1px solid var(--border-subtle); overflow-x: auto;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem; flex-wrap: wrap; gap: 0.5rem;">
-                        <h3 style="margin: 0; font-size: 1.05rem; font-weight: 800; color: var(--text-primary);">Detailed Breakdown</h3>
-                        <a href="{{ route('reports.summary') }}" class="btn-premium btn-premium-success" style="padding: 0.4rem 0.85rem; font-size: 0.8rem; border-radius: 6px;">
+                <div class="replacement-card"
+                    style="padding: 1.25rem; border-radius: 10px; border: 1px solid var(--border-subtle); overflow-x: auto;">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem; flex-wrap: wrap; gap: 0.5rem;">
+                        <h3 style="margin: 0; font-size: 1.05rem; font-weight: 800; color: var(--text-primary);">Detailed
+                            Breakdown</h3>
+                        <a href="{{ route('reports.summary') }}" class="btn-premium btn-premium-success"
+                            style="padding: 0.4rem 0.85rem; font-size: 0.8rem; border-radius: 6px;">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                 stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
                                 style="margin-right: 4px;">
@@ -1190,10 +1233,14 @@
                                 <th class="fleet-th" style="padding: 0.5rem 0.75rem; font-size: 0.72rem;">#</th>
                                 <th class="fleet-th" style="padding: 0.5rem 0.75rem; font-size: 0.72rem;">Part Number</th>
                                 <th class="fleet-th" style="padding: 0.5rem 0.75rem; font-size: 0.72rem;">Category</th>
-                                <th class="fleet-th" style="padding: 0.5rem 0.75rem; font-size: 0.72rem; text-align: center;">Exp</th>
-                                <th class="fleet-th" style="padding: 0.5rem 0.75rem; font-size: 0.72rem; text-align: center;">Crit</th>
-                                <th class="fleet-th" style="padding: 0.5rem 0.75rem; font-size: 0.72rem; text-align: center;">Warn</th>
-                                <th class="fleet-th" style="padding: 0.5rem 0.75rem; font-size: 0.72rem; text-align: center;">Total</th>
+                                <th class="fleet-th"
+                                    style="padding: 0.5rem 0.75rem; font-size: 0.72rem; text-align: center;">Exp</th>
+                                <th class="fleet-th"
+                                    style="padding: 0.5rem 0.75rem; font-size: 0.72rem; text-align: center;">Crit</th>
+                                <th class="fleet-th"
+                                    style="padding: 0.5rem 0.75rem; font-size: 0.72rem; text-align: center;">Warn</th>
+                                <th class="fleet-th"
+                                    style="padding: 0.5rem 0.75rem; font-size: 0.72rem; text-align: center;">Total</th>
                                 <th class="fleet-th" style="padding: 0.5rem 0.75rem; font-size: 0.72rem;">Affected</th>
                             </tr>
                         </thead>
@@ -1226,12 +1273,14 @@
             @if ($isPlanVisible)
                 @if (count($plan) > 0)
                     <section class="replacement-section replacement-interval-section animate-view"
-                        data-interval="{{ $interval }}" id="replacement-{{ $interval }}-plan" style="margin-top: 0.25rem;">
+                        data-interval="{{ $interval }}" id="replacement-{{ $interval }}-plan"
+                        style="margin-top: 0.25rem;">
                         <div
                             style="display: flex; justify-content: flex-end; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.85rem;">
                             <div style="display: flex; gap: 0.75rem; align-items: center;">
                                 <a href="{{ route('reports.excel') }}" class="btn-premium btn-premium-success"
-                                    title="Download Excel Report" style="padding: 0.4rem 0.85rem; font-size: 0.8rem; border-radius: 6px;">
+                                    title="Download Excel Report"
+                                    style="padding: 0.4rem 0.85rem; font-size: 0.8rem; border-radius: 6px;">
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
                                         stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
                                         stroke-linejoin="round" style="margin-right: 4px;">
@@ -1243,7 +1292,8 @@
                                 </a>
                                 <button type="button" class="btn-premium" id="toggleAllPlanBtn-{{ $interval }}"
                                     onclick="toggleAllPlan('{{ $interval }}')"
-                                    style="cursor: pointer; padding: 0.4rem 0.85rem; font-size: 0.8rem; border-radius: 8px;">Expand All</button>
+                                    style="cursor: pointer; padding: 0.4rem 0.85rem; font-size: 0.8rem; border-radius: 8px;">Expand
+                                    All</button>
                             </div>
                         </div>
 
@@ -1253,17 +1303,28 @@
                             $overdueTotal = isset($plan['overdue']) ? $plan['overdue']['total'] : 0;
                         @endphp
                         <div class="monthly-grand-summary" style="margin: 0 0 1.25rem 0; gap: 0.75rem;">
-                            <div class="monthly-grand-item" style="border: 1px solid rgba(59, 130, 246, 0.45); background: linear-gradient(180deg, rgba(59, 130, 246, 0.14) 0%, rgba(59, 130, 246, 0.02) 100%); box-shadow: inset 0 0 12px rgba(59, 130, 246, 0.08); padding: 0.9rem; border-radius: 10px; flex: 1;">
-                                <span class="monthly-grand-value" style="font-size: 1.8rem; font-weight: 800; color: var(--primary);">{{ $grandTotal }}</span>
-                                <span class="monthly-grand-label" style="font-size: 0.72rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 0.25rem;">Total Life Vests</span>
+                            <div class="monthly-grand-item"
+                                style="border: 1px solid rgba(var(--primary-rgb), 0.45); background: linear-gradient(180deg, rgba(var(--primary-rgb), 0.14) 0%, rgba(var(--primary-rgb), 0.02) 100%); box-shadow: inset 0 0 12px rgba(var(--primary-rgb), 0.08); padding: 0.9rem; border-radius: 10px; flex: 1;">
+                                <span class="monthly-grand-value"
+                                    style="font-size: 1.8rem; font-weight: 800; color: var(--primary); font-family: 'JetBrains Mono', monospace;">{{ $grandTotal }}</span>
+                                <span class="monthly-grand-label"
+                                    style="font-size: 0.72rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 0.25rem;">Total
+                                    Life Vests</span>
                             </div>
-                            <div class="monthly-grand-item overdue" style="border: 1px solid rgba(139, 92, 246, 0.45); background: linear-gradient(180deg, rgba(139, 92, 246, 0.14) 0%, rgba(139, 92, 246, 0.02) 100%); box-shadow: inset 0 0 12px rgba(139, 92, 246, 0.08); padding: 0.9rem; border-radius: 10px; flex: 1;">
-                                <span class="monthly-grand-value" style="font-size: 1.8rem; font-weight: 800; color: #c4b5fd;">{{ $overdueTotal }}</span>
-                                <span class="monthly-grand-label" style="font-size: 0.72rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 0.25rem;">Overdue</span>
+                            <div class="monthly-grand-item overdue"
+                                style="border: 1px solid rgba(124, 58, 237, 0.45); background: linear-gradient(180deg, rgba(124, 58, 237, 0.14) 0%, rgba(124, 58, 237, 0.02) 100%); box-shadow: inset 0 0 12px rgba(124, 58, 237, 0.08); padding: 0.9rem; border-radius: 10px; flex: 1;">
+                                <span class="monthly-grand-value"
+                                    style="font-size: 1.8rem; font-weight: 800; color: #c4b5fd; font-family: 'JetBrains Mono', monospace;">{{ $overdueTotal }}</span>
+                                <span class="monthly-grand-label"
+                                    style="font-size: 0.72rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 0.25rem;">Overdue</span>
                             </div>
-                            <div class="monthly-grand-item" style="border: 1px solid rgba(16, 185, 129, 0.45); background: linear-gradient(180deg, rgba(16, 185, 129, 0.14) 0%, rgba(16, 185, 129, 0.02) 100%); box-shadow: inset 0 0 12px rgba(16, 185, 129, 0.08); padding: 0.9rem; border-radius: 10px; flex: 1;">
-                                <span class="monthly-grand-value" style="font-size: 1.8rem; font-weight: 800; color: #34d399;">{{ count($plan) - (isset($plan['overdue']) ? 1 : 0) }}</span>
-                                <span class="monthly-grand-label" style="font-size: 0.72rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 0.25rem;">Periods Scheduled</span>
+                            <div class="monthly-grand-item"
+                                style="border: 1px solid rgba(5, 150, 105, 0.45); background: linear-gradient(180deg, rgba(5, 150, 105, 0.14) 0%, rgba(5, 150, 105, 0.02) 100%); box-shadow: inset 0 0 12px rgba(5, 150, 105, 0.08); padding: 0.9rem; border-radius: 10px; flex: 1;">
+                                <span class="monthly-grand-value"
+                                    style="font-size: 1.8rem; font-weight: 800; color: #34d399; font-family: 'JetBrains Mono', monospace;">{{ count($plan) - (isset($plan['overdue']) ? 1 : 0) }}</span>
+                                <span class="monthly-grand-label"
+                                    style="font-size: 0.72rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 0.25rem;">Periods
+                                    Scheduled</span>
                             </div>
                         </div>
 
@@ -1451,12 +1512,6 @@
             critical: 'Critical',
             expired: 'Expired'
         };
-        const statusEmojis = {
-            safe: '🟢',
-            warning: '🟡',
-            critical: '🔴',
-            expired: '🟣'
-        };
         const statusColors = {
             safe: 'var(--success)',
             warning: 'var(--warning)',
@@ -1474,7 +1529,7 @@
             const body = document.getElementById('seatModalBody');
 
             title.innerHTML =
-                `${statusEmojis[status] || ''} ${registration} — <span style="color: ${statusColors[status]}">${statusLabels[status] || status}</span>`;
+                `${registration} — <span style="color: ${statusColors[status]}">${statusLabels[status] || status}</span>`;
             subtitle.textContent = 'Memuat data...';
             body.innerHTML = `
                 <div style="display: flex; align-items: center; justify-content: center; padding: 3rem; gap: 0.75rem;">
@@ -2219,24 +2274,24 @@
                         datasets: [{
                                 label: 'Expired',
                                 data: data.map(d => d.expired),
-                                backgroundColor: 'rgba(139, 92, 246, 0.8)',
-                                borderColor: 'rgba(139, 92, 246, 1)',
+                                backgroundColor: 'rgba(124, 58, 237, 0.85)',
+                                borderColor: 'rgba(124, 58, 237, 1)',
                                 borderWidth: 1,
                                 borderRadius: 4,
                             },
                             {
                                 label: 'Critical',
                                 data: data.map(d => d.critical),
-                                backgroundColor: 'rgba(239, 68, 68, 0.8)',
-                                borderColor: 'rgba(239, 68, 68, 1)',
+                                backgroundColor: 'rgba(220, 38, 38, 0.85)',
+                                borderColor: 'rgba(220, 38, 38, 1)',
                                 borderWidth: 1,
                                 borderRadius: 4,
                             },
                             {
                                 label: 'Warning',
                                 data: data.map(d => d.warning),
-                                backgroundColor: 'rgba(245, 158, 11, 0.8)',
-                                borderColor: 'rgba(245, 158, 11, 1)',
+                                backgroundColor: 'rgba(217, 119, 6, 0.85)',
+                                borderColor: 'rgba(217, 119, 6, 1)',
                                 borderWidth: 1,
                                 borderRadius: 4,
                             }
@@ -2336,19 +2391,17 @@
                         8) + ' more' : '';
 
                     html += `<tr>
-                        <td class="fleet-td" style="font-weight: 600; color: var(--text-secondary);">${idx + 1}</td>
+                        <td class="fleet-td" style="font-weight: 600; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">${idx + 1}</td>
                         <td class="fleet-td" style="font-weight: 700; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem;">${item.pn}</td>
                         <td class="fleet-td">
-                            <span style="font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; text-transform: uppercase; letter-spacing: 0.5px;
-                                background: ${item.category === 'adult' ? (dark ? 'rgba(96,165,250,0.2)' : 'rgba(37,99,235,0.15)') : item.category === 'crew' ? (dark ? 'rgba(251,191,36,0.2)' : 'rgba(217,119,6,0.15)') : (dark ? 'rgba(244,114,182,0.2)' : 'rgba(219,39,119,0.15)')};
-                                color: ${item.category === 'adult' ? (dark ? '#60a5fa' : '#2563eb') : item.category === 'crew' ? (dark ? '#fbbf24' : '#d97706') : (dark ? '#f472b6' : '#db2777')};">
+                            <span class="replacement-category ${item.category}" style="margin-left: 0; font-size: 0.7rem;">
                                 ${item.category}
                             </span>
                         </td>
-                        <td class="fleet-td" style="text-align: center; font-weight: 700; color: ${item.expired > 0 ? '#c4b5fd' : 'var(--text-muted)'};">${item.expired}</td>
-                        <td class="fleet-td" style="text-align: center; font-weight: 700; color: ${item.critical > 0 ? '#f87171' : 'var(--text-muted)'};">${item.critical}</td>
-                        <td class="fleet-td" style="text-align: center; font-weight: 700; color: ${item.warning > 0 ? '#fbbf24' : 'var(--text-muted)'};">${item.warning}</td>
-                        <td class="fleet-td" style="text-align: center; font-weight: 800; font-size: 1.05rem; color: var(--primary);">${totalAction}</td>
+                        <td class="fleet-td" style="text-align: center; font-weight: 700; font-family: 'JetBrains Mono', monospace; color: ${item.expired > 0 ? (dark ? '#a78bfa' : '#7c3aed') : 'var(--text-muted)'};">${item.expired}</td>
+                        <td class="fleet-td" style="text-align: center; font-weight: 700; font-family: 'JetBrains Mono', monospace; color: ${item.critical > 0 ? (dark ? '#f87171' : '#dc2626') : 'var(--text-muted)'};">${item.critical}</td>
+                        <td class="fleet-td" style="text-align: center; font-weight: 700; font-family: 'JetBrains Mono', monospace; color: ${item.warning > 0 ? (dark ? '#fbbf24' : '#d97706') : 'var(--text-muted)'};">${item.warning}</td>
+                        <td class="fleet-td" style="text-align: center; font-weight: 800; font-size: 1.05rem; font-family: 'JetBrains Mono', monospace; color: var(--primary);">${totalAction}</td>
                         <td class="fleet-td" style="font-size: 0.8rem; color: var(--text-secondary); max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${aircraftList}${moreCount}</td>
                     </tr>`;
                 });

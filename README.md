@@ -123,7 +123,7 @@ lifevest-laravel/
 
 ## Legenda Status (Arti Warna)
 
-Di bawah ini adalah status masa berlaku pelampung beserta representasi warna pada antarmuka sistem:
+Di bawah ini adalah status masa berlaku pelampung beserta representasi warna pada antarmuka sistem (dengan border dan kontras tinggi untuk kejelasan):
 
 *   **Hijau (Safe / Aman)**: Masa berlaku pelampung > 6 bulan dari sekarang.
 *   **Kuning (Warning / Peringatan)**: Masa berlaku tersisa 3 sampai 6 bulan.

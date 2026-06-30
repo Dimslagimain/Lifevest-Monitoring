@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\ActivityLog;
 use App\Models\Aircraft;
 use App\Models\Seat;
+use App\Http\Requests\DeleteSeatRequest;
+use App\Http\Requests\StoreBatchInputRequest;
+use App\Http\Requests\UpdateSeatsRequest;
 use App\Models\User;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class AircraftController extends Controller
@@ -138,14 +140,9 @@ class AircraftController extends Controller
     /**
      * Update seat expiry dates
      */
-    public function updateSeats(Request $request, string $registration)
+    public function updateSeats(UpdateSeatsRequest $request, string $registration)
     {
         try {
-            $request->validate([
-                'seat_ids' => 'required|array',
-                'seat_ids.*' => 'required|string',
-                'expiry_date' => 'required|date',
-            ]);
 
             $seatIds = $request->input('seat_ids');
             $expiryDate = $request->input('expiry_date');
@@ -255,11 +252,8 @@ class AircraftController extends Controller
     /**
      * Delete a spare seat (PAX/INF)
      */
-    public function deleteSeat(Request $request, string $registration)
+    public function deleteSeat(DeleteSeatRequest $request, string $registration)
     {
-        $request->validate([
-            'seat_id' => 'required|string',
-        ]);
 
         $seatId = $request->input('seat_id');
 
@@ -327,7 +321,7 @@ class AircraftController extends Controller
     /**
      * Store Batch Input Data - Sectioned
      */
-    public function storeBatchInput(Request $request, string $registration)
+    public function storeBatchInput(StoreBatchInputRequest $request, string $registration)
     {
         $aircraft = Aircraft::where('registration', $registration)->firstOrFail();
         $layout = $aircraft->layout ?? 'b737-e46';

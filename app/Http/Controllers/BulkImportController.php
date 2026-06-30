@@ -6,10 +6,10 @@ use App\Exports\BulkImportTemplateExport;
 use App\Imports\AircraftImport;
 use App\Imports\SeatImport;
 use App\Imports\UserImport;
+use App\Http\Requests\ImportRequest;
 use App\Models\ActivityLog;
 use App\Models\Aircraft;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
@@ -27,12 +27,8 @@ class BulkImportController extends Controller
     /**
      * Proses unggah & import file Excel
      */
-    public function import(Request $request)
+    public function import(ImportRequest $request)
     {
-        $request->validate([
-            'import_type' => 'required|in:aircraft,seat,user',
-            'file' => 'required|mimes:xlsx,csv,xls|max:10240', // max 10MB
-        ]);
 
         try {
             $type = $request->import_type;

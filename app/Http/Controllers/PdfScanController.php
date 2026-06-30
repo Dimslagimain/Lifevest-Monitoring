@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exports\PdfScanExport;
+use App\Http\Requests\ScanRequest;
 use App\Models\Aircraft;
 use App\Services\PdfParserService;
 use App\Services\VerificationService;
@@ -42,13 +43,8 @@ class PdfScanController extends Controller
         return redirect()->route('superadmin.pdf-scan');
     }
 
-    public function scan(Request $request)
+    public function scan(ScanRequest $request)
     {
-        // First validate that a file is uploaded and size is acceptable.
-        // We relax the 'mimes' rule here because corrupted files often lose their correct mime-type detection.
-        $request->validate([
-            'file' => 'required|file|max:20480',
-        ]);
 
         $file = $request->file('file');
 

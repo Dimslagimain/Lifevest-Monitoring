@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreAircraftRequest;
+use App\Http\Requests\UpdateAircraftRequest;
+use App\Http\Requests\StoreAirlineRequest;
+use App\Http\Requests\UpdateAirlineRequest;
 use App\Models\ActivityLog;
 use App\Models\Aircraft;
 use App\Models\Airline;
@@ -61,15 +65,8 @@ class FleetController extends Controller
     /**
      * Store a newly created aircraft in storage.
      */
-    public function store(Request $request)
+    public function store(StoreAircraftRequest $request)
     {
-        $request->validate([
-            'registration' => 'required|unique:aircraft,registration',
-            'airline_id' => 'required|exists:airlines,id',
-            'type' => 'required',
-            'layout' => 'required',
-            'status' => 'required|in:active,prolong',
-        ]);
 
         // Force Uppercase
         $data = $request->all();
@@ -96,13 +93,8 @@ class FleetController extends Controller
     /**
      * Update the specified aircraft in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateAircraftRequest $request, string $id)
     {
-        $request->validate([
-            'airline_id' => 'required|exists:airlines,id',
-            'type' => 'required',
-            'status' => 'required|in:active,prolong',
-        ]);
 
         $aircraft = Aircraft::findOrFail($id);
         $oldPn = [
@@ -161,12 +153,8 @@ class FleetController extends Controller
     /**
      * Store a newly created airline in storage.
      */
-    public function storeAirline(Request $request)
+    public function storeAirline(StoreAirlineRequest $request)
     {
-        $request->validate([
-            'name' => 'required|unique:airlines,name',
-            'code' => 'nullable|max:10',
-        ]);
 
         $data = $request->all();
         $data['code'] = strtoupper($request->code ?? '');
@@ -189,12 +177,8 @@ class FleetController extends Controller
     /**
      * Update the specified airline in storage.
      */
-    public function updateAirline(Request $request, string $id)
+    public function updateAirline(UpdateAirlineRequest $request, string $id)
     {
-        $request->validate([
-            'name' => 'required|unique:airlines,name,'.$id,
-            'code' => 'nullable|max:10',
-        ]);
 
         $airline = Airline::findOrFail($id);
 

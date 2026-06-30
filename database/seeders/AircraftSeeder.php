@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Aircraft;
+use Illuminate\Database\Seeder;
 
 class AircraftSeeder extends Seeder
 {
@@ -196,9 +196,9 @@ class AircraftSeeder extends Seeder
                 $data['pn_adult'] = 'P01074-221W';
                 $data['pn_crew'] = ($i % 10 == 0) ? 'P01074-205WC' : 'P01074-201WC';
             }
-            
+
             $data['pn_infant'] = 'P0640-101';
-            
+
             // Set Icon
             if (str_contains($data['type'], '737') || str_contains($data['type'], '320')) {
                 $data['icon'] = '✈️';

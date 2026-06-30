@@ -13,7 +13,7 @@ class AdminPermissionTest extends TestCase
     public function test_superadmin_has_admin_privileges()
     {
         $user = User::factory()->create(['role' => 'superadmin']);
-        
+
         $this->assertTrue($user->isAdmin());
         $this->assertTrue($user->isSuperAdmin());
     }
@@ -21,7 +21,7 @@ class AdminPermissionTest extends TestCase
     public function test_admin_has_admin_privileges_but_not_superadmin()
     {
         $user = User::factory()->create(['role' => 'admin']);
-        
+
         $this->assertTrue($user->isAdmin());
         $this->assertFalse($user->isSuperAdmin());
     }
@@ -29,7 +29,7 @@ class AdminPermissionTest extends TestCase
     public function test_regular_user_has_no_admin_privileges()
     {
         $user = User::factory()->create(['role' => 'user']);
-        
+
         $this->assertFalse($user->isAdmin());
         $this->assertFalse($user->isSuperAdmin());
     }
@@ -38,15 +38,15 @@ class AdminPermissionTest extends TestCase
     {
         $user = User::factory()->create(['role' => 'admin']);
         $registration = 'PK-TNP';
-        
+
         // Mock aircraft and seat if necessary, but at least check middleware
         $response = $this->actingAs($user)
             ->post("/aircraft/{$registration}/update-seats", [
                 'seat_ids' => ['1A'],
-                'expiry_date' => '2030-01-01'
+                'expiry_date' => '2030-01-01',
             ]);
-            
-        // If it's 302/403, it means middleware blocked it. 
+
+        // If it's 302/403, it means middleware blocked it.
         // If it's something else (like 404 because PK-TNP doesn't exist), it means it passed middleware.
         $this->assertNotEquals(403, $response->status());
     }

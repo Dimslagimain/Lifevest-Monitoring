@@ -40,7 +40,7 @@ class Aircraft extends Model
             $layout = strtoupper($aircraft->layout);
 
             // Logic Icon
-            if (str_contains($layout, 'CARGO') || str_contains($type, 'F') && !str_contains($type, '737')) {
+            if (str_contains($layout, 'CARGO') || str_contains($type, 'F') && ! str_contains($type, '737')) {
                 $aircraft->icon = '📦'; // Cargo
             } elseif (str_starts_with($type, 'A')) {
                 $aircraft->icon = '🛩️'; // Airbus (Start with A...)
@@ -53,7 +53,7 @@ class Aircraft extends Model
 
         // 2. Cascade Delete Seats
         static::deleting(function ($aircraft) {
-            \App\Models\Seat::where('registration', $aircraft->registration)->delete();
+            Seat::where('registration', $aircraft->registration)->delete();
         });
     }
 }

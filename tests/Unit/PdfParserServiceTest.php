@@ -2,9 +2,10 @@
 
 namespace Tests\Unit;
 
-use Tests\TestCase;
 use App\Services\PdfParserService;
+use Illuminate\Support\Facades\Http;
 use ReflectionClass;
+use Tests\TestCase;
 
 class PdfParserServiceTest extends TestCase
 {
@@ -13,7 +14,7 @@ class PdfParserServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new PdfParserService();
+        $this->service = new PdfParserService;
     }
 
     /**
@@ -24,6 +25,7 @@ class PdfParserServiceTest extends TestCase
         $reflection = new ReflectionClass(PdfParserService::class);
         $method = $reflection->getMethod($name);
         $method->setAccessible(true);
+
         return $method->invokeArgs($this->service, $arguments);
     }
 
@@ -36,7 +38,7 @@ class PdfParserServiceTest extends TestCase
         $this->assertStringNotContainsString('//', $cleaned);
         // Trailing comma before closing brace should be cleaned
         $this->assertStringNotContainsString(',}', $cleaned);
-        
+
         $decoded = json_decode($cleaned, true);
         $this->assertEquals(['key' => 'value'], $decoded);
     }
@@ -62,8 +64,8 @@ class PdfParserServiceTest extends TestCase
             'aircraft_type' => 'B777',
             'seats' => [
                 ['seat_id' => '1A', 'expiry_date' => '2030-01-01'],
-                ['seat_id' => '2B']
-            ]
+                ['seat_id' => '2B'],
+            ],
         ];
 
         $normalized1 = $this->invokeMethod('normalizeResult', [$data1]);
@@ -80,8 +82,8 @@ class PdfParserServiceTest extends TestCase
             'aircraft_type' => 'B777',
             'seats' => [
                 ['1A', '2030-01-01'],
-                ['2B', '']
-            ]
+                ['2B', ''],
+            ],
         ];
         $normalized2 = $this->invokeMethod('normalizeResult', [$data2]);
         $this->assertEquals('1A', $normalized2['seats'][0]['seat_id']);
@@ -94,7 +96,7 @@ class PdfParserServiceTest extends TestCase
         $extracted1 = $this->invokeMethod('extractJson', [$content1]);
         $this->assertEquals('PK-ABC', $extracted1['registration']);
 
-        $content2 = "Raw json start {\"registration\":\"PK-XYZ\",\"seats\":[]} and some other info";
+        $content2 = 'Raw json start {"registration":"PK-XYZ","seats":[]} and some other info';
         $extracted2 = $this->invokeMethod('extractJson', [$content2]);
         $this->assertEquals('PK-XYZ', $extracted2['registration']);
     }
@@ -102,8 +104,8 @@ class PdfParserServiceTest extends TestCase
     public function test_refine_with_gpt5_success()
     {
         // Mock Flaz.id API response
-        \Illuminate\Support\Facades\Http::fake([
-            'https://ai.flaz.id/v1/chat/completions' => \Illuminate\Support\Facades\Http::response([
+        Http::fake([
+            'https://ai.flaz.id/v1/chat/completions' => Http::response([
                 'choices' => [
                     [
                         'message' => [
@@ -113,12 +115,12 @@ class PdfParserServiceTest extends TestCase
                                 'seats' => [
                                     ['seat_id' => '1A', 'expiry_date' => '05 JAN 2035'], // corrected date
                                     ['seat_id' => '1B', 'expiry_date' => '20 JAN 2030'], // unchanged
-                                ]
-                            ])
-                        ]
-                    ]
-                ]
-            ], 200)
+                                ],
+                            ]),
+                        ],
+                    ],
+                ],
+            ], 200),
         ]);
 
         $stage1Result = [
@@ -127,7 +129,7 @@ class PdfParserServiceTest extends TestCase
             'seats' => [
                 ['seat_id' => '1A', 'expiry_date' => '05 JAN 2025?'], // uncertain date
                 ['seat_id' => '1B', 'expiry_date' => '20 JAN 2030'],
-            ]
+            ],
         ];
 
         // Create temporary image path for mock test
@@ -138,7 +140,7 @@ class PdfParserServiceTest extends TestCase
             $stage1Result,
             [$tempFile],
             'mock-api-key',
-            'gpt-5'
+            'gpt-5',
         ]);
 
         @unlink($tempFile);
@@ -152,8 +154,8 @@ class PdfParserServiceTest extends TestCase
 
     public function test_refine_with_gpt5_api_failure_throws_exception()
     {
-        \Illuminate\Support\Facades\Http::fake([
-            'https://ai.flaz.id/v1/chat/completions' => \Illuminate\Support\Facades\Http::response('API Error', 500)
+        Http::fake([
+            'https://ai.flaz.id/v1/chat/completions' => Http::response('API Error', 500),
         ]);
 
         $stage1Result = [
@@ -161,20 +163,20 @@ class PdfParserServiceTest extends TestCase
             'aircraft_type' => 'B777',
             'seats' => [
                 ['seat_id' => '1A', 'expiry_date' => '05 JAN 2025?'],
-            ]
+            ],
         ];
 
         $tempFile = tempnam(sys_get_temp_dir(), 'test_img');
         imagepng(imagecreatetruecolor(10, 10), $tempFile);
 
         $this->expectException(\Exception::class);
-        
+
         try {
             $this->invokeMethod('refineWithGPT5', [
                 $stage1Result,
                 [$tempFile],
                 'mock-api-key',
-                'gpt-5'
+                'gpt-5',
             ]);
         } finally {
             @unlink($tempFile);

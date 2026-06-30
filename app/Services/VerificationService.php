@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Aircraft;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -9,48 +10,51 @@ use Illuminate\Support\Facades\Log;
 class VerificationService
 {
     protected ?string $flazKey;
+
     protected ?string $flazModel;
+
     protected array $imageData; // base64-encoded images for AI validation
+
     protected float $confidenceThreshold; // min confidence for auto-accept (0.85 = 85%)
 
     public function __construct(float $confidenceThreshold = 0.85)
     {
-        $this->flazKey  = env('FLAZ_API_KEY');
+        $this->flazKey = env('FLAZ_API_KEY');
         $this->flazModel = env('FLAZ_MODEL', 'claude-sonnet-4-6');
         $this->confidenceThreshold = $confidenceThreshold;
     }
 
     /**
      * Verify and correct extracted data from PDF
-     * 
-     * @param array $extractedData {registration, aircraft_type, seats: [[seat_id, expiry_date], ...]}
-     * @param array|string|null $imagePaths Original image paths for AI validation (optional)
+     *
+     * @param  array  $extractedData  {registration, aircraft_type, seats: [[seat_id, expiry_date], ...]}
+     * @param  array|string|null  $imagePaths  Original image paths for AI validation (optional)
      * @return array Enhanced data with confidence scores + correction flags
-     *              {
-     *                 registration, 
-     *                 aircraft_type,
-     *                 seats: [
-     *                    {
-     *                       seat_id, 
-     *                       expiry_date,
-     *                       original_value,
-     *                       confidence (0-1),
-     *                       was_corrected (bool),
-     *                       correction_type (typo|date_format|digit_confusion|ai_validation|none),
-     *                       issue_detected (null|string),
-     *                       suggestion (null|string)
-     *                    },
-     *                    ...
-     *                 ],
-     *                 summary: {auto_accepted, flagged, needs_review}
-     *              }
+     *               {
+     *               registration,
+     *               aircraft_type,
+     *               seats: [
+     *               {
+     *               seat_id,
+     *               expiry_date,
+     *               original_value,
+     *               confidence (0-1),
+     *               was_corrected (bool),
+     *               correction_type (typo|date_format|digit_confusion|ai_validation|none),
+     *               issue_detected (null|string),
+     *               suggestion (null|string)
+     *               },
+     *               ...
+     *               ],
+     *               summary: {auto_accepted, flagged, needs_review}
+     *               }
      */
     public function verify(array $extractedData, array|string|null $imagePaths = null): array
     {
         Log::info('[Verification] Starting verification process', [
             'registration' => $extractedData['registration'] ?? 'PENDING',
             'total_seats' => count($extractedData['seats'] ?? []),
-            'has_images' => !empty($imagePaths),
+            'has_images' => ! empty($imagePaths),
         ]);
 
         // Step 1: Apply registration-specific row validation (per-aircraft layout)
@@ -64,7 +68,7 @@ class VerificationService
         $verifiedSeats = $this->applyRuleBasedCorrections($extractedData['seats'] ?? []);
 
         // Step 3: Apply AI validation if images provided
-        if (!empty($imagePaths) && !empty($this->flazKey)) {
+        if (! empty($imagePaths) && ! empty($this->flazKey)) {
             try {
                 $this->imageData = $this->prepareImageData($imagePaths);
                 $aiValidation = $this->applyAiValidation($extractedData, $verifiedSeats);
@@ -73,7 +77,9 @@ class VerificationService
                 //   accept the suggested_correction as new expiry_date and mark was_corrected.
                 // - Otherwise attach AI fields (confidence, issue, image_value) for review.
                 foreach ($verifiedSeats as $idx => $seat) {
-                    if (!isset($aiValidation[$idx])) continue;
+                    if (! isset($aiValidation[$idx])) {
+                        continue;
+                    }
                     $aiData = $aiValidation[$idx];
 
                     // Attach AI metadata
@@ -86,10 +92,10 @@ class VerificationService
 
                     // If AI found a mismatch and suggested a correction
                     $suggestion = $aiData['suggested_correction'] ?? null;
-                    $match = isset($aiData['match']) ? (bool)$aiData['match'] : null;
+                    $match = isset($aiData['match']) ? (bool) $aiData['match'] : null;
                     $conf = $aiData['confidence'] ?? ($verifiedSeats[$idx]['confidence'] ?? 0);
 
-                    if ($match === false && !empty($suggestion) && $conf >= $this->confidenceThreshold) {
+                    if ($match === false && ! empty($suggestion) && $conf >= $this->confidenceThreshold) {
                         // AI confident about a correction → auto-fix
                         $verifiedSeats[$idx]['expiry_date'] = $suggestion;
                         $verifiedSeats[$idx]['was_corrected'] = true;
@@ -120,7 +126,7 @@ class VerificationService
                 }
             } catch (\Exception $e) {
                 Log::warning('[Verification] AI validation failed, continuing with rule-based only', [
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ]);
                 // Continue without AI validation - rule-based is still applied
             }
@@ -140,18 +146,18 @@ class VerificationService
 
     /**
      * Validate and correct row numbers based on aircraft layout from database
-     * 
+     *
      * For each registration (aircraft), lookup the configured layout and validate
      * that seat rows match the expected range for that layout.
-     * 
+     *
      * Example:
      * - PK-GHE (layout: a330-900a): Business 6-11, Economy 21-58
      * - PK-GHH (layout: a330-900b): Economy only 21-58 (no business, so min row is 21)
-     * 
+     *
      * If scan shows "6C" but layout says min is 21, flag or correct it.
-     * 
-     * @param string $registration Aircraft registration (e.g., PK-GHH)
-     * @param array $seats Extracted seats from PDF
+     *
+     * @param  string  $registration  Aircraft registration (e.g., PK-GHH)
+     * @param  array  $seats  Extracted seats from PDF
      * @return array Seats with row validation applied
      */
     protected function validateAndCorrectRowsByRegistration(string $registration, array $seats): array
@@ -162,16 +168,18 @@ class VerificationService
 
         try {
             // Lookup aircraft from database
-            $aircraft = \App\Models\Aircraft::where('registration', $registration)->first();
-            if (!$aircraft) {
+            $aircraft = Aircraft::where('registration', $registration)->first();
+            if (! $aircraft) {
                 Log::warning('[Verification] Aircraft not found in database', ['registration' => $registration]);
+
                 return $seats; // No validation possible
             }
 
             $layout = $aircraft->layout;
             $classRowsConfig = config('aircraft_class_rows');
-            if (!isset($classRowsConfig[$layout])) {
+            if (! isset($classRowsConfig[$layout])) {
                 Log::warning('[Verification] Layout config not found', ['layout' => $layout, 'registration' => $registration]);
+
                 return $seats; // No validation possible
             }
 
@@ -185,8 +193,12 @@ class VerificationService
                 if (is_array($rows)) {
                     foreach ($rows as $row) {
                         $expectedRows[] = $row;
-                        if ($minRow === null || $row < $minRow) $minRow = $row;
-                        if ($maxRow === null || $row > $maxRow) $maxRow = $row;
+                        if ($minRow === null || $row < $minRow) {
+                            $minRow = $row;
+                        }
+                        if ($maxRow === null || $row > $maxRow) {
+                            $maxRow = $row;
+                        }
                     }
                 }
             }
@@ -201,11 +213,11 @@ class VerificationService
             // Validate each seat
             foreach ($seats as &$seat) {
                 $seatId = $seat['seat_id'] ?? ($seat[0] ?? '');
-                
+
                 // Extract row number from seat_id (e.g., "6A" → 6, "21C" → 21)
                 if (preg_match('/^(\d+)/', $seatId, $m)) {
-                    $row = (int)$m[1];
-                    
+                    $row = (int) $m[1];
+
                     // Check if row is valid for this aircraft
                     if ($minRow !== null && $row < $minRow) {
                         Log::warning('[Verification] Seat row below minimum for layout', [
@@ -215,7 +227,7 @@ class VerificationService
                             'min_expected' => $minRow,
                             'layout' => $layout,
                         ]);
-                        
+
                         // Flag for review - don't auto-correct row numbers as that's risky
                         $seat['issue_detected'] = "Row {$row} below expected minimum {$minRow} for {$layout}";
                         $seat['was_flagged'] = true;
@@ -227,7 +239,7 @@ class VerificationService
                             'max_expected' => $maxRow,
                             'layout' => $layout,
                         ]);
-                        
+
                         // Flag for review
                         $seat['issue_detected'] = "Row {$row} above expected maximum {$maxRow} for {$layout}";
                         $seat['was_flagged'] = true;
@@ -241,6 +253,7 @@ class VerificationService
                 'registration' => $registration,
                 'error' => $e->getMessage(),
             ]);
+
             return $seats; // Return original on error
         }
     }
@@ -277,7 +290,7 @@ class VerificationService
                 $seatResult['seat_id'] = $correctedSeatId;
                 $seatResult['was_corrected'] = true;
                 $seatResult['correction_type'] = 'typo';
-                $seatResult['issue_detected'] = "Seat ID typo";
+                $seatResult['issue_detected'] = 'Seat ID typo';
                 $seatResult['suggestion'] = "{$seatId} → {$correctedSeatId}";
                 $seatId = $correctedSeatId; // Use corrected for further processing
             }
@@ -331,33 +344,35 @@ class VerificationService
         if (preg_match('/^(?:att\/)?d(\d+)-([a-zA-Z]{1,2})$/i', $seatId, $m)) {
             $door = strtolower($m[1]);
             $position = strtoupper($m[2]);
+
             return "att/d{$door}-{$position}";
         }
 
         // Spare/PAX seats: normalize format
         // Examples: "PAX-1", "pax 1", "ADULT-1" → "pax-1"
         if (preg_match('/^(pax|adult|spare.*?pax)\s*[-_]?\s*(\d+)$/i', $seatId, $m)) {
-            return "pax-" . $m[2];
+            return 'pax-'.$m[2];
         }
         // Infant/Baby: "INF-1", "inf 1", "baby-1" → "inf-1"
         if (preg_match('/^(inf|infant|baby|child)\s*[-_]?\s*(\d+)$/i', $seatId, $m)) {
-            return "inf-" . $m[2];
+            return 'inf-'.$m[2];
         }
 
         // Regular seat: normalize format
         // Examples: "6AA" → "6A", "06A" → "6A", "6 A" → "6A", "ROW 6 COL A" → "6A"
         $seatId = preg_replace('/^(?:row|col)\s*/i', '', $seatId);
         $seatId = preg_replace('/\s+/', '', $seatId);
-        
+
         // Handle duplicate letters: "6AA" → "6A", "12CC" → "12C"
         if (preg_match('/^(\d+)([a-zA-Z])\1$/i', $seatId, $m)) {
-            return strtoupper($m[1] . $m[2]);
+            return strtoupper($m[1].$m[2]);
         }
 
         // Standard seat: number + letter(s)
         if (preg_match('/^(\d+)([a-zA-Z]{1,2})$/i', $seatId, $m)) {
-            $row = (int)$m[1]; // Remove leading zeros
+            $row = (int) $m[1]; // Remove leading zeros
             $col = strtoupper($m[2]);
+
             return "{$row}{$col}";
         }
 
@@ -367,7 +382,7 @@ class VerificationService
     /**
      * Correct and normalize expiry dates
      * Handles multiple formats: "28 JAN 2028", "JAN 28 2028", "1/28/2028", Excel numeric dates, etc.
-     * 
+     *
      * @return array {corrected: string (YYYY-MM-DD or original), confidence: 0-1, issue: string|null, suggestion: string|null}
      */
     protected function correctExpiryDate(string $expiryDate): array
@@ -422,9 +437,9 @@ class VerificationService
             foreach ($formats as $format) {
                 try {
                     $date = Carbon::createFromFormat($format, trim($dateStr), 'UTC');
-                    
+
                     // If no year provided, assume current or next year
-                    if (!preg_match('/\d{4}/', trim($dateStr))) {
+                    if (! preg_match('/\d{4}/', trim($dateStr))) {
                         $currentYear = Carbon::now('UTC')->year;
                         if ($date->month < Carbon::now('UTC')->month) {
                             $date = $date->year($currentYear + 1);
@@ -441,7 +456,7 @@ class VerificationService
 
                         // Flag if had uncertainty marker
                         if ($hasUncertaintyFlag) {
-                            $issue = "Uncertain in original (marked with ?)";
+                            $issue = 'Uncertain in original (marked with ?)';
                             $carbonConfidence = 0.80;
                         }
 
@@ -465,7 +480,7 @@ class VerificationService
             'corrected' => $original,
             'confidence' => 0.5,
             'issue' => 'Could not parse date format',
-            'suggestion' => "Please verify format; expected: DD MMM YYYY (e.g., 28 JAN 2028)",
+            'suggestion' => 'Please verify format; expected: DD MMM YYYY (e.g., 28 JAN 2028)',
         ];
     }
 
@@ -488,14 +503,17 @@ class VerificationService
                 $path = public_path($path);
             }
 
-            if (!file_exists($path)) {
+            if (! file_exists($path)) {
                 Log::warning('[Verification] Image file not found', ['path' => $path]);
+
                 continue;
             }
 
             try {
                 $content = file_get_contents($path);
-                if ($content === false) continue;
+                if ($content === false) {
+                    continue;
+                }
 
                 // Compress to JPEG (same as PdfParserService)
                 $img = @imagecreatefrompng($path);
@@ -521,6 +539,7 @@ class VerificationService
                 }
             } catch (\Exception $e) {
                 Log::warning('[Verification] Failed to prepare image', ['path' => $path, 'error' => $e->getMessage()]);
+
                 continue;
             }
         }
@@ -536,13 +555,14 @@ class VerificationService
     {
         if (empty($this->imageData)) {
             Log::warning('[Verification] No image data for AI validation');
+
             return [];
         }
 
         Log::info('[Verification] Starting AI validation with Flaz.id', [
-            'model'          => $this->flazModel,
+            'model' => $this->flazModel,
             'seats_to_validate' => count($verifiedSeats),
-            'images_count'   => count($this->imageData),
+            'images_count' => count($this->imageData),
         ]);
 
         $aircraftType = $extractedData['aircraft_type'] ?? 'Unknown';
@@ -556,57 +576,57 @@ class VerificationService
 
             foreach ($seatChunks as $chunkIndex => $chunk) {
                 Log::info('[Verification] Processing batch', [
-                    'batch'          => $chunkIndex + 1,
-                    'total_batches'  => count($seatChunks),
+                    'batch' => $chunkIndex + 1,
+                    'total_batches' => count($seatChunks),
                     'seats_in_batch' => count($chunk),
                 ]);
 
-                $chunkSeatsJson = json_encode(array_values(array_map(fn($s) => [
-                    'seat_id'     => $s['seat_id'],
+                $chunkSeatsJson = json_encode(array_values(array_map(fn ($s) => [
+                    'seat_id' => $s['seat_id'],
                     'expiry_date' => $s['expiry_date'],
                 ], $chunk)));
 
-                $chunkPrompt = "You are an expert auditor of aircraft life-vest maintenance records."
-                    . " Do NOT guess or hallucinate values."
-                    . "\n\nTASK: Re-examine the ORIGINAL IMAGES provided and COMPARE them to the extracted values below."
-                    . " For each item, re-read the image and state the EXACT textual value you see."
-                    . "\n\nCONTEXT: Aircraft type: {$aircraftType}."
-                    . "\n\nEXTRACTED DATA (for reference only):\n{$chunkSeatsJson}"
-                    . "\n\nINSTRUCTIONS:"
-                    . "\n1) For each seat entry, look at the corresponding row on the image and read the expiry date value exactly as it appears in handwriting."
-                    . "\n2) Return these fields per item: seat_id, original_value, image_value, match (true/false), confidence (0.0-1.0), issue (null or short string), suggested_correction (YYYY-MM-DD or null)."
-                    . "\n3) If the image area is illegible, return image_value as empty string, confidence < 0.7, issue: illegible."
-                    . "\n4) Never invent a value. If unsure, set confidence low."
-                    . "\n\nOUTPUT: Return ONLY a minified JSON object with key validation_items containing an array.";
+                $chunkPrompt = 'You are an expert auditor of aircraft life-vest maintenance records.'
+                    .' Do NOT guess or hallucinate values.'
+                    ."\n\nTASK: Re-examine the ORIGINAL IMAGES provided and COMPARE them to the extracted values below."
+                    .' For each item, re-read the image and state the EXACT textual value you see.'
+                    ."\n\nCONTEXT: Aircraft type: {$aircraftType}."
+                    ."\n\nEXTRACTED DATA (for reference only):\n{$chunkSeatsJson}"
+                    ."\n\nINSTRUCTIONS:"
+                    ."\n1) For each seat entry, look at the corresponding row on the image and read the expiry date value exactly as it appears in handwriting."
+                    ."\n2) Return these fields per item: seat_id, original_value, image_value, match (true/false), confidence (0.0-1.0), issue (null or short string), suggested_correction (YYYY-MM-DD or null)."
+                    ."\n3) If the image area is illegible, return image_value as empty string, confidence < 0.7, issue: illegible."
+                    ."\n4) Never invent a value. If unsure, set confidence low."
+                    ."\n\nOUTPUT: Return ONLY a minified JSON object with key validation_items containing an array.";
 
                 // Build message content: text prompt + images
                 $userContent = [['type' => 'text', 'text' => $chunkPrompt]];
                 foreach ($this->imageData as $imgItem) {
                     $mimeType = $imgItem['mime_type'] ?? 'image/jpeg';
-                    $b64      = $imgItem['data'] ?? '';
+                    $b64 = $imgItem['data'] ?? '';
                     $userContent[] = [
-                        'type'      => 'image_url',
+                        'type' => 'image_url',
                         'image_url' => [
-                            'url'    => "data:{$mimeType};base64,{$b64}",
+                            'url' => "data:{$mimeType};base64,{$b64}",
                             'detail' => 'high',
                         ],
                     ];
                 }
 
                 $response = Http::timeout(300)->withHeaders([
-                    'Authorization' => 'Bearer ' . $this->flazKey,
-                    'Content-Type'  => 'application/json',
+                    'Authorization' => 'Bearer '.$this->flazKey,
+                    'Content-Type' => 'application/json',
                 ])->post('https://ai.flaz.id/v1/chat/completions', [
-                    'model'       => $this->flazModel,
+                    'model' => $this->flazModel,
                     'temperature' => 0.05,
-                    'max_tokens'  => 16000,
-                    'messages'    => [
+                    'max_tokens' => 16000,
+                    'messages' => [
                         [
-                            'role'    => 'system',
+                            'role' => 'system',
                             'content' => 'You are a JSON-only output machine. Never output anything except valid minified JSON. No markdown, no explanation, no code blocks.',
                         ],
                         [
-                            'role'    => 'user',
+                            'role' => 'user',
                             'content' => $userContent,
                         ],
                     ],
@@ -614,25 +634,27 @@ class VerificationService
 
                 if ($response->failed()) {
                     Log::warning('[Verification] Batch API failed', [
-                        'batch'  => $chunkIndex + 1,
+                        'batch' => $chunkIndex + 1,
                         'status' => $response->status(),
-                        'body'   => substr($response->body(), 0, 500),
+                        'body' => substr($response->body(), 0, 500),
                     ]);
+
                     continue;
                 }
 
                 $responseData = $response->json();
-                $rawContent   = $responseData['choices'][0]['message']['content'] ?? '';
+                $rawContent = $responseData['choices'][0]['message']['content'] ?? '';
 
                 if (empty($rawContent)) {
-                    Log::warning('[Verification] Empty response for batch ' . ($chunkIndex + 1));
+                    Log::warning('[Verification] Empty response for batch '.($chunkIndex + 1));
+
                     continue;
                 }
 
                 Log::info('[Verification] AI validation batch response', [
-                    'batch'          => $chunkIndex + 1,
+                    'batch' => $chunkIndex + 1,
                     'content_length' => strlen($rawContent),
-                    'preview'        => substr($rawContent, 0, 300),
+                    'preview' => substr($rawContent, 0, 300),
                 ]);
 
                 // Strip markdown code fences if model wrapped the JSON
@@ -640,12 +662,13 @@ class VerificationService
                 $rawContent = preg_replace('/```\s*$/', '', $rawContent);
 
                 $validationData = json_decode($rawContent, true);
-                if (!is_array($validationData)) {
+                if (! is_array($validationData)) {
                     $validationData = $this->extractPartialJson($rawContent);
                 }
 
-                if (!is_array($validationData)) {
-                    Log::warning('[Verification] JSON parse failed for batch ' . ($chunkIndex + 1));
+                if (! is_array($validationData)) {
+                    Log::warning('[Verification] JSON parse failed for batch '.($chunkIndex + 1));
+
                     continue;
                 }
 
@@ -663,29 +686,29 @@ class VerificationService
                     if (isset($validationBySeatId[$seatId])) {
                         $aiData = $validationBySeatId[$seatId];
                         $allResults[$idx] = [
-                            'confidence'           => $aiData['confidence'] ?? 0.5,
-                            'match'                => $aiData['match'] ?? null,
-                            'issue'                => $aiData['issue'] ?? null,
-                            'issue_detected'       => $aiData['issue'] ?? null,
-                            'image_value'          => $aiData['image_value'] ?? null,
-                            'original_value'       => $aiData['original_value'] ?? null,
+                            'confidence' => $aiData['confidence'] ?? 0.5,
+                            'match' => $aiData['match'] ?? null,
+                            'issue' => $aiData['issue'] ?? null,
+                            'issue_detected' => $aiData['issue'] ?? null,
+                            'image_value' => $aiData['image_value'] ?? null,
+                            'original_value' => $aiData['original_value'] ?? null,
                             'suggested_correction' => $aiData['suggested_correction'] ?? null,
-                            'suggestion'           => $aiData['suggested_correction'] ?? null,
-                            'correction_type'      => 'ai_validation',
+                            'suggestion' => $aiData['suggested_correction'] ?? null,
+                            'correction_type' => 'ai_validation',
                         ];
                     }
                 }
 
                 Log::info('[Verification] Batch processed', [
-                    'batch'            => $chunkIndex + 1,
-                    'ai_items_parsed'  => count($validationItems),
+                    'batch' => $chunkIndex + 1,
+                    'ai_items_parsed' => count($validationItems),
                     'matched_to_seats' => count(array_intersect_key($allResults, $chunk)),
                 ]);
             }
 
             Log::info('[Verification] All batches complete', [
                 'total_ai_results' => count($allResults),
-                'total_seats'      => count($verifiedSeats),
+                'total_seats' => count($verifiedSeats),
             ]);
 
             return $allResults;
@@ -707,7 +730,7 @@ class VerificationService
 
         foreach ($verifiedSeats as $seat) {
             $confidence = $seat['confidence'] ?? 0;
-            
+
             if ($confidence >= $this->confidenceThreshold) {
                 $autoAccepted++;
             } elseif ($confidence >= 0.70) {
@@ -736,7 +759,7 @@ class VerificationService
 
         foreach ($verificationResult['seats'] ?? [] as $seat) {
             $confidence = $seat['confidence'] ?? 1.0;
-            
+
             // Include if: corrected OR confidence below threshold
             if ($seat['was_corrected'] || $confidence < $threshold) {
                 $flagged[] = $seat;
@@ -756,8 +779,8 @@ class VerificationService
 
         foreach ($verificationResult['seats'] ?? [] as $seat) {
             $confidence = $seat['confidence'] ?? 1.0;
-            
-            if ($confidence >= $threshold && !$seat['was_corrected']) {
+
+            if ($confidence >= $threshold && ! $seat['was_corrected']) {
                 $highConfidence[] = $seat;
             }
         }
@@ -772,24 +795,30 @@ class VerificationService
     protected function extractPartialJson(string $content): ?array
     {
         $content = trim($content);
-        if (empty($content)) return null;
+        if (empty($content)) {
+            return null;
+        }
 
         // Try to find and extract JSON
         $firstBrace = strpos($content, '{');
         $lastBrace = strrpos($content, '}');
-        
-        if ($firstBrace === false) return null;
+
+        if ($firstBrace === false) {
+            return null;
+        }
 
         // If we have matching braces, try that substring
         if ($lastBrace !== false && $lastBrace > $firstBrace) {
             $json = substr($content, $firstBrace, $lastBrace - $firstBrace + 1);
             $decoded = json_decode($json, true);
-            if (is_array($decoded)) return $decoded;
+            if (is_array($decoded)) {
+                return $decoded;
+            }
         }
 
         // JSON is truncated — try to repair it
         $json = substr($content, $firstBrace);
-        
+
         // Remove trailing incomplete entries
         // Find the last complete object "}" in the validation_items array
         $lastCompleteObj = strrpos($json, '}');
@@ -814,6 +843,7 @@ class VerificationService
         if (is_array($decoded)) {
             $itemCount = count($decoded['validation_items'] ?? []);
             Log::info('[Verification] Recovered truncated JSON', ['items_recovered' => $itemCount]);
+
             return $decoded;
         }
 

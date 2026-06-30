@@ -21,12 +21,12 @@ class AuthControllerTest extends TestCase
     {
         $user = User::factory()->create([
             'email' => 'test@lifevest.com',
-            'password' => bcrypt('secret123')
+            'password' => bcrypt('secret123'),
         ]);
 
         $response = $this->post(route('login'), [
             'email' => 'test@lifevest.com',
-            'password' => 'secret123'
+            'password' => 'secret123',
         ]);
 
         $response->assertRedirect(route('dashboard'));
@@ -37,12 +37,12 @@ class AuthControllerTest extends TestCase
     {
         $user = User::factory()->create([
             'email' => 'test@lifevest.com',
-            'password' => bcrypt('secret123')
+            'password' => bcrypt('secret123'),
         ]);
 
         $response = $this->from(route('login'))->post(route('login'), [
             'email' => 'test@lifevest.com',
-            'password' => 'wrongpass'
+            'password' => 'wrongpass',
         ]);
 
         $response->assertRedirect(route('login'));
@@ -56,12 +56,12 @@ class AuthControllerTest extends TestCase
             'email' => 'test@lifevest.com',
             'password' => bcrypt('secret123'),
             'is_suspended' => true,
-            'suspension_reason' => 'Rules violation'
+            'suspension_reason' => 'Rules violation',
         ]);
 
         $response = $this->from(route('login'))->post(route('login'), [
             'email' => 'test@lifevest.com',
-            'password' => 'secret123'
+            'password' => 'secret123',
         ]);
 
         $response->assertRedirect(route('login'));

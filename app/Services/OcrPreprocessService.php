@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Log;
  * OCR Preprocessing Service
  * ==========================
  * Bridge between PHP and the Python OCR preprocessing script.
- * 
+ *
  * Responsibilities:
  * 1. Call Python script (opencv-python + pytesseract) for image enhancement
  * 2. Apply OCR correction data dictionary to fix common misreads
@@ -17,8 +17,11 @@ use Illuminate\Support\Facades\Log;
 class OcrPreprocessService
 {
     protected string $pythonPath;
+
     protected string $tesseractPath;
+
     protected string $scriptPath;
+
     protected array $corrections;
 
     public function __construct()
@@ -31,19 +34,19 @@ class OcrPreprocessService
 
     /**
      * Run the full preprocessing pipeline on a set of images.
-     * 
-     * @param array $imagePaths Paths to page images
-     * @param string|null $outputDir Directory for enhanced images (default: same dir as input)
+     *
+     * @param  array  $imagePaths  Paths to page images
+     * @param  string|null  $outputDir  Directory for enhanced images (default: same dir as input)
      * @return array {
-     *   'success' => bool,
-     *   'enhanced_images' => string[],        // OCR-enhanced image paths
-     *   'ai_enhanced_images' => string[],      // AI-enhanced image paths (moderate enhancement)
-     *   'ocr_text' => string,                  // Raw OCR text from pytesseract
-     *   'corrected_ocr_text' => string,        // OCR text after data dictionary correction
-     *   'orientations' => array[],             // Orientation info per page
-     *   'preprocessing_applied' => string[],   // List of preprocessing steps applied
-     *   'errors' => string[]
-     * }
+     *               'success' => bool,
+     *               'enhanced_images' => string[],        // OCR-enhanced image paths
+     *               'ai_enhanced_images' => string[],      // AI-enhanced image paths (moderate enhancement)
+     *               'ocr_text' => string,                  // Raw OCR text from pytesseract
+     *               'corrected_ocr_text' => string,        // OCR text after data dictionary correction
+     *               'orientations' => array[],             // Orientation info per page
+     *               'preprocessing_applied' => string[],   // List of preprocessing steps applied
+     *               'errors' => string[]
+     *               }
      */
     public function preprocess(array $imagePaths, ?string $outputDir = null): array
     {
@@ -59,9 +62,10 @@ class OcrPreprocessService
         ];
 
         // Validate script exists
-        if (!file_exists($this->scriptPath)) {
+        if (! file_exists($this->scriptPath)) {
             Log::warning('[OCR Preprocess] Python script not found', ['path' => $this->scriptPath]);
-            $fallback['errors'][] = 'Python script not found: ' . $this->scriptPath;
+            $fallback['errors'][] = 'Python script not found: '.$this->scriptPath;
+
             return $fallback;
         }
 
@@ -77,17 +81,18 @@ class OcrPreprocessService
 
         if (empty($validPaths)) {
             $fallback['errors'][] = 'No valid image files found';
+
             return $fallback;
         }
 
         // Determine output directory
-        if (!$outputDir) {
+        if (! $outputDir) {
             $outputDir = dirname($validPaths[0]);
         }
 
         // Build command
         $escapedPaths = array_map(function ($p) {
-            return '"' . str_replace('"', '\\"', $p) . '"';
+            return '"'.str_replace('"', '\\"', $p).'"';
         }, $validPaths);
 
         $cmd = sprintf(
@@ -121,13 +126,14 @@ class OcrPreprocessService
         // Parse JSON output from Python
         $result = json_decode($rawOutput, true);
 
-        if ($result === null || !is_array($result)) {
+        if ($result === null || ! is_array($result)) {
             Log::error('[OCR Preprocess] Failed to parse Python output', [
                 'raw_output' => substr($rawOutput, 0, 1000),
                 'json_error' => json_last_error_msg(),
             ]);
             $fallback['errors'][] = 'Failed to parse Python script output';
             $fallback['errors'][] = substr($rawOutput, 0, 500);
+
             return $fallback;
         }
 
@@ -177,7 +183,9 @@ class OcrPreprocessService
     public function correctDate(string $date): string
     {
         $date = trim($date);
-        if (empty($date)) return '';
+        if (empty($date)) {
+            return '';
+        }
 
         // Remove uncertainty markers for processing (we'll re-add if needed)
         $hasUncertainty = str_ends_with($date, '?');
@@ -193,7 +201,7 @@ class OcrPreprocessService
         $corrected = $this->correctDateComponents($cleanDate);
 
         // Re-add uncertainty marker if it was present
-        if ($hasUncertainty && !str_ends_with($corrected, '?')) {
+        if ($hasUncertainty && ! str_ends_with($corrected, '?')) {
             $corrected .= '?';
         }
 
@@ -203,8 +211,8 @@ class OcrPreprocessService
     /**
      * Apply corrections to an entire array of seat results.
      * Called after AI returns its parsed data, as a post-processing step.
-     * 
-     * @param array $seats Array of ['seat_id' => ..., 'expiry_date' => ...]
+     *
+     * @param  array  $seats  Array of ['seat_id' => ..., 'expiry_date' => ...]
      * @return array Corrected seats array
      */
     public function correctSeatsData(array $seats): array
@@ -236,7 +244,7 @@ class OcrPreprocessService
             ];
         }
 
-        if (!empty($correctionLog)) {
+        if (! empty($correctionLog)) {
             Log::info('[OCR Corrections] Applied data dictionary corrections', [
                 'total_corrections' => count($correctionLog),
                 'details' => array_slice($correctionLog, 0, 20), // Log first 20
@@ -252,9 +260,9 @@ class OcrPreprocessService
     public function correctRegistration(string $registration): string
     {
         $reg = strtoupper(trim($registration));
-        
+
         $corrections = $this->corrections['registration_corrections'] ?? [];
-        
+
         // Apply prefix corrections
         foreach ($corrections as $wrong => $right) {
             if (strlen($wrong) > 2) { // Only apply prefix-level corrections
@@ -264,7 +272,7 @@ class OcrPreprocessService
 
         // Ensure PK- format
         if (preg_match('/^PK[\s\-–—]/', $reg)) {
-            $reg = 'PK-' . ltrim(substr($reg, 2), " -–—");
+            $reg = 'PK-'.ltrim(substr($reg, 2), ' -–—');
         }
 
         // In registration context, digits should be letters (PK-GIA, not PK-G1A)
@@ -276,7 +284,7 @@ class OcrPreprocessService
                 $char = $suffix[$i];
                 $correctedSuffix .= $regLetterSubs[$char] ?? $char;
             }
-            $reg = 'PK-' . $correctedSuffix;
+            $reg = 'PK-'.$correctedSuffix;
         }
 
         return $reg;
@@ -379,6 +387,7 @@ class OcrPreprocessService
         foreach ($patterns as $pattern) {
             $text = preg_replace_callback($pattern, function ($matches) {
                 $fullMatch = $matches[0];
+
                 return $this->correctDateComponents($fullMatch);
             }, $text);
         }
@@ -392,7 +401,9 @@ class OcrPreprocessService
     private function correctDateComponents(string $date): string
     {
         $date = trim($date);
-        if (empty($date)) return '';
+        if (empty($date)) {
+            return '';
+        }
 
         $monthCorrections = $this->corrections['month_corrections'] ?? [];
         $validMonths = $this->corrections['valid_months'] ?? [];
@@ -448,8 +459,12 @@ class OcrPreprocessService
         $dayNum = (int) $corrected;
         $maxDay = $contextRules['day_range'][1] ?? 31;
 
-        if ($dayNum < 1) $dayNum = 1;
-        if ($dayNum > $maxDay) $dayNum = $maxDay;
+        if ($dayNum < 1) {
+            $dayNum = 1;
+        }
+        if ($dayNum > $maxDay) {
+            $dayNum = $maxDay;
+        }
 
         return (string) $dayNum;
     }
@@ -554,7 +569,7 @@ class OcrPreprocessService
         // 2-digit year → 4-digit
         if (strlen($corrected) === 2) {
             $base = $contextRules['year_2digit_base'] ?? 2000;
-            $corrected = (string)($base + (int)$corrected);
+            $corrected = (string) ($base + (int) $corrected);
         }
 
         // Validate range
@@ -567,7 +582,7 @@ class OcrPreprocessService
             if ($yearNum < 2020 && $yearNum >= 2000) {
                 $candidate = $yearNum + 20; // 2005 → 2025
                 if ($candidate >= $min && $candidate <= $max) {
-                    return (string)$candidate;
+                    return (string) $candidate;
                 }
             }
         }
@@ -581,11 +596,11 @@ class OcrPreprocessService
     private function validateDayForMonth(string $day, string $month, array $contextRules): string
     {
         $maxDays = $contextRules['max_days_per_month'] ?? [];
-        $dayNum = (int)$day;
+        $dayNum = (int) $day;
 
         if (isset($maxDays[$month]) && $dayNum > $maxDays[$month]) {
             // Clamp to max valid day for this month
-            return (string)$maxDays[$month];
+            return (string) $maxDays[$month];
         }
 
         return $day;
@@ -597,14 +612,16 @@ class OcrPreprocessService
     private function correctSeatId(string $seatId): string
     {
         $seatId = trim($seatId);
-        if (empty($seatId)) return $seatId;
+        if (empty($seatId)) {
+            return $seatId;
+        }
 
         $corrections = $this->corrections['seat_id_corrections'] ?? [];
 
         // Apply prefix corrections
         foreach ($corrections as $wrong => $right) {
             if (str_starts_with($seatId, $wrong)) {
-                $seatId = $right . substr($seatId, strlen($wrong));
+                $seatId = $right.substr($seatId, strlen($wrong));
                 break; // Only apply one prefix correction
             }
         }

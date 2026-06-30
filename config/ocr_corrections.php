@@ -96,150 +96,149 @@ return [
     // Organized by target month, covers both OCR and handwriting errors.
     'month_corrections' => [
         // --- JAN (January) ---
-        'IAN'  => 'JAN',  // I↔J confusion
-        'JRN'  => 'JAN',  // R↔A confusion
-        'JNR'  => 'JAN',  // transposition
-        'JNA'  => 'JAN',  // transposition
-        'JÅN'  => 'JAN',  // diacritical artifact
-        'JAN'  => 'JAN',  // identity (for validation)
-        'JAM'  => 'JAN',  // M↔N confusion
-        'JAH'  => 'JAN',  // H↔N confusion
-        'JPN'  => 'JAN',  // P↔A confusion (rare)
-        'J4N'  => 'JAN',  // 4↔A confusion
+        'IAN' => 'JAN',  // I↔J confusion
+        'JRN' => 'JAN',  // R↔A confusion
+        'JNR' => 'JAN',  // transposition
+        'JNA' => 'JAN',  // transposition
+        'JÅN' => 'JAN',  // diacritical artifact
+        'JAN' => 'JAN',  // identity (for validation)
+        'JAM' => 'JAN',  // M↔N confusion
+        'JAH' => 'JAN',  // H↔N confusion
+        'JPN' => 'JAN',  // P↔A confusion (rare)
+        'J4N' => 'JAN',  // 4↔A confusion
         'J AN' => 'JAN',  // space artifact
 
         // --- FEB (February) ---
-        'FEE'  => 'FEB',  // E↔B confusion
-        'FER'  => 'FEB',  // R↔B confusion
-        'FFB'  => 'FEB',  // F↔E confusion
-        'F3B'  => 'FEB',  // 3↔E confusion
-        'FE8'  => 'FEB',  // 8↔B confusion
-        'FEB'  => 'FEB',  // identity
-        'FEP'  => 'FEB',  // P↔B confusion
-        'FÉB'  => 'FEB',  // diacritical artifact
-        'FRB'  => 'FEB',  // R↔E confusion
+        'FEE' => 'FEB',  // E↔B confusion
+        'FER' => 'FEB',  // R↔B confusion
+        'FFB' => 'FEB',  // F↔E confusion
+        'F3B' => 'FEB',  // 3↔E confusion
+        'FE8' => 'FEB',  // 8↔B confusion
+        'FEB' => 'FEB',  // identity
+        'FEP' => 'FEB',  // P↔B confusion
+        'FÉB' => 'FEB',  // diacritical artifact
+        'FRB' => 'FEB',  // R↔E confusion
         'F EB' => 'FEB',  // space artifact
 
         // --- MAR (March) ---
-        'NAR'  => 'MAR',  // N↔M confusion
-        'MAB'  => 'MAR',  // B↔R confusion
-        'MRR'  => 'MAR',  // R↔A confusion
-        'MAE'  => 'MAR',  // E↔R confusion (careful: not MAY)
-        'M4R'  => 'MAR',  // 4↔A confusion
-        'MAR'  => 'MAR',  // identity
-        'MÁR'  => 'MAR',  // diacritical artifact
-        'MAK'  => 'MAR',  // K↔R confusion
+        'NAR' => 'MAR',  // N↔M confusion
+        'MAB' => 'MAR',  // B↔R confusion
+        'MRR' => 'MAR',  // R↔A confusion
+        'MAE' => 'MAR',  // E↔R confusion (careful: not MAY)
+        'M4R' => 'MAR',  // 4↔A confusion
+        'MAR' => 'MAR',  // identity
+        'MÁR' => 'MAR',  // diacritical artifact
+        'MAK' => 'MAR',  // K↔R confusion
         'M AR' => 'MAR',  // space artifact
-        'NAR'  => 'MAR',  // N↔M confusion
-        'HAR'  => 'MAR',  // H↔M confusion
+        'HAR' => 'MAR',  // H↔M confusion
 
         // --- APR (April) ---
-        'APB'  => 'APR',  // B↔R confusion
-        'APE'  => 'APR',  // E↔R confusion
-        'ARP'  => 'APR',  // transposition
-        'APP'  => 'APR',  // P↔R confusion
-        'A9R'  => 'APR',  // 9↔P confusion
-        '4PR'  => 'APR',  // 4↔A confusion
-        'APR'  => 'APR',  // identity
-        'ÅPR'  => 'APR',  // diacritical artifact
-        'APK'  => 'APR',  // K↔R confusion
+        'APB' => 'APR',  // B↔R confusion
+        'APE' => 'APR',  // E↔R confusion
+        'ARP' => 'APR',  // transposition
+        'APP' => 'APR',  // P↔R confusion
+        'A9R' => 'APR',  // 9↔P confusion
+        '4PR' => 'APR',  // 4↔A confusion
+        'APR' => 'APR',  // identity
+        'ÅPR' => 'APR',  // diacritical artifact
+        'APK' => 'APR',  // K↔R confusion
         'A PR' => 'APR',  // space artifact
-        'APH'  => 'APR',  // H↔R confusion
+        'APH' => 'APR',  // H↔R confusion
 
         // --- MAY ---
-        'MAV'  => 'MAY',  // V↔Y confusion
-        'NAY'  => 'MAY',  // N↔M confusion
-        'MAI'  => 'MAY',  // I↔Y (common in some languages)
-        'MAT'  => 'MAY',  // T↔Y confusion
-        'MAY'  => 'MAY',  // identity
-        'MÅY'  => 'MAY',  // diacritical artifact
-        'M4Y'  => 'MAY',  // 4↔A confusion
+        'MAV' => 'MAY',  // V↔Y confusion
+        'NAY' => 'MAY',  // N↔M confusion
+        'MAI' => 'MAY',  // I↔Y (common in some languages)
+        'MAT' => 'MAY',  // T↔Y confusion
+        'MAY' => 'MAY',  // identity
+        'MÅY' => 'MAY',  // diacritical artifact
+        'M4Y' => 'MAY',  // 4↔A confusion
         'M AY' => 'MAY',  // space artifact
-        'HAY'  => 'MAY',  // H↔M confusion
-        'MAJ'  => 'MAY',  // J↔Y confusion (Swedish/Danish)
-        'MYA'  => 'MAY',  // transposition
+        'HAY' => 'MAY',  // H↔M confusion
+        'MAJ' => 'MAY',  // J↔Y confusion (Swedish/Danish)
+        'MYA' => 'MAY',  // transposition
 
         // --- JUN (June) ---
-        'IUN'  => 'JUN',  // I↔J confusion
-        'JUH'  => 'JUN',  // H↔N confusion
-        'JUM'  => 'JUN',  // M↔N confusion
-        'JUW'  => 'JUN',  // W↔N confusion
-        'JUN'  => 'JUN',  // identity
-        'JÜN'  => 'JUN',  // diacritical artifact
-        'JUR'  => 'JUN',  // R↔N confusion
+        'IUN' => 'JUN',  // I↔J confusion
+        'JUH' => 'JUN',  // H↔N confusion
+        'JUM' => 'JUN',  // M↔N confusion
+        'JUW' => 'JUN',  // W↔N confusion
+        'JUN' => 'JUN',  // identity
+        'JÜN' => 'JUN',  // diacritical artifact
+        'JUR' => 'JUN',  // R↔N confusion
         'J UN' => 'JUN',  // space artifact
-        'JUB'  => 'JUN',  // B↔N confusion
+        'JUB' => 'JUN',  // B↔N confusion
         'JU N' => 'JUN',  // space artifact
 
         // --- JUL (July) ---
-        'IUL'  => 'JUL',  // I↔J confusion
-        'JUI'  => 'JUL',  // I↔L confusion
-        'JLY'  => 'JUL',  // transposition / abbreviation
-        'JUL'  => 'JUL',  // identity
-        'JÚL'  => 'JUL',  // diacritical artifact
-        'JU1'  => 'JUL',  // 1↔L confusion
+        'IUL' => 'JUL',  // I↔J confusion
+        'JUI' => 'JUL',  // I↔L confusion
+        'JLY' => 'JUL',  // transposition / abbreviation
+        'JUL' => 'JUL',  // identity
+        'JÚL' => 'JUL',  // diacritical artifact
+        'JU1' => 'JUL',  // 1↔L confusion
         'J UL' => 'JUL',  // space artifact
-        'JUK'  => 'JUL',  // K↔L confusion
+        'JUK' => 'JUL',  // K↔L confusion
 
         // --- AUG (August) ---
-        'AUC'  => 'AUG',  // C↔G confusion
-        'AUB'  => 'AUG',  // B↔G confusion
-        'RUG'  => 'AUG',  // R↔A confusion
-        'AUG'  => 'AUG',  // identity
-        'ÅUG'  => 'AUG',  // diacritical artifact
-        '4UG'  => 'AUG',  // 4↔A confusion
+        'AUC' => 'AUG',  // C↔G confusion
+        'AUB' => 'AUG',  // B↔G confusion
+        'RUG' => 'AUG',  // R↔A confusion
+        'AUG' => 'AUG',  // identity
+        'ÅUG' => 'AUG',  // diacritical artifact
+        '4UG' => 'AUG',  // 4↔A confusion
         'A UG' => 'AUG',  // space artifact
-        'AUQ'  => 'AUG',  // Q↔G confusion
-        'AU6'  => 'AUG',  // 6↔G confusion
-        'AUS'  => 'AUG',  // S↔G confusion
+        'AUQ' => 'AUG',  // Q↔G confusion
+        'AU6' => 'AUG',  // 6↔G confusion
+        'AUS' => 'AUG',  // S↔G confusion
 
         // --- SEP (September) ---
-        'SFP'  => 'SEP',  // F↔E confusion
-        'SEF'  => 'SEP',  // F↔P confusion
-        'SPE'  => 'SEP',  // transposition
-        'S3P'  => 'SEP',  // 3↔E confusion
-        'SEP'  => 'SEP',  // identity
-        '5EP'  => 'SEP',  // 5↔S confusion
+        'SFP' => 'SEP',  // F↔E confusion
+        'SEF' => 'SEP',  // F↔P confusion
+        'SPE' => 'SEP',  // transposition
+        'S3P' => 'SEP',  // 3↔E confusion
+        'SEP' => 'SEP',  // identity
+        '5EP' => 'SEP',  // 5↔S confusion
         'S EP' => 'SEP',  // space artifact
-        'SEB'  => 'SEP',  // B↔P confusion
-        'SE9'  => 'SEP',  // 9↔P confusion
-        'SEQ'  => 'SEP',  // Q↔P confusion
+        'SEB' => 'SEP',  // B↔P confusion
+        'SE9' => 'SEP',  // 9↔P confusion
+        'SEQ' => 'SEP',  // Q↔P confusion
 
         // --- OCT (October) ---
-        'OKT'  => 'OCT',  // K↔C (German/Dutch spelling)
-        'OCR'  => 'OCT',  // R↔T confusion
-        'OCI'  => 'OCT',  // I↔T confusion
-        'OC7'  => 'OCT',  // 7↔T confusion
-        'OCT'  => 'OCT',  // identity
-        '0CT'  => 'OCT',  // 0↔O confusion
+        'OKT' => 'OCT',  // K↔C (German/Dutch spelling)
+        'OCR' => 'OCT',  // R↔T confusion
+        'OCI' => 'OCT',  // I↔T confusion
+        'OC7' => 'OCT',  // 7↔T confusion
+        'OCT' => 'OCT',  // identity
+        '0CT' => 'OCT',  // 0↔O confusion
         'O CT' => 'OCT',  // space artifact
-        'OCL'  => 'OCT',  // L↔T confusion
-        'OGT'  => 'OCT',  // G↔C confusion
-        'OET'  => 'OCT',  // E↔C confusion
+        'OCL' => 'OCT',  // L↔T confusion
+        'OGT' => 'OCT',  // G↔C confusion
+        'OET' => 'OCT',  // E↔C confusion
 
         // --- NOV (November) ---
-        'NOY'  => 'NOV',  // Y↔V confusion
-        'N0V'  => 'NOV',  // 0↔O confusion
-        'NOU'  => 'NOV',  // U↔V confusion
-        'NOV'  => 'NOV',  // identity
-        'NOB'  => 'NOV',  // B↔V confusion
-        'NDV'  => 'NOV',  // D↔O confusion
+        'NOY' => 'NOV',  // Y↔V confusion
+        'N0V' => 'NOV',  // 0↔O confusion
+        'NOU' => 'NOV',  // U↔V confusion
+        'NOV' => 'NOV',  // identity
+        'NOB' => 'NOV',  // B↔V confusion
+        'NDV' => 'NOV',  // D↔O confusion
         'N OV' => 'NOV',  // space artifact
-        'HOV'  => 'NOV',  // H↔N confusion
-        'MOV'  => 'NOV',  // M↔N confusion
-        'NOW'  => 'NOV',  // W↔V confusion
+        'HOV' => 'NOV',  // H↔N confusion
+        'MOV' => 'NOV',  // M↔N confusion
+        'NOW' => 'NOV',  // W↔V confusion
 
         // --- DEC (December) ---
-        'DFC'  => 'DEC',  // F↔E confusion
-        'DFG'  => 'DEC',  // F↔E, G↔C confusion
-        'DBC'  => 'DEC',  // B↔E confusion
-        'DEC'  => 'DEC',  // identity
-        'D3C'  => 'DEC',  // 3↔E confusion
+        'DFC' => 'DEC',  // F↔E confusion
+        'DFG' => 'DEC',  // F↔E, G↔C confusion
+        'DBC' => 'DEC',  // B↔E confusion
+        'DEC' => 'DEC',  // identity
+        'D3C' => 'DEC',  // 3↔E confusion
         'D EC' => 'DEC',  // space artifact
-        'DEG'  => 'DEC',  // G↔C confusion
-        'OEC'  => 'DEC',  // O↔D confusion
-        'DCC'  => 'DEC',  // C↔E confusion
-        'DER'  => 'DEC',  // R↔C confusion (rare)
+        'DEG' => 'DEC',  // G↔C confusion
+        'OEC' => 'DEC',  // O↔D confusion
+        'DCC' => 'DEC',  // C↔E confusion
+        'DER' => 'DEC',  // R↔C confusion (rare)
     ],
 
     // ═══════════════════════════════════════════════════════════════════
@@ -267,46 +266,45 @@ return [
     // ═══════════════════════════════════════════════════════════════════
     'common_misreads' => [
         // Pipe and vertical bars → 1
-        '|'  => '1',
-        '¦'  => '1',
-        '│'  => '1',
-        '‖'  => '11',
+        '|' => '1',
+        '¦' => '1',
+        '│' => '1',
+        '‖' => '11',
 
         // Exclamation → 1
-        '!'  => '1',
+        '!' => '1',
 
         // Bracket confusion
-        '{'  => '(',
-        '}'  => ')',
-        '['  => '(',
-        ']'  => ')',
+        '{' => '(',
+        '}' => ')',
+        '[' => '(',
+        ']' => ')',
 
-        '`'  => "'",
-        '´'  => "'",
-        "'"  => "'",
-        '’'  => "'",
-        '‘'  => "'",
-        '"'  => '"',
-        '"'  => '"',
-        '«'  => '"',
-        '»'  => '"',
+        '`' => "'",
+        '´' => "'",
+        "'" => "'",
+        '’' => "'",
+        '‘' => "'",
+        '"' => '"',
+        '«' => '"',
+        '»' => '"',
 
         // Dash/hyphen normalization
-        '–'  => '-',  // en-dash
-        '—'  => '-',  // em-dash
-        '‒'  => '-',  // figure dash
-        '−'  => '-',  // minus sign
-        '⁃'  => '-',  // hyphen bullet
+        '–' => '-',  // en-dash
+        '—' => '-',  // em-dash
+        '‒' => '-',  // figure dash
+        '−' => '-',  // minus sign
+        '⁃' => '-',  // hyphen bullet
 
         // Slash normalization
-        '∕'  => '/',
-        '⁄'  => '/',
+        '∕' => '/',
+        '⁄' => '/',
         '＼' => '\\',
 
         // Period/dot confusion
-        '·'  => '.',
-        '•'  => '.',
-        '●'  => '.',
+        '·' => '.',
+        '•' => '.',
+        '●' => '.',
 
         // Space artifacts
         '\xC2\xA0' => ' ',  // non-breaking space
@@ -321,42 +319,42 @@ return [
     // Common OCR mistakes in seat IDs (e.g., "att/d11-LL" misread)
     'seat_id_corrections' => [
         // Attendant door prefix variations
-        'Att/'   => 'att/',
-        'ATT/'   => 'att/',
-        'att /   '=> 'att/',
-        'aLt/'   => 'att/',
-        'aft/'   => 'att/',  // Note: 'aft-LC' is valid, don't overcorrect
+        'Att/' => 'att/',
+        'ATT/' => 'att/',
+        'att /   ' => 'att/',
+        'aLt/' => 'att/',
+        'aft/' => 'att/',  // Note: 'aft-LC' is valid, don't overcorrect
 
         // Pilot/Copilot variations
-        'Pilot'   => 'pilot',
-        'PILOT'   => 'pilot',
+        'Pilot' => 'pilot',
+        'PILOT' => 'pilot',
         'Copilot' => 'copilot',
         'COPILOT' => 'copilot',
         'CoPilot' => 'copilot',
         'Co-Pilot' => 'copilot',
         'Co-pilot' => 'copilot',
-        'Copil'   => 'copilot',
+        'Copil' => 'copilot',
 
         // Observer variations
         'Observer1' => 'observer1',
         'Observer2' => 'observer2',
         'OBSERVER1' => 'observer1',
         'OBSERVER2' => 'observer2',
-        'Oberver1'  => 'observer1',  // common typo
-        'Oberver2'  => 'observer2',
+        'Oberver1' => 'observer1',  // common typo
+        'Oberver2' => 'observer2',
 
         // Pax/Inf spare ID normalization
-        'PAX-'   => 'pax-',
-        'Pax-'   => 'pax-',
-        'INF-'   => 'inf-',
-        'Inf-'   => 'inf-',
+        'PAX-' => 'pax-',
+        'Pax-' => 'pax-',
+        'INF-' => 'inf-',
+        'Inf-' => 'inf-',
         'SPARE-' => 'pax-',
         'Spare-' => 'pax-',
         'Adult-' => 'pax-',
         'ADULT-' => 'pax-',
         'Infant-' => 'inf-',
         'INFANT-' => 'inf-',
-        'Baby-'  => 'inf-',
+        'Baby-' => 'inf-',
         'Child-' => 'inf-',
     ],
 
@@ -366,15 +364,15 @@ return [
     // Aircraft registrations follow the PK-XXX format (Indonesian)
     'registration_corrections' => [
         // Common OCR errors in "PK-" prefix
-        'PK -'  => 'PK-',   // space before dash
-        'PK- '  => 'PK-',   // space after dash
-        'PK –'  => 'PK-',   // en-dash
-        'PK—'   => 'PK-',   // em-dash
-        'P K-'  => 'PK-',   // space in prefix
-        'PX-'   => 'PK-',   // X↔K confusion
-        'BK-'   => 'PK-',   // B↔P confusion
-        'FK-'   => 'PK-',   // F↔P confusion (rare)
-        'RK-'   => 'PK-',   // R↔P confusion
+        'PK -' => 'PK-',   // space before dash
+        'PK- ' => 'PK-',   // space after dash
+        'PK –' => 'PK-',   // en-dash
+        'PK—' => 'PK-',   // em-dash
+        'P K-' => 'PK-',   // space in prefix
+        'PX-' => 'PK-',   // X↔K confusion
+        'BK-' => 'PK-',   // B↔P confusion
+        'FK-' => 'PK-',   // F↔P confusion (rare)
+        'RK-' => 'PK-',   // R↔P confusion
 
         // Common letter substitutions in suffix
         // (applied character-by-character after prefix)
@@ -410,7 +408,7 @@ return [
     // ═══════════════════════════════════════════════════════════════════
     'valid_months' => [
         'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN',
-        'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'
+        'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC',
     ],
 
     // ═══════════════════════════════════════════════════════════════════
@@ -520,46 +518,46 @@ return [
     // Normalize aircraft type strings from OCR
     'aircraft_type_corrections' => [
         // B737 variants
-        'B-737'   => 'B737',
-        'B 737'   => 'B737',
-        'b737'    => 'B737',
-        '737'     => 'B737',
+        'B-737' => 'B737',
+        'B 737' => 'B737',
+        'b737' => 'B737',
+        '737' => 'B737',
         'B737-800' => 'B737',
-        'B737-8'  => 'B737',
-        'B737NG'  => 'B737',
+        'B737-8' => 'B737',
+        'B737NG' => 'B737',
 
         // B777 variants
-        'B-777'   => 'B777',
-        'B 777'   => 'B777',
-        'b777'    => 'B777',
-        '777'     => 'B777',
+        'B-777' => 'B777',
+        'B 777' => 'B777',
+        'b777' => 'B777',
+        '777' => 'B777',
         'B777-300' => 'B777',
         'B777-300ER' => 'B777',
-        'B777-3'  => 'B777',
-        'B773'    => 'B777',
+        'B777-3' => 'B777',
+        'B773' => 'B777',
 
         // A330 variants
-        'A-330'   => 'A330',
-        'A 330'   => 'A330',
-        'a330'    => 'A330',
-        '330'     => 'A330',
+        'A-330' => 'A330',
+        'A 330' => 'A330',
+        'a330' => 'A330',
+        '330' => 'A330',
         'A330-900' => 'A330-900',
         'A330-900NEO' => 'A330-900',
         'A330-300' => 'A330-300',
-        'A333'    => 'A330',
-        'A339'    => 'A330-900',
+        'A333' => 'A330',
+        'A339' => 'A330-900',
 
         // A320 variants
-        'A-320'   => 'A320',
-        'A 320'   => 'A320',
-        'a320'    => 'A320',
-        '320'     => 'A320',
+        'A-320' => 'A320',
+        'A 320' => 'A320',
+        'a320' => 'A320',
+        '320' => 'A320',
         'A320-200' => 'A320',
 
         // ATR72
-        'ATR-72'  => 'ATR72',
-        'ATR 72'  => 'ATR72',
-        'atr72'   => 'ATR72',
+        'ATR-72' => 'ATR72',
+        'ATR 72' => 'ATR72',
+        'atr72' => 'ATR72',
     ],
 
     // ═══════════════════════════════════════════════════════════════════

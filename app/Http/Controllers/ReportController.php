@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Aircraft;
 use App\Models\Seat;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Http\Request;
 
 class ReportController extends Controller
 {
@@ -18,9 +17,9 @@ class ReportController extends Controller
         $aircraft = Aircraft::where('registration', $registration)->firstOrFail();
 
         // Load seats relationship if not already loaded, or fetch manually if needed
-        // Assuming we need existing logic to fetch seats. 
+        // Assuming we need existing logic to fetch seats.
         // Ideally we reuse the logic from AircraftController or a Service.
-        // For now, I'll replicate the basic fetch or assume $aircraft->seats is enough if relation exists 
+        // For now, I'll replicate the basic fetch or assume $aircraft->seats is enough if relation exists
         // but looking at AircraftController, it might be using a specific query.
 
         // Let's check AircraftController logic later. For now, assuming $aircraft->seats is accessible.
@@ -45,7 +44,7 @@ class ReportController extends Controller
         $pdf->setPaper('a4', 'portrait');
 
         // 4. Return stream (preview di browser)
-        return $pdf->stream('Report_' . $registration . '_' . date('Y-m-d') . '.pdf');
+        return $pdf->stream('Report_'.$registration.'_'.date('Y-m-d').'.pdf');
     }
 
     /**
@@ -94,6 +93,6 @@ class ReportController extends Controller
         $pdf->setPaper('a4', 'portrait');
 
         // Return stream
-        return $pdf->stream('BlankForm_' . $registration . '_' . date('Y-m-d') . '.pdf');
+        return $pdf->stream('BlankForm_'.$registration.'_'.date('Y-m-d').'.pdf');
     }
 }

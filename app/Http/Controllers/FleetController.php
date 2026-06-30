@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ActivityLog;
 use App\Models\Aircraft;
 use App\Models\Airline;
-use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -37,10 +37,11 @@ class FleetController extends Controller
             // e.g. "b737-e46" -> "B737 E46"
             $name = strtoupper(str_replace('-', ' ', $filename));
 
-            $layouts[$filename] = $name . ' (' . $filename . ')';
+            $layouts[$filename] = $name.' ('.$filename.')';
         }
 
         ksort($layouts);
+
         return $layouts;
     }
 
@@ -53,6 +54,7 @@ class FleetController extends Controller
     {
         $layoutOptions = $this->getLayoutOptions();
         $airlines = Airline::orderBy('name')->get();
+
         return view('fleet.create', compact('layoutOptions', 'airlines'));
     }
 
@@ -87,6 +89,7 @@ class FleetController extends Controller
         $aircraft = Aircraft::findOrFail($id);
         $layoutOptions = $this->getLayoutOptions();
         $airlines = Airline::orderBy('name')->get();
+
         return view('fleet.edit', compact('aircraft', 'layoutOptions', 'airlines'));
     }
 
@@ -127,7 +130,7 @@ class FleetController extends Controller
                 'details' => [
                     'old' => $oldPn,
                     'new' => $newPn,
-                ]
+                ],
             ]);
         }
 
@@ -179,6 +182,7 @@ class FleetController extends Controller
     public function editAirline(string $id)
     {
         $airline = Airline::findOrFail($id);
+
         return view('fleet.airline-edit', compact('airline'));
     }
 
@@ -188,7 +192,7 @@ class FleetController extends Controller
     public function updateAirline(Request $request, string $id)
     {
         $request->validate([
-            'name' => 'required|unique:airlines,name,' . $id,
+            'name' => 'required|unique:airlines,name,'.$id,
             'code' => 'nullable|max:10',
         ]);
 

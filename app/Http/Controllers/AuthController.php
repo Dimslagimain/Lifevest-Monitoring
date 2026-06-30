@@ -34,8 +34,9 @@ class AuthController extends Controller
 
             if ($user->is_suspended) {
                 Auth::logout();
+
                 return back()->withErrors([
-                    'email' => 'Your account has been suspended. Reason: ' . $user->suspension_reason,
+                    'email' => 'Your account has been suspended. Reason: '.$user->suspension_reason,
                 ])->onlyInput('email');
             }
 

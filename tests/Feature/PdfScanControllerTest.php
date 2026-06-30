@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\User;
 use App\Services\PdfParserService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Mockery\MockInterface;
@@ -15,17 +16,19 @@ class PdfScanControllerTest extends TestCase
     use RefreshDatabase;
 
     private User $superadmin;
+
     private User $admin;
+
     private User $regularUser;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->superadmin = User::factory()->create(['role' => 'superadmin']);
         $this->admin = User::factory()->create(['role' => 'admin']);
         $this->regularUser = User::factory()->create(['role' => 'user']);
-        
+
         Storage::fake('temp_scans');
     }
 
@@ -60,7 +63,7 @@ class PdfScanControllerTest extends TestCase
             'registration' => 'PK-GIA',
             'aircraftType' => 'B777',
             'extractedData' => [['seat_id' => '1A', 'expiry_date' => '2030-01-01', 'registration' => 'PK-GIA']],
-            'scanImages' => ['/storage/scan_preview/page_1.jpg']
+            'scanImages' => ['/storage/scan_preview/page_1.jpg'],
         ];
 
         session(['pdf_scan_result' => $dummyResult]);
@@ -76,7 +79,7 @@ class PdfScanControllerTest extends TestCase
         session(['pdf_scan_result' => ['some' => 'data']]);
 
         $response = $this->actingAs($this->superadmin)->get(route('superadmin.pdf-scan.clear'));
-        
+
         $response->assertRedirect(route('superadmin.pdf-scan'));
         $this->assertNull(session('pdf_scan_result'));
     }
@@ -100,20 +103,20 @@ class PdfScanControllerTest extends TestCase
                     'registration' => 'PK-GIA',
                     'aircraft_type' => 'B777-300',
                     'seats' => [
-                        ['seat_id' => '1A', 'expiry_date' => '2030-01-01', 'registration' => 'PK-GIA']
-                    ]
+                        ['seat_id' => '1A', 'expiry_date' => '2030-01-01', 'registration' => 'PK-GIA'],
+                    ],
                 ]);
         });
 
         $response = $this->actingAs($this->superadmin)
             ->post(route('superadmin.pdf-scan.process'), [
-                'file' => $file
+                'file' => $file,
             ]);
 
         $response->assertStatus(200);
         $response->assertViewIs('superadmin.pdf-scan-review');
         $response->assertViewHas('registration', 'PK-GIA');
-        
+
         // Assert stored in session
         $this->assertNotNull(session('pdf_scan_result'));
         $this->assertEquals('PK-GIA', session('pdf_scan_result.registration'));
@@ -126,13 +129,13 @@ class PdfScanControllerTest extends TestCase
         $this->mock(PdfParserService::class, function (MockInterface $mock) {
             $mock->shouldReceive('processFile')
                 ->once()
-                ->andThrow(new \Illuminate\Http\Client\ConnectionException("Connection timeout"));
+                ->andThrow(new ConnectionException('Connection timeout'));
         });
 
         $response = $this->actingAs($this->superadmin)
             ->from(route('superadmin.pdf-scan'))
             ->post(route('superadmin.pdf-scan.process'), [
-                'file' => $file
+                'file' => $file,
             ]);
 
         $response->assertRedirect(route('superadmin.pdf-scan'));
@@ -147,13 +150,13 @@ class PdfScanControllerTest extends TestCase
         $this->mock(PdfParserService::class, function (MockInterface $mock) {
             $mock->shouldReceive('processFile')
                 ->once()
-                ->andThrow(new \Exception("API Error (HTTP 429) Rate limit reached"));
+                ->andThrow(new \Exception('API Error (HTTP 429) Rate limit reached'));
         });
 
         $response = $this->actingAs($this->superadmin)
             ->from(route('superadmin.pdf-scan'))
             ->post(route('superadmin.pdf-scan.process'), [
-                'file' => $file
+                'file' => $file,
             ]);
 
         $response->assertRedirect(route('superadmin.pdf-scan'));
@@ -172,8 +175,8 @@ class PdfScanControllerTest extends TestCase
                 'was_corrected' => true,
                 'correction_type' => 'corrected',
                 'suggestion' => 'Valid input',
-                'issue_detected' => 'None'
-            ]
+                'issue_detected' => 'None',
+            ],
         ];
 
         $response = $this->actingAs($this->superadmin)
@@ -181,7 +184,7 @@ class PdfScanControllerTest extends TestCase
                 'data' => $data,
                 'include_verification' => true,
                 'master_registration' => 'PK-GIA',
-                'aircraft_type' => 'B777-300'
+                'aircraft_type' => 'B777-300',
             ]);
 
         $response->assertStatus(200);

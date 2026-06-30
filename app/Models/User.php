@@ -3,20 +3,23 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
+    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
     /**
      * Role Constants
      */
     public const ROLE_SUPERADMIN = 'superadmin';
+
     public const ROLE_ADMIN = 'admin';
+
     public const ROLE_USER = 'user';
 
     /**
@@ -47,6 +50,7 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         $role = strtolower(trim($this->role));
+
         return in_array($role, [self::ROLE_SUPERADMIN, self::ROLE_ADMIN]);
     }
 

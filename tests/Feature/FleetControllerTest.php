@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
-use App\Models\Airline;
 use App\Models\Aircraft;
+use App\Models\Airline;
 use App\Models\Seat;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -14,7 +14,9 @@ class FleetControllerTest extends TestCase
     use RefreshDatabase;
 
     private User $admin;
+
     private User $regularUser;
+
     private Airline $airline;
 
     protected function setUp(): void
@@ -25,7 +27,7 @@ class FleetControllerTest extends TestCase
         $this->regularUser = User::factory()->create(['role' => 'user']);
         $this->airline = Airline::create([
             'name' => 'Garuda Indonesia',
-            'code' => 'GA'
+            'code' => 'GA',
         ]);
     }
 
@@ -47,7 +49,7 @@ class FleetControllerTest extends TestCase
             'airline_id' => $this->airline->id,
             'type' => 'B777',
             'layout' => 'b777-e26',
-            'status' => 'active'
+            'status' => 'active',
         ])->assertStatus(403);
     }
 
@@ -60,13 +62,13 @@ class FleetControllerTest extends TestCase
             'airline_id' => $this->airline->id,
             'type' => 'B777-300',
             'layout' => 'b777-e26',
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
         $response->assertRedirect(route('fleet.index'));
         $this->assertDatabaseHas('aircraft', [
             'registration' => 'PK-GIA',
-            'type' => 'B777-300'
+            'type' => 'B777-300',
         ]);
     }
 
@@ -79,7 +81,7 @@ class FleetControllerTest extends TestCase
             'airline_id' => $this->airline->id,
             'type' => 'B777',
             'layout' => 'b777-e26',
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
         $response = $this->from(route('fleet.create'))->post(route('fleet.store'), [
@@ -87,7 +89,7 @@ class FleetControllerTest extends TestCase
             'airline_id' => $this->airline->id,
             'type' => 'B777',
             'layout' => 'b777-e26',
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
         $response->assertRedirect(route('fleet.create'));
@@ -106,7 +108,7 @@ class FleetControllerTest extends TestCase
             'status' => 'active',
             'pn_adult' => '111',
             'pn_crew' => '222',
-            'pn_infant' => '333'
+            'pn_infant' => '333',
         ]);
 
         $response = $this->put(route('fleet.update', $aircraft->id), [
@@ -115,7 +117,7 @@ class FleetControllerTest extends TestCase
             'status' => 'prolong',
             'pn_adult' => '444',
             'pn_crew' => '222',
-            'pn_infant' => '333'
+            'pn_infant' => '333',
         ]);
 
         $response->assertRedirect(route('fleet.index'));
@@ -123,13 +125,13 @@ class FleetControllerTest extends TestCase
             'registration' => 'PK-GIA',
             'type' => 'B777-300ER',
             'status' => 'prolong',
-            'pn_adult' => '444'
+            'pn_adult' => '444',
         ]);
 
         // Check that activity log was registered
         $this->assertDatabaseHas('activity_logs', [
             'registration' => 'PK-GIA',
-            'action' => 'pn_update'
+            'action' => 'pn_update',
         ]);
     }
 
@@ -142,14 +144,14 @@ class FleetControllerTest extends TestCase
             'airline_id' => $this->airline->id,
             'type' => 'B777',
             'layout' => 'b777-e26',
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
         Seat::create([
             'registration' => 'PK-GIA',
             'seat_id' => '1A',
             'expiry_date' => '2030-01-01',
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
         $response = $this->delete(route('fleet.destroy', $aircraft->id));
@@ -167,7 +169,7 @@ class FleetControllerTest extends TestCase
         // Store Airline
         $response = $this->post(route('airlines.store'), [
             'name' => 'Citilink',
-            'code' => 'QG'
+            'code' => 'QG',
         ]);
 
         $response->assertRedirect(route('fleet.index', ['tab' => 'airlines']));
@@ -190,7 +192,7 @@ class FleetControllerTest extends TestCase
             'airline_id' => $this->airline->id,
             'type' => 'B777',
             'layout' => 'b777-e26',
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
         $response = $this->delete(route('airlines.destroy', $this->airline->id));

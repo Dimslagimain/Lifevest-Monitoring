@@ -24,7 +24,7 @@ class Seat extends Model
      */
     public function getStatusAttribute(): string
     {
-        if (!$this->expiry_date) {
+        if (! $this->expiry_date) {
             return 'no-data';
         }
 
@@ -37,6 +37,7 @@ class Seat extends Model
         } elseif ($daysRemaining < 180) {
             return 'warning';
         }
+
         return 'safe';
     }
 
@@ -45,9 +46,10 @@ class Seat extends Model
      */
     public function getDaysRemainingAttribute(): ?int
     {
-        if (!$this->expiry_date) {
+        if (! $this->expiry_date) {
             return null;
         }
+
         return now()->startOfDay()->diffInDays($this->expiry_date, false);
     }
 }

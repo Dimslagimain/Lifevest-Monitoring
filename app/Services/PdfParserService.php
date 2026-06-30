@@ -2,20 +2,23 @@
 
 namespace App\Services;
 
+use App\Models\Aircraft;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class PdfParserService
 {
     protected string $ghostscriptPath;
+
     protected ?string $apiKey;
+
     protected OcrPreprocessService $ocrPreprocess;
 
     public function __construct()
     {
         $this->ghostscriptPath = env('GHOSTSCRIPT_PATH', 'C:/Program Files/gs/gs10.07.0/bin/gswin64c.exe');
         $this->apiKey = env('OPENROUTER_API_KEY');
-        $this->ocrPreprocess = new OcrPreprocessService();
+        $this->ocrPreprocess = new OcrPreprocessService;
     }
 
     public function processFile(string $filePath): array
@@ -24,29 +27,31 @@ class PdfParserService
         if ($extension === 'pdf') {
             return $this->processPdf($filePath);
         }
-        
+
         $allResults = $this->analyzeWithAI([$filePath]);
-        
+
         // Save scan image for review page display
         $scanDir = 'scan_preview';
         $storageScanDir = storage_path("app/public/{$scanDir}");
-        if (!is_dir($storageScanDir)) {
+        if (! is_dir($storageScanDir)) {
             mkdir($storageScanDir, 0755, true);
         }
         // Clean old previews
-        foreach (glob($storageScanDir . '/*') as $old) @unlink($old);
-        
-        $filename = "page_1.jpg";
+        foreach (glob($storageScanDir.'/*') as $old) {
+            @unlink($old);
+        }
+
+        $filename = 'page_1.jpg';
         $imgRes = @imagecreatefromstring(file_get_contents($filePath));
         if ($imgRes !== false) {
-            imagejpeg($imgRes, $storageScanDir . '/' . $filename, 85);
+            imagejpeg($imgRes, $storageScanDir.'/'.$filename, 85);
             imagedestroy($imgRes);
         } else {
-            copy($filePath, $storageScanDir . '/' . $filename);
+            copy($filePath, $storageScanDir.'/'.$filename);
         }
-        
+
         $allResults['scan_images'] = ["/storage/{$scanDir}/{$filename}"];
-        
+
         return $allResults;
     }
 
@@ -54,29 +59,31 @@ class PdfParserService
     {
         $tempDir = storage_path('app/private/temp_pdf_pages');
         if (is_dir($tempDir)) {
-            foreach (glob($tempDir . '/*') as $file) @unlink($file);
+            foreach (glob($tempDir.'/*') as $file) {
+                @unlink($file);
+            }
         } else {
             mkdir($tempDir, 0755, true);
         }
 
-        $outputPattern = $tempDir . '/page_%03d.png';
-        $dpi = (int)env('PDF_SCAN_DPI', 300);
+        $outputPattern = $tempDir.'/page_%03d.png';
+        $dpi = (int) env('PDF_SCAN_DPI', 300);
         // Configurable DPI: default 300 (maximum readability/performance balance)
         $gsCmd = sprintf('"%s" -dNOPAUSE -dBATCH -sDEVICE=png16m -r%d -sOutputFile="%s" "%s" 2>&1', $this->ghostscriptPath, $dpi, $outputPattern, $pdfPath);
-        
+
         Log::info('[PDF Scanner] Running Ghostscript command', ['cmd' => $gsCmd]);
         $gsOutput = [];
         $gsReturnCode = 0;
         exec($gsCmd, $gsOutput, $gsReturnCode);
         Log::info('[PDF Scanner] Ghostscript result', ['return_code' => $gsReturnCode, 'output_lines' => count($gsOutput)]);
 
-        $pageImages = glob($tempDir . '/page_*.png');
+        $pageImages = glob($tempDir.'/page_*.png');
         if (empty($pageImages)) {
             Log::error('[PDF Scanner] Ghostscript produced no images', ['gs_output' => implode("\n", $gsOutput)]);
             throw new \Exception('Gagal memproses PDF ke gambar. Pastikan Ghostscript terinstall dengan benar.');
         }
         sort($pageImages);
-        Log::info('[PDF Scanner] Processing ' . count($pageImages) . ' page(s) AT ONCE');
+        Log::info('[PDF Scanner] Processing '.count($pageImages).' page(s) AT ONCE');
 
         // Send ALL pages to AI in a single request!
         $allResults = $this->analyzeWithAI($pageImages);
@@ -85,22 +92,26 @@ class PdfParserService
         $scanImagePaths = [];
         $scanDir = 'scan_preview';
         $storageScanDir = storage_path("app/public/{$scanDir}");
-        if (!is_dir($storageScanDir)) {
+        if (! is_dir($storageScanDir)) {
             mkdir($storageScanDir, 0755, true);
         }
         // Clean old previews
-        foreach (glob($storageScanDir . '/*') as $old) @unlink($old);
-        
+        foreach (glob($storageScanDir.'/*') as $old) {
+            @unlink($old);
+        }
+
         foreach ($pageImages as $idx => $img) {
-            $filename = "page_" . ($idx + 1) . ".jpg";
+            $filename = 'page_'.($idx + 1).'.jpg';
             // Compress to JPEG for web display
             $imgRes = imagecreatefrompng($img);
-            if ($imgRes === false) $imgRes = imagecreatefromstring(file_get_contents($img));
+            if ($imgRes === false) {
+                $imgRes = imagecreatefromstring(file_get_contents($img));
+            }
             if ($imgRes !== false) {
-                imagejpeg($imgRes, $storageScanDir . '/' . $filename, 85);
+                imagejpeg($imgRes, $storageScanDir.'/'.$filename, 85);
                 imagedestroy($imgRes);
             } else {
-                copy($img, $storageScanDir . '/' . $filename);
+                copy($img, $storageScanDir.'/'.$filename);
             }
             $scanImagePaths[] = "/storage/{$scanDir}/{$filename}";
         }
@@ -109,7 +120,7 @@ class PdfParserService
         // Log raw IDs for debugging
         $spareIds = array_filter(
             array_column($allResults['seats'], 'seat_id'),
-            fn($id) => preg_match('/pax|inf|spare|adult|infant|child|baby/i', $id)
+            fn ($id) => preg_match('/pax|inf|spare|adult|infant|child|baby/i', $id)
         );
         Log::info('[PDF Scanner] Spare IDs from AI', ['spare_ids' => array_values($spareIds)]);
 
@@ -122,10 +133,10 @@ class PdfParserService
             // PAX / Adult patterns
             if (preg_match('/^(pax|adult|spare.?pax|spare.?adult|spares?)-?\d/i', $id) || $id === 'pax') {
                 $paxSeats[] = $seat;
-            // INF / Infant patterns
+                // INF / Infant patterns
             } elseif (preg_match('/^(inf|infant|baby|child|spare.?inf|spare.?infant)-?\d/i', $id)) {
                 $infSeats[] = $seat;
-            // Generic spare → assume pax
+                // Generic spare → assume pax
             } elseif (str_contains($id, 'spare') || str_contains($id, 'adult') || str_contains($id, 'pax')) {
                 $paxSeats[] = $seat;
             } elseif (str_contains($id, 'inf') || str_contains($id, 'infant') || str_contains($id, 'baby')) {
@@ -135,10 +146,11 @@ class PdfParserService
             }
         }
         // Sort pax and inf by their number suffix
-        $sortByNum = function($a, $b) {
+        $sortByNum = function ($a, $b) {
             preg_match('/(\d+)$/', $a['seat_id'] ?? '', $ma);
             preg_match('/(\d+)$/', $b['seat_id'] ?? '', $mb);
-            return ((int)($ma[1] ?? 0)) - ((int)($mb[1] ?? 0));
+
+            return ((int) ($ma[1] ?? 0)) - ((int) ($mb[1] ?? 0));
         };
         usort($paxSeats, $sortByNum);
         usort($infSeats, $sortByNum);
@@ -155,6 +167,7 @@ class PdfParserService
         ]);
 
         $this->cleanTempDir($tempDir);
+
         return $allResults;
     }
 
@@ -170,13 +183,13 @@ class PdfParserService
         $openRouterKey = env('OPENROUTER_API_KEY');
         $snifoxKey = env('SNIFOX_API_KEY');
         $flazKey = env('FLAZ_API_KEY');
-        
+
         if (empty($anthropicKey) && empty($openaiKey) && empty($geminiKey) && empty($openRouterKey) && empty($snifoxKey) && empty($flazKey)) {
             throw new \Exception('Belum ada API Key. Set FLAZ_API_KEY, SNIFOX_API_KEY, ANTHROPIC_API_KEY, OPENAI_API_KEY, GEMINI_API_KEY, atau OPENROUTER_API_KEY di .env');
         }
 
         // Priority: Flaz > Snifox > Gemini > Anthropic > OpenAI > OpenRouter
-        $provider = !empty($flazKey) ? 'flaz' : (!empty($snifoxKey) ? 'openrouter' : (!empty($geminiKey) ? 'gemini' : (!empty($anthropicKey) ? 'anthropic' : (!empty($openaiKey) ? 'openai' : 'openrouter'))));
+        $provider = ! empty($flazKey) ? 'flaz' : (! empty($snifoxKey) ? 'openrouter' : (! empty($geminiKey) ? 'gemini' : (! empty($anthropicKey) ? 'anthropic' : (! empty($openaiKey) ? 'openai' : 'openrouter'))));
         $tesseractTranscript = '';
         $visionTranscript = '';
 
@@ -186,7 +199,7 @@ class PdfParserService
         $aiImagePaths = $imagePaths; // Default: use original images
         $ocrText = '';
         try {
-            Log::info('[PDF Scanner] Running Python OCR preprocessing on ' . count($imagePaths) . ' image(s)');
+            Log::info('[PDF Scanner] Running Python OCR preprocessing on '.count($imagePaths).' image(s)');
             $ocrResult = $this->ocrPreprocess->preprocess($imagePaths);
 
             if ($ocrResult['success'] ?? false) {
@@ -194,14 +207,14 @@ class PdfParserService
                 // Each page is split into 3 strips, so Claude only sees ~15 rows per tile
                 $aiTiles = $ocrResult['ai_tile_images'] ?? [];
                 $aiEnhanced = $ocrResult['ai_enhanced_images'] ?? [];
-                
-                if (!empty($aiTiles)) {
+
+                if (! empty($aiTiles)) {
                     $aiImagePaths = $aiTiles;
                     Log::info('[PDF Scanner] Using TILED images for AI (row-drift prevention)', [
                         'tile_count' => count($aiTiles),
                         'original_pages' => count($imagePaths),
                     ]);
-                } elseif (!empty($aiEnhanced) && count($aiEnhanced) === count($imagePaths)) {
+                } elseif (! empty($aiEnhanced) && count($aiEnhanced) === count($imagePaths)) {
                     $aiImagePaths = $aiEnhanced;
                     Log::info('[PDF Scanner] Using AI-enhanced images (fallback, no tiles)', [
                         'count' => count($aiImagePaths),
@@ -215,7 +228,7 @@ class PdfParserService
                 $orientations = $ocrResult['orientations'] ?? [];
                 foreach ($orientations as $idx => $orient) {
                     if ($orient['needs_rotation'] ?? false) {
-                        Log::info("[PDF Scanner] Page " . ($idx + 1) . " was auto-rotated", [
+                        Log::info('[PDF Scanner] Page '.($idx + 1).' was auto-rotated', [
                             'angle' => $orient['angle'],
                             'confidence' => $orient['confidence'],
                         ]);
@@ -235,15 +248,15 @@ class PdfParserService
         // === STEP B: GOOGLE CLOUD VISION API (Additional OCR Fallback) ===
         $visionText = '';
         $visionApiKey = env('GOOGLE_VISION_API_KEY');
-        if (!empty($visionApiKey)) {
+        if (! empty($visionApiKey)) {
             $visionText = $this->getVisionOcrText($imagePaths, $visionApiKey);
         }
 
         // === STEP C: DETECT AIRCRAFT TYPE FROM OCR TEXT ===
         // Combine all OCR text for detection
-        $combinedOcrText = trim($ocrText . "\n" . $visionText);
+        $combinedOcrText = trim($ocrText."\n".$visionText);
         $detectedAircraft = null;
-        if (!empty($combinedOcrText)) {
+        if (! empty($combinedOcrText)) {
             $detectedAircraft = $this->detectAircraftFromText($combinedOcrText);
         }
 
@@ -278,16 +291,16 @@ class PdfParserService
         }
 
         // === STEP E: APPEND OCR TRANSCRIPTS TO PROMPT ===
-        if (!empty($ocrText)) {
+        if (! empty($ocrText)) {
             $prompt .= "\n\n=== PYTESSERACT OCR TRANSCRIPT (OpenCV Enhanced) ===\n";
             $prompt .= "Below is text extracted by Tesseract OCR from OpenCV-enhanced images. Use this as REFERENCE for reading handwriting (especially dates). Match these text strings to the table structure you see in the image:\n";
-            $prompt .= "```\n" . substr($ocrText, 0, 8000) . "\n```\n";
+            $prompt .= "```\n".substr($ocrText, 0, 8000)."\n```\n";
         }
 
-        if (!empty($visionText)) {
+        if (! empty($visionText)) {
             $prompt .= "\n\n=== GOOGLE CLOUD VISION OCR TRANSCRIPT ===\n";
             $prompt .= "Below is the exact text extracted by a highly accurate OCR engine. Use this as your PRIMARY source of truth for reading handwriting (especially dates). Match these text strings to the table structure you see in the image:\n";
-            $prompt .= "```\n" . $visionText . "\n```\n";
+            $prompt .= "```\n".$visionText."\n```\n";
         }
 
         $geminiParts = [['text' => $prompt]];
@@ -304,16 +317,16 @@ class PdfParserService
                 // Fallback: try as any format
                 $img = imagecreatefromstring(file_get_contents($imagePath));
             }
-            
+
             if ($img !== false) {
                 // === IMAGE ENHANCEMENT FOR BETTER OCR ===
                 // 1. Boost contrast so handwriting stands out from faint grid lines
                 imagefilter($img, IMG_FILTER_CONTRAST, -20); // negative = more contrast
                 // 2. Sharpen using unsharp mask convolution
                 $sharpenMatrix = [
-                    [ 0, -1,  0],
+                    [0, -1,  0],
                     [-1,  9, -1],
-                    [ 0, -1,  0],
+                    [0, -1,  0],
                 ];
                 $divisor = array_sum(array_map('array_sum', $sharpenMatrix)); // = 5
                 imageconvolution($img, $sharpenMatrix, $divisor, 0);
@@ -341,29 +354,29 @@ class PdfParserService
                     'type' => 'base64',
                     'media_type' => $mimeType,
                     'data' => $imageData,
-                ]
+                ],
             ];
 
             $geminiParts[] = [
                 'inline_data' => [
                     'mime_type' => $mimeType,
-                    'data' => $imageData
-                ]
+                    'data' => $imageData,
+                ],
             ];
 
             $openAiContent[] = [
                 'type' => 'image_url',
                 'image_url' => [
                     'url' => "data:{$mimeType};base64,{$imageData}",
-                    'detail' => 'high' // Use high detail for handwriting accuracy
-                ]
+                    'detail' => 'high', // Use high detail for handwriting accuracy
+                ],
             ];
 
             $openRouterContent[] = [
                 'type' => 'image_url',
                 'image_url' => [
-                    'url' => "data:{$mimeType};base64,{$imageData}"
-                ]
+                    'url' => "data:{$mimeType};base64,{$imageData}",
+                ],
             ];
         }
 
@@ -377,7 +390,7 @@ class PdfParserService
             try {
                 if ($provider === 'anthropic') {
                     // === ANTHROPIC CLAUDE 3.5 SONNET (Best for table reading) ===
-                    Log::info("[PDF Scanner] Anthropic Claude call attempt {$attempt}/{$maxRetries} with " . count($imagePaths) . " image(s)");
+                    Log::info("[PDF Scanner] Anthropic Claude call attempt {$attempt}/{$maxRetries} with ".count($imagePaths).' image(s)');
 
                     $response = Http::timeout(240)->withHeaders([
                         'x-api-key' => $anthropicKey,
@@ -390,94 +403,94 @@ class PdfParserService
                         'messages' => [
                             [
                                 'role' => 'user',
-                                'content' => $anthropicContent
-                            ]
-                        ]
+                                'content' => $anthropicContent,
+                            ],
+                        ],
                     ]);
 
                 } elseif ($provider === 'openai') {
                     // === OPENAI GPT-4o Vision (Best for handwriting) ===
-                    Log::info("[PDF Scanner] OpenAI GPT-4o call attempt {$attempt}/{$maxRetries} with " . count($imagePaths) . " image(s)");
+                    Log::info("[PDF Scanner] OpenAI GPT-4o call attempt {$attempt}/{$maxRetries} with ".count($imagePaths).' image(s)');
 
                     $response = Http::timeout(240)->withHeaders([
-                        'Authorization' => 'Bearer ' . $openaiKey,
+                        'Authorization' => 'Bearer '.$openaiKey,
                         'Content-Type' => 'application/json',
                     ])->post('https://api.openai.com/v1/chat/completions', [
                         'model' => 'gpt-4o',
                         'messages' => [
                             [
                                 'role' => 'user',
-                                'content' => $openAiContent
-                            ]
+                                'content' => $openAiContent,
+                            ],
                         ],
                         'temperature' => 0.1,
                         'max_tokens' => 16000,
-                        'response_format' => ['type' => 'json_object']
+                        'response_format' => ['type' => 'json_object'],
                     ]);
 
                 } elseif ($provider === 'gemini') {
                     // === GOOGLE GEMINI API ===
-                    Log::info("[PDF Scanner] Google Gemini API call attempt {$attempt}/{$maxRetries} with " . count($imagePaths) . " image(s)");
+                    Log::info("[PDF Scanner] Google Gemini API call attempt {$attempt}/{$maxRetries} with ".count($imagePaths).' image(s)');
 
                     $geminiModel = env('GEMINI_MODEL', 'gemini-2.5-flash');
                     $response = Http::timeout(240)
                         ->post("https://generativelanguage.googleapis.com/v1beta/models/{$geminiModel}:generateContent?key={$geminiKey}", [
                             'contents' => [
                                 [
-                                    'parts' => $geminiParts
-                                ]
+                                    'parts' => $geminiParts,
+                                ],
                             ],
                             'generationConfig' => [
                                 'temperature' => 0.1,
                                 'maxOutputTokens' => 65536,
                                 'responseMimeType' => 'application/json',
-                            ]
+                            ],
                         ]);
                 } elseif ($provider === 'flaz') {
                     // === FLAZ.ID AI (OpenAI-compatible) ===
                     $flazModel = env('FLAZ_MODEL', 'claude-sonnet-4-6');
-                    Log::info("[PDF Scanner] Flaz.id call attempt {$attempt}/{$maxRetries} with " . count($imagePaths) . " image(s)", [
+                    Log::info("[PDF Scanner] Flaz.id call attempt {$attempt}/{$maxRetries} with ".count($imagePaths).' image(s)', [
                         'model' => $flazModel,
                     ]);
 
                     $response = Http::timeout(300)->withHeaders([
-                        'Authorization' => 'Bearer ' . $flazKey,
+                        'Authorization' => 'Bearer '.$flazKey,
                         'Content-Type' => 'application/json',
                     ])->post('https://ai.flaz.id/v1/chat/completions', [
                         'model' => $flazModel,
                         'messages' => [
                             [
                                 'role' => 'system',
-                                'content' => 'You are a JSON-only output machine. Never output anything except valid minified JSON. No markdown, no explanation, no code blocks.'
+                                'content' => 'You are a JSON-only output machine. Never output anything except valid minified JSON. No markdown, no explanation, no code blocks.',
                             ],
                             [
                                 'role' => 'user',
-                                'content' => $openAiContent
-                            ]
+                                'content' => $openAiContent,
+                            ],
                         ],
                         'temperature' => 0.05,
                         'max_tokens' => 32000,
                     ]);
                 } else {
                     // === SNIFOX AI / OPENROUTER (OpenAI-compatible) ===
-                    $isSnifox = !empty($snifoxKey);
+                    $isSnifox = ! empty($snifoxKey);
                     $routerKey = $isSnifox ? $snifoxKey : $openRouterKey;
                     $routerBase = $isSnifox ? 'https://core.snifoxai.com/v1' : 'https://openrouter.ai/api/v1';
                     $routerModel = $isSnifox
                         ? env('SNIFOX_MODEL', 'google/gemini-3.1-pro-preview')
                         : 'google/gemini-3.1-pro-preview';
 
-                    Log::info("[PDF Scanner] " . ($isSnifox ? 'Snifox' : 'OpenRouter') . " API call attempt {$attempt}/{$maxRetries} with " . count($imagePaths) . " image(s)", [
+                    Log::info('[PDF Scanner] '.($isSnifox ? 'Snifox' : 'OpenRouter')." API call attempt {$attempt}/{$maxRetries} with ".count($imagePaths).' image(s)', [
                         'key_prefix' => substr($routerKey, 0, 15),
                         'model' => $routerModel,
                         'base' => $routerBase,
                     ]);
 
                     $headers = [
-                        'Authorization' => 'Bearer ' . $routerKey,
+                        'Authorization' => 'Bearer '.$routerKey,
                         'Content-Type' => 'application/json',
                     ];
-                    if (!$isSnifox) {
+                    if (! $isSnifox) {
                         $headers['HTTP-Referer'] = 'http://localhost:8000';
                         $headers['X-Title'] = 'Life Vest Tracker';
                     }
@@ -487,12 +500,12 @@ class PdfParserService
                         'messages' => [
                             [
                                 'role' => 'system',
-                                'content' => 'You are a JSON-only output machine. Never output anything except valid minified JSON. No markdown, no explanation, no code blocks.'
+                                'content' => 'You are a JSON-only output machine. Never output anything except valid minified JSON. No markdown, no explanation, no code blocks.',
                             ],
                             [
                                 'role' => 'user',
-                                'content' => $openRouterContent
-                            ]
+                                'content' => $openRouterContent,
+                            ],
                         ],
                         'temperature' => 0.05,
                         'max_tokens' => 32000,
@@ -506,13 +519,17 @@ class PdfParserService
                         'status' => $response->status(),
                         'body' => substr($errorBody, 0, 500),
                     ]);
-                    $lastError = new \Exception('API Error (HTTP ' . $response->status() . '): ' . substr($errorBody, 0, 200));
-                    if ($attempt < $maxRetries) { sleep(2); continue; }
+                    $lastError = new \Exception('API Error (HTTP '.$response->status().'): '.substr($errorBody, 0, 200));
+                    if ($attempt < $maxRetries) {
+                        sleep(2);
+
+                        continue;
+                    }
                     throw $lastError;
                 }
 
                 $responseData = $response->json();
-                
+
                 // Parse response berdasarkan provider
                 if ($provider === 'anthropic') {
                     $rawContent = $responseData['content'][0]['text'] ?? '';
@@ -522,29 +539,37 @@ class PdfParserService
                     // OpenAI and OpenRouter use same response format
                     $rawContent = $responseData['choices'][0]['message']['content'] ?? '';
                 }
-                
+
                 // Strip the loop detection bypass tag
                 $rawContent = str_replace('[ignoring loop detection]', '', $rawContent);
 
                 Log::info("[PDF Scanner] Raw AI response (provider: {$provider}, attempt {$attempt})", [
                     'content_length' => strlen($rawContent),
-                    'raw_preview'    => substr($rawContent, 0, 3000),
+                    'raw_preview' => substr($rawContent, 0, 3000),
                 ]);
 
                 if (empty(trim($rawContent))) {
                     Log::warning("[PDF Scanner] API returned empty content (attempt {$attempt})");
                     $lastError = new \Exception('AI returned empty content');
-                    if ($attempt < $maxRetries) { sleep(2); continue; }
+                    if ($attempt < $maxRetries) {
+                        sleep(2);
+
+                        continue;
+                    }
                     throw $lastError;
                 }
 
                 // Use the dedicated extractJson method
                 $parsedData = $this->extractJson($rawContent);
-                
+
                 if ($parsedData === null) {
-                    Log::error("[PDF Scanner] JSON extraction failed", ['raw_preview' => substr($rawContent, 0, 500)]);
+                    Log::error('[PDF Scanner] JSON extraction failed', ['raw_preview' => substr($rawContent, 0, 500)]);
                     $lastError = new \Exception('Gagal parsing JSON dari response AI');
-                    if ($attempt < $maxRetries) { sleep(2); continue; }
+                    if ($attempt < $maxRetries) {
+                        sleep(2);
+
+                        continue;
+                    }
                     throw $lastError;
                 }
 
@@ -569,7 +594,7 @@ class PdfParserService
                 $stage1Result = [
                     'registration' => $registration,
                     'aircraft_type' => $aircraftType,
-                    'seats' => $seats
+                    'seats' => $seats,
                 ];
 
                 // === STEP D: GPT-5 REFINEMENT PASS (Stage 2) ===
@@ -579,7 +604,7 @@ class PdfParserService
                 $refinementModel = env('FLAZ_REFINEMENT_MODEL', 'gpt-5');
                 $refinementKey = env('FLAZ_API_KEY'); // Same Flaz.id API key
 
-                if ($refinementEnabled && !empty($refinementKey) && !empty($refinementModel)) {
+                if ($refinementEnabled && ! empty($refinementKey) && ! empty($refinementModel)) {
                     try {
                         $stage1Result = $this->refineWithGPT5(
                             $stage1Result,
@@ -600,7 +625,11 @@ class PdfParserService
             } catch (\Exception $e) {
                 Log::error("[PDF Scanner] Exception (attempt {$attempt})", ['error' => $e->getMessage()]);
                 $lastError = $e;
-                if ($attempt < $maxRetries) { sleep(2); continue; }
+                if ($attempt < $maxRetries) {
+                    sleep(2);
+
+                    continue;
+                }
             }
         }
         throw $lastError ?? new \Exception('Gagal menganalisis gambar setelah beberapa percobaan.');
@@ -609,21 +638,22 @@ class PdfParserService
     private function detectAircraftFromText(string $text): ?array
     {
         $text = strtoupper($text);
-        
+
         // 1. Try to find an exact database match (normalized)
         $reg = $this->detectAircraftRegistration($text);
         if ($reg) {
-            $aircraft = \App\Models\Aircraft::where('registration', $reg)->first();
+            $aircraft = Aircraft::where('registration', $reg)->first();
             if ($aircraft) {
                 Log::info('[PDF Scanner] Pre-detected aircraft from OCR text', [
                     'registration' => $aircraft->registration,
                     'type' => $aircraft->type,
-                    'layout' => $aircraft->layout
+                    'layout' => $aircraft->layout,
                 ]);
+
                 return [
                     'registration' => $aircraft->registration,
                     'type' => $aircraft->type,
-                    'layout' => $aircraft->layout
+                    'layout' => $aircraft->layout,
                 ];
             }
         }
@@ -644,10 +674,11 @@ class PdfParserService
 
         if ($type) {
             Log::info('[PDF Scanner] Pre-detected aircraft type from keywords', ['type' => $type]);
+
             return [
                 'registration' => 'PENDING',
                 'type' => $type,
-                'layout' => null
+                'layout' => null,
             ];
         }
 
@@ -662,9 +693,10 @@ class PdfParserService
 
         // Fetch all registrations from DB
         try {
-            $registrations = \App\Models\Aircraft::pluck('registration')->toArray();
+            $registrations = Aircraft::pluck('registration')->toArray();
         } catch (\Exception $e) {
-            Log::warning('[PDF Scanner] Could not fetch registrations from DB for pre-detection: ' . $e->getMessage());
+            Log::warning('[PDF Scanner] Could not fetch registrations from DB for pre-detection: '.$e->getMessage());
+
             return null;
         }
 
@@ -674,7 +706,7 @@ class PdfParserService
         // 1. Try exact match on normalized text
         foreach ($registrations as $reg) {
             $normalizedReg = strtoupper(preg_replace('/[^A-Z0-9]/', '', $reg));
-            if (!empty($normalizedReg) && str_contains($normalizedText, $normalizedReg)) {
+            if (! empty($normalizedReg) && str_contains($normalizedText, $normalizedReg)) {
                 return $reg;
             }
         }
@@ -684,7 +716,7 @@ class PdfParserService
         if (preg_match_all('/PK\s*[-–—]?\s*([A-Z0-9]{3})/i', $text, $matches)) {
             $letterSubs = [
                 '0' => 'O', '1' => 'I', '2' => 'Z', '3' => 'E', '4' => 'A',
-                '5' => 'S', '6' => 'G', '7' => 'T', '8' => 'B', '9' => 'G'
+                '5' => 'S', '6' => 'G', '7' => 'T', '8' => 'B', '9' => 'G',
             ];
             foreach ($matches[1] as $suffix) {
                 // Apply letter substitutions to convert digits to letters in the 3-character suffix
@@ -693,12 +725,13 @@ class PdfParserService
                     $char = strtoupper($suffix[$i]);
                     $correctedSuffix .= $letterSubs[$char] ?? $char;
                 }
-                $candidateReg = 'PK-' . $correctedSuffix;
+                $candidateReg = 'PK-'.$correctedSuffix;
                 if (in_array($candidateReg, $registrations)) {
                     Log::info('[PDF Scanner] Pre-detected registration using suffix digit-to-letter corrections', [
                         'original' => $suffix,
-                        'corrected' => $candidateReg
+                        'corrected' => $candidateReg,
                     ]);
+
                     return $candidateReg;
                 }
             }
@@ -714,35 +747,37 @@ class PdfParserService
             $imageData = base64_encode(file_get_contents($imagePath));
             $visionRequests[] = [
                 'image' => ['content' => $imageData],
-                'features' => [['type' => 'DOCUMENT_TEXT_DETECTION']]
+                'features' => [['type' => 'DOCUMENT_TEXT_DETECTION']],
             ];
         }
 
         try {
-            Log::info("[PDF Scanner] Calling Google Cloud Vision API for " . count($imagePaths) . " image(s)");
+            Log::info('[PDF Scanner] Calling Google Cloud Vision API for '.count($imagePaths).' image(s)');
             $response = Http::timeout(60)->post("https://vision.googleapis.com/v1/images:annotate?key={$apiKey}", [
-                'requests' => $visionRequests
+                'requests' => $visionRequests,
             ]);
 
             if ($response->failed()) {
-                Log::warning("[PDF Scanner] Vision API failed", ['error' => $response->body()]);
+                Log::warning('[PDF Scanner] Vision API failed', ['error' => $response->body()]);
+
                 return '';
             }
 
             $visionText = '';
             foreach ($response->json('responses', []) as $resp) {
                 if (isset($resp['fullTextAnnotation']['text'])) {
-                    $visionText .= $resp['fullTextAnnotation']['text'] . "\n\n";
+                    $visionText .= $resp['fullTextAnnotation']['text']."\n\n";
                 }
             }
-            
-            if (!empty($visionText)) {
-                Log::info("[PDF Scanner] Vision API successfully extracted text", ['length' => strlen($visionText)]);
+
+            if (! empty($visionText)) {
+                Log::info('[PDF Scanner] Vision API successfully extracted text', ['length' => strlen($visionText)]);
             }
-            
+
             return trim($visionText);
         } catch (\Exception $e) {
-            Log::warning("[PDF Scanner] Vision API exception", ['error' => $e->getMessage()]);
+            Log::warning('[PDF Scanner] Vision API exception', ['error' => $e->getMessage()]);
+
             return '';
         }
     }
@@ -756,14 +791,14 @@ class PdfParserService
         if (preg_match('/```(?:json)?\s*([\s\S]*?)\s*```/', $content, $matches)) {
             $candidates[] = trim($matches[1]);
         }
-        
+
         // 2. Try to find the first '{' and the last '}'
         $firstBrace = strpos($content, '{');
         $lastBrace = strrpos($content, '}');
         if ($firstBrace !== false && $lastBrace !== false && $lastBrace > $firstBrace) {
             $candidates[] = substr($content, $firstBrace, $lastBrace - $firstBrace + 1);
         }
-        
+
         // 3. Try the whole content if it starts with '{' (might be truncated at the end)
         if ($firstBrace !== false) {
             $candidates[] = substr($content, $firstBrace);
@@ -773,7 +808,9 @@ class PdfParserService
 
         foreach ($candidates as $json) {
             $json = trim($json);
-            if (empty($json)) continue;
+            if (empty($json)) {
+                continue;
+            }
 
             $decoded = json_decode($json, true);
             if ($decoded !== null && is_array($decoded)) {
@@ -790,8 +827,10 @@ class PdfParserService
         // Try fixing truncated ones
         foreach ($candidates as $json) {
             $json = trim($json);
-            if (empty($json)) continue;
-            
+            if (empty($json)) {
+                continue;
+            }
+
             $fixed = $this->fixTruncatedJson($json);
             $decoded = json_decode($fixed, true);
             if ($decoded !== null && is_array($decoded)) {
@@ -810,13 +849,16 @@ class PdfParserService
         $json = preg_replace('/,\s*([\}\]])/', '$1', $json);
         $json = preg_replace('/([{\[,])\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*:/', '$1"$2":', $json);
         $json = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F]/', '', $json);
+
         return trim($json);
     }
 
     private function fixTruncatedJson(string $json): string
     {
         $json = trim($json);
-        if (empty($json)) return '';
+        if (empty($json)) {
+            return '';
+        }
 
         // Clean basic issues first
         $json = $this->cleanJson($json);
@@ -836,7 +878,7 @@ class PdfParserService
         if ($openBraces > $closeBraces || $openBrackets > $closeBrackets) {
             // Find the last complete object/array ending
             $lastCompletePos = max(strrpos($json, '}'), strrpos($json, ']'));
-            
+
             if ($lastCompletePos !== false) {
                 // If there's a comma after the last complete element, strip it
                 $afterLast = substr($json, $lastCompletePos + 1);
@@ -856,7 +898,7 @@ class PdfParserService
 
             $json .= str_repeat(']', max(0, $openBrackets - $closeBrackets));
             $json .= str_repeat('}', max(0, $openBraces - $closeBraces));
-            
+
             // Final cleanup of trailing commas
             $json = preg_replace('/,\s*([\}\]])/', '$1', $json);
         }
@@ -866,23 +908,27 @@ class PdfParserService
 
     private function normalizeResult(array $data): ?array
     {
-        if (empty($data)) return null;
+        if (empty($data)) {
+            return null;
+        }
 
         $seats = [];
         $rawSeats = $data['seats'] ?? (isset($data[0]) ? $data : []);
 
         foreach ($rawSeats as $item) {
-            if (isset($item[0]) && str_contains(strtolower((string)$item[0]), 'seat')) continue;
+            if (isset($item[0]) && str_contains(strtolower((string) $item[0]), 'seat')) {
+                continue;
+            }
 
             if (isset($item['seat_id'])) {
                 $seats[] = [
                     'seat_id' => $item['seat_id'],
-                    'expiry_date' => $item['expiry_date'] ?? ''
+                    'expiry_date' => $item['expiry_date'] ?? '',
                 ];
             } elseif (is_array($item) && count($item) >= 2) {
                 $seats[] = [
                     'seat_id' => $item[0],
-                    'expiry_date' => $item[1] ?? ''
+                    'expiry_date' => $item[1] ?? '',
                 ];
             }
         }
@@ -890,31 +936,31 @@ class PdfParserService
         return [
             'registration' => $data['registration'] ?? 'PENDING',
             'aircraft_type' => $data['aircraft_type'] ?? 'Unknown',
-            'seats' => $seats
+            'seats' => $seats,
         ];
     }
 
     /**
      * Verify extracted data and apply corrections
-     * 
-     * @param array $extractedData {registration, aircraft_type, seats: [[seat_id, expiry_date], ...]}
-     * @param array|string $imagePaths Original images for AI validation
+     *
+     * @param  array  $extractedData  {registration, aircraft_type, seats: [[seat_id, expiry_date], ...]}
+     * @param  array|string  $imagePaths  Original images for AI validation
      * @return array Enhanced data with confidence scores
      */
     private function verifyExtractionResults(array $extractedData, array|string $imagePaths): array
     {
         try {
             Log::info('[PDF Scanner] Starting verification pass');
-            
-            $verificationService = new VerificationService();
+
+            $verificationService = new VerificationService;
             $verificationResult = $verificationService->verify($extractedData, $imagePaths);
-            
+
             Log::info('[PDF Scanner] Verification complete', [
                 'auto_accepted' => $verificationResult['summary']['auto_accepted'] ?? 0,
                 'flagged' => $verificationResult['summary']['flagged'] ?? 0,
                 'needs_review' => $verificationResult['summary']['needs_review'] ?? 0,
             ]);
-            
+
             // Return in format compatible with existing pipeline
             return [
                 'registration' => $verificationResult['registration'],
@@ -924,20 +970,20 @@ class PdfParserService
                     'enabled' => true,
                     'summary' => $verificationResult['summary'],
                     'confidence_threshold' => $verificationResult['confidence_threshold'],
-                ]
+                ],
             ];
-            
+
         } catch (\Exception $e) {
             Log::error('[PDF Scanner] Verification failed, returning unverified data', [
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
-            
+
             // Graceful fallback: return original data without verification
             return array_merge($extractedData, [
                 'verification' => [
                     'enabled' => false,
                     'error' => $e->getMessage(),
-                ]
+                ],
             ]);
         }
     }
@@ -945,22 +991,24 @@ class PdfParserService
     private function cleanTempDir(string $dir): void
     {
         if (is_dir($dir)) {
-            foreach (glob($dir . '/*') as $file) @unlink($file);
+            foreach (glob($dir.'/*') as $file) {
+                @unlink($file);
+            }
             @rmdir($dir);
         }
     }
 
     /**
      * Stage 2: Refinement pass using GPT-5 (or other model) via Flaz.id API.
-     * 
+     *
      * Sends the original images + Stage 1 JSON results to GPT-5 for verification
      * and correction of handwritten dates that may have been misread.
      *
-     * @param array $stage1Result {registration, aircraft_type, seats}
-     * @param array $imagePaths   Paths to AI-enhanced/tiled images
-     * @param string $apiKey      Flaz.id API key
-     * @param string $model       Model ID (e.g., 'gpt-5')
-     * @return array              Refined result with corrections applied
+     * @param  array  $stage1Result  {registration, aircraft_type, seats}
+     * @param  array  $imagePaths  Paths to AI-enhanced/tiled images
+     * @param  string  $apiKey  Flaz.id API key
+     * @param  string  $model  Model ID (e.g., 'gpt-5')
+     * @return array Refined result with corrections applied
      */
     private function refineWithGPT5(array $stage1Result, array $imagePaths, string $apiKey, string $model): array
     {
@@ -986,9 +1034,9 @@ class PdfParserService
                 // Apply same enhancement as Stage 1
                 imagefilter($img, IMG_FILTER_CONTRAST, -20);
                 $sharpenMatrix = [
-                    [ 0, -1,  0],
+                    [0, -1,  0],
                     [-1,  9, -1],
-                    [ 0, -1,  0],
+                    [0, -1,  0],
                 ];
                 $divisor = array_sum(array_map('array_sum', $sharpenMatrix));
                 imageconvolution($img, $sharpenMatrix, $divisor, 0);
@@ -1007,26 +1055,26 @@ class PdfParserService
                 'type' => 'image_url',
                 'image_url' => [
                     'url' => "data:{$mimeType};base64,{$imageData}",
-                    'detail' => 'high'
-                ]
+                    'detail' => 'high',
+                ],
             ];
         }
 
         // Call Flaz.id API with GPT-5 model
         $response = Http::timeout(300)->withHeaders([
-            'Authorization' => 'Bearer ' . $apiKey,
+            'Authorization' => 'Bearer '.$apiKey,
             'Content-Type' => 'application/json',
         ])->post('https://ai.flaz.id/v1/chat/completions', [
             'model' => $model,
             'messages' => [
                 [
                     'role' => 'system',
-                    'content' => 'You are a JSON-only output machine specialized in verifying and correcting OCR results from aircraft LOPA documents. Never output anything except valid JSON. No markdown, no explanation, no code blocks.'
+                    'content' => 'You are a JSON-only output machine specialized in verifying and correcting OCR results from aircraft LOPA documents. Never output anything except valid JSON. No markdown, no explanation, no code blocks.',
                 ],
                 [
                     'role' => 'user',
-                    'content' => $content
-                ]
+                    'content' => $content,
+                ],
             ],
             'temperature' => 0.05,
             'max_tokens' => 32000,
@@ -1037,7 +1085,7 @@ class PdfParserService
                 'status' => $response->status(),
                 'body' => substr($response->body(), 0, 500),
             ]);
-            throw new \Exception('Stage 2 refinement API error: HTTP ' . $response->status());
+            throw new \Exception('Stage 2 refinement API error: HTTP '.$response->status());
         }
 
         $responseData = $response->json();
@@ -1051,6 +1099,7 @@ class PdfParserService
 
         if (empty(trim($rawContent))) {
             Log::warning('[PDF Scanner] Stage 2 returned empty content, keeping Stage 1 results');
+
             return $stage1Result;
         }
 
@@ -1059,6 +1108,7 @@ class PdfParserService
 
         if ($refinedData === null) {
             Log::warning('[PDF Scanner] Stage 2 JSON extraction failed, keeping Stage 1 results');
+
             return $stage1Result;
         }
 
@@ -1067,12 +1117,12 @@ class PdfParserService
         $originalSeats = $stage1Result['seats'];
         $corrections = [];
 
-        if (!empty($refinedSeats)) {
+        if (! empty($refinedSeats)) {
             // Build a lookup map from refined data
             $refinedMap = [];
             foreach ($refinedSeats as $seat) {
                 $seatId = $seat['seat_id'] ?? '';
-                if (!empty($seatId)) {
+                if (! empty($seatId)) {
                     $refinedMap[$seatId] = $seat;
                 }
             }
@@ -1085,7 +1135,7 @@ class PdfParserService
                     $refinedDate = $refinedSeat['expiry_date'] ?? '';
                     $originalDate = $origSeat['expiry_date'] ?? '';
 
-                    if (!empty($refinedDate) && $refinedDate !== $originalDate) {
+                    if (! empty($refinedDate) && $refinedDate !== $originalDate) {
                         $corrections[] = "{$seatId}: '{$originalDate}' → '{$refinedDate}'";
                         $originalSeats[$idx]['expiry_date'] = $refinedDate;
                     }
@@ -1119,7 +1169,7 @@ class PdfParserService
 
     /**
      * Generate the refinement prompt for Stage 2 (GPT-5).
-     * 
+     *
      * Embeds the Stage 1 JSON results and instructs GPT-5 to verify
      * each handwritten date against the original images.
      */
@@ -1343,7 +1393,7 @@ B737 has NO att/d13, d14, d23, d24.
 CRITICAL CHECKPOINT B737: You MUST read until the bottom. Output MUST include att/d12-LL, att/d22-RR, and ALL Spares. If not, you FAILED.
 ";
 
-        return $prefix . $body . $suffix;
+        return $prefix.$body.$suffix;
     }
 
     private function getB777Prompt(?string $layout = null): string
@@ -1352,7 +1402,7 @@ CRITICAL CHECKPOINT B737: You MUST read until the bottom. Output MUST include at
         $suffix = $this->getCommonSuffix();
 
         $body = "\n=== BOEING B777 PARSING RULES ===\n";
-        
+
         if ($layout === 'b777-2class') {
             $body .= "AIRCRAFT LAYOUT DETECTED: b777-2class (Boeing 777-300 with Business & Economy Class, NO First Class).\n";
             $body .= "Apply the following rules strictly:\n";
@@ -1420,7 +1470,7 @@ CRITICAL CHECKPOINT B737: You MUST read until the bottom. Output MUST include at
             $body .= "Boeing 777-300 has two possible layouts (2-class and 3-class). Look at the rows present to determine which one is shown:\n";
             $body .= "- If you see FIRST CLASS (Rows 1-2) or Business Class goes up to Row 16, it is b777-3class. Follow B777 3-class rules.\n";
             $body .= "- If there is NO First Class, and Business Class goes up to Row 12, it is b777-2class. Follow B777 2-class rules.\n\n";
-            
+
             $body .= "=== LAYOUT A: b777-2class RULES ===\n";
             $body .= "1. COCKPIT: pilot, copilot, observer1, observer2.\n";
             $body .= "2. ATTENDANT DOOR 1: D1-L, D1-CL, D1-CR, D1-R (4 seats, map to: att/d1-L, att/d1-CL, att/d1-CR, att/d1-R).\n";
@@ -1470,7 +1520,7 @@ CRITICAL CHECKPOINT B737: You MUST read until the bottom. Output MUST include at
         $body .= "Count only filled cells in the ADULT/A/Craft column to output pax-1, pax-2... pax-N.\n";
         $body .= "Count only filled cells in the INFANT column to output inf-1, inf-2... inf-M.\n";
 
-        return $prefix . $body . $suffix;
+        return $prefix.$body.$suffix;
     }
 
     private function getA330Prompt(?string $layout = null): string
@@ -1479,7 +1529,7 @@ CRITICAL CHECKPOINT B737: You MUST read until the bottom. Output MUST include at
         $suffix = $this->getCommonSuffix();
 
         $body = "\n=== AIRBUS A330 PARSING RULES ===\n";
-        
+
         if ($layout === 'a330-900a') {
             $body .= "AIRCRAFT LAYOUT DETECTED: a330-900a (Airbus A330-900 with Business & Economy Class).\n";
             $body .= "Apply the following rules strictly:\n";
@@ -1514,7 +1564,7 @@ CRITICAL CHECKPOINT B737: You MUST read until the bottom. Output MUST include at
 
         $body .= "\n=== SPARE ===\nRead actual count from PDF. Use pax-1,...pax-N then inf-1,...inf-N.\n";
 
-        return $prefix . $body . $suffix;
+        return $prefix.$body.$suffix;
     }
 
     private function getA320Prompt(): string
@@ -1531,7 +1581,7 @@ A320 has NO att/d13, d14, d23, d24.
 CRITICAL CHECKPOINT A320: You MUST read until the bottom. Output MUST include att/d12-L, att/d22-RR, and ALL Spares. If not, you FAILED.
 ";
 
-        return $prefix . $body . $suffix;
+        return $prefix.$body.$suffix;
     }
 
     private function getDefaultPrompt(): string
@@ -1697,8 +1747,11 @@ A320 has NO att/d13, d14, d23, d24.
 CRITICAL CHECKPOINT A320: You MUST read until the bottom. Output MUST include att/d12-L, att/d22-RR, and ALL Spares. If not, you FAILED.
 ";
 
-        return $prefix . $body . $suffix;
+        return $prefix.$body.$suffix;
     }
 
-    public function parseText(string $text): string { return $text; }
+    public function parseText(string $text): string
+    {
+        return $text;
+    }
 }

@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
-use App\Models\Airline;
 use App\Models\Aircraft;
+use App\Models\Airline;
 use App\Models\Seat;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -14,8 +14,11 @@ class AircraftControllerTest extends TestCase
     use RefreshDatabase;
 
     private User $admin;
+
     private User $regularUser;
+
     private Airline $airline;
+
     private Aircraft $aircraft;
 
     protected function setUp(): void
@@ -24,10 +27,10 @@ class AircraftControllerTest extends TestCase
 
         $this->admin = User::factory()->create(['role' => 'admin']);
         $this->regularUser = User::factory()->create(['role' => 'user']);
-        
+
         $this->airline = Airline::create([
             'name' => 'Garuda Indonesia',
-            'code' => 'GA'
+            'code' => 'GA',
         ]);
 
         $this->aircraft = Aircraft::create([
@@ -38,7 +41,7 @@ class AircraftControllerTest extends TestCase
             'status' => 'active',
             'pn_adult' => '111-222',
             'pn_crew' => '333-444',
-            'pn_infant' => '555-666'
+            'pn_infant' => '555-666',
         ]);
     }
 
@@ -68,18 +71,18 @@ class AircraftControllerTest extends TestCase
             'seat_id' => '1A',
             'class_type' => 'business',
             'status' => 'active',
-            'expiry_date' => '2030-01-01'
+            'expiry_date' => '2030-01-01',
         ]);
 
         $response = $this->get(route('aircraft.seatStatus', [
             'registration' => $this->aircraft->registration,
-            'status' => 'active'
+            'status' => 'active',
         ]));
 
         $response->assertStatus(200);
         $response->assertJsonFragment([
             'registration' => 'PK-GIA',
-            'status' => 'active'
+            'status' => 'active',
         ]);
     }
 
@@ -89,12 +92,12 @@ class AircraftControllerTest extends TestCase
 
         $response = $this->post(route('aircraft.updateSeats', $this->aircraft->registration), [
             'seat_ids' => ['1A', '2B', 'inf-1'],
-            'expiry_date' => '2030-05-15'
+            'expiry_date' => '2030-05-15',
         ]);
 
         $response->assertStatus(200);
         $response->assertJson([
-            'success' => true
+            'success' => true,
         ]);
 
         $seat1A = Seat::where('registration', 'PK-GIA')->where('seat_id', '1A')->first();
@@ -108,7 +111,7 @@ class AircraftControllerTest extends TestCase
         // Check activity log
         $this->assertDatabaseHas('activity_logs', [
             'registration' => 'PK-GIA',
-            'action' => 'update'
+            'action' => 'update',
         ]);
     }
 
@@ -120,17 +123,17 @@ class AircraftControllerTest extends TestCase
             'registration' => 'PK-GIA',
             'seat_id' => 'pax-1',
             'class_type' => 'spare-pax',
-            'expiry_date' => '2030-01-01'
+            'expiry_date' => '2030-01-01',
         ]);
 
         $response = $this->delete(route('aircraft.deleteSeat', $this->aircraft->registration), [
-            'seat_id' => 'pax-1'
+            'seat_id' => 'pax-1',
         ]);
 
         $response->assertStatus(200);
         $this->assertDatabaseMissing('seats', [
             'registration' => 'PK-GIA',
-            'seat_id' => 'pax-1'
+            'seat_id' => 'pax-1',
         ]);
     }
 
@@ -142,17 +145,17 @@ class AircraftControllerTest extends TestCase
             'registration' => 'PK-GIA',
             'seat_id' => '21A',
             'class_type' => 'economy',
-            'expiry_date' => '2030-01-01'
+            'expiry_date' => '2030-01-01',
         ]);
 
         $response = $this->delete(route('aircraft.deleteSeat', $this->aircraft->registration), [
-            'seat_id' => '21A'
+            'seat_id' => '21A',
         ]);
 
         $response->assertStatus(403);
         $this->assertDatabaseHas('seats', [
             'registration' => 'PK-GIA',
-            'seat_id' => '21A'
+            'seat_id' => '21A',
         ]);
     }
 
@@ -162,8 +165,8 @@ class AircraftControllerTest extends TestCase
 
         $response = $this->post(route('aircraft.storeBatchInput', $this->aircraft->registration), [
             'section_0_col_A' => "24-Jan-25\n25-Jan-25",
-            'pax_dates' => "Oct-25",
-            'inf_dates' => "Nov-25"
+            'pax_dates' => 'Oct-25',
+            'inf_dates' => 'Nov-25',
         ]);
 
         $response->assertRedirect(route('aircraft.show', $this->aircraft->registration));

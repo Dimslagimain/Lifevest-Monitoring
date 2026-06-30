@@ -2,14 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
+use App\Models\ActivityLog;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class UserManagementController extends Controller
 {
     public function index()
     {
-        $users = \App\Models\User::query()->orderBy('role')->orderBy('name')->get();
+        $users = User::query()->orderBy('role')->orderBy('name')->get();
+
         return view('superadmin.users', compact('users'));
     }
 
@@ -22,21 +26,21 @@ class UserManagementController extends Controller
             'role' => 'required|string|in:superadmin,admin,user',
         ]);
 
-        \App\Models\User::query()->create([
+        User::query()->create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => \Illuminate\Support\Facades\Hash::make($request->password),
+            'password' => Hash::make($request->password),
             'role' => $request->role,
         ]);
 
         return redirect()->back()->with('success', 'User created successfully.');
     }
 
-    public function update(Request $request, \App\Models\User $user)
+    public function update(Request $request, User $user)
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'email' => 'required|string|email|max:255|unique:users,email,'.$user->id,
             'password' => 'nullable|string|min:8',
             'role' => 'required|string|in:superadmin,admin,user',
         ]);
@@ -48,7 +52,7 @@ class UserManagementController extends Controller
         ];
 
         if ($request->password) {
-            $data['password'] = \Illuminate\Support\Facades\Hash::make($request->password);
+            $data['password'] = Hash::make($request->password);
         }
 
         $user->update($data);
@@ -56,10 +60,10 @@ class UserManagementController extends Controller
         return redirect()->back()->with('success', 'User updated successfully.');
     }
 
-    public function destroy(\App\Models\User $user)
+    public function destroy(User $user)
     {
-        if (\Illuminate\Support\Facades\Auth::id() === $user->id) {
-            return redirect()->back()->with('error', "You cannot delete your own account.");
+        if (Auth::id() === $user->id) {
+            return redirect()->back()->with('error', 'You cannot delete your own account.');
         }
 
         $user->delete();
@@ -67,10 +71,10 @@ class UserManagementController extends Controller
         return redirect()->back()->with('success', 'User deleted successfully.');
     }
 
-    public function suspend(Request $request, \App\Models\User $user)
+    public function suspend(Request $request, User $user)
     {
-        if (\Illuminate\Support\Facades\Auth::id() === $user->id) {
-            return redirect()->back()->with('error', "You cannot suspend your own account.");
+        if (Auth::id() === $user->id) {
+            return redirect()->back()->with('error', 'You cannot suspend your own account.');
         }
 
         $request->validate([
@@ -83,20 +87,20 @@ class UserManagementController extends Controller
         ]);
 
         // Log the activity
-        \App\Models\ActivityLog::query()->create([
-            'user_id' => \Illuminate\Support\Facades\Auth::id(),
+        ActivityLog::query()->create([
+            'user_id' => Auth::id(),
             'action' => 'suspend_user',
             'details' => [
                 'target_user_id' => $user->id,
                 'target_user_name' => $user->name,
                 'reason' => $request->reason,
-            ]
+            ],
         ]);
 
         return redirect()->back()->with('success', "User {$user->name} has been suspended.");
     }
 
-    public function unsuspend(\App\Models\User $user)
+    public function unsuspend(User $user)
     {
         $user->update([
             'is_suspended' => false,
@@ -104,13 +108,13 @@ class UserManagementController extends Controller
         ]);
 
         // Log the activity
-        \App\Models\ActivityLog::query()->create([
-            'user_id' => \Illuminate\Support\Facades\Auth::id(),
+        ActivityLog::query()->create([
+            'user_id' => Auth::id(),
             'action' => 'unsuspend_user',
             'details' => [
                 'target_user_id' => $user->id,
                 'target_user_name' => $user->name,
-            ]
+            ],
         ]);
 
         return redirect()->back()->with('success', "User {$user->name} has been unsuspended.");

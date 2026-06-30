@@ -25,7 +25,6 @@ try:
     import cv2
     import numpy as np
     import pytesseract
-    from PIL import Image
 except ImportError as e:
     print(json.dumps({
         "success": False,
@@ -35,6 +34,20 @@ except ImportError as e:
         "orientations": []
     }))
     sys.exit(1)
+
+# Try to auto-configure Tesseract path on Windows if not in PATH
+if sys.platform.startswith("win"):
+    import shutil
+    if not shutil.which("tesseract"):
+        default_tesseract_paths = [
+            r"C:\Program Files\Tesseract-OCR\tesseract.exe",
+            r"C:\Program Files (x86)\Tesseract-OCR\tesseract.exe"
+        ]
+        for path in default_tesseract_paths:
+            if os.path.exists(path):
+                pytesseract.pytesseract.tesseract_cmd = path
+                break
+
 
 
 def detect_orientation(image_or_path, confidence_threshold=1.0):
@@ -395,7 +408,7 @@ def extract_ocr_with_boxes(image_path, lang="eng"):
                 })
         
         return results
-    except Exception as e:
+    except Exception:
         return []
 
 
@@ -522,18 +535,18 @@ def run_self_test():
     try:
         test_results["opencv"] = True
         test_results["opencv_version"] = cv2.__version__
-    except:
+    except Exception:
         pass
     
     try:
         test_results["numpy"] = True
-    except:
+    except Exception:
         pass
     
     try:
-        from PIL import Image as PILImage
+        __import__('PIL')
         test_results["pillow"] = True
-    except:
+    except Exception:
         pass
     
     try:
@@ -558,7 +571,7 @@ def run_self_test():
             osd = detect_orientation(test_path)
             test_results["osd_works"] = True
             test_results["osd_result"] = osd
-        except:
+        except Exception:
             test_results["osd_works"] = False
         
         # Test OCR

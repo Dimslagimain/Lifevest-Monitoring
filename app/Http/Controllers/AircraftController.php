@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Seat;
 use App\Models\ActivityLog;
 use App\Models\Aircraft;
+use App\Models\Seat;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -17,7 +19,7 @@ class AircraftController extends Controller
     {
         $aircraft = Aircraft::where('registration', $registration)->first();
 
-        if (!$aircraft) {
+        if (! $aircraft) {
             abort(404, 'Aircraft not found');
         }
 
@@ -35,34 +37,34 @@ class AircraftController extends Controller
             ->keyBy('seat_id');
 
         // Determine template from DB layout
-        $template = 'aircraft.' . ($aircraft->layout ?? 'show');
+        $template = 'aircraft.'.($aircraft->layout ?? 'show');
 
         // Reuse the collection for stats to avoid redundant DB queries
         $today = now()->startOfDay();
 
-        $adultSeats = $seats->filter(fn($s) => in_array($s->class_type, ['business', 'economy', 'spare-pax']));
-        $crewSeats = $seats->filter(fn($s) => in_array($s->class_type, ['cockpit', 'attendant']));
-        $infantSeats = $seats->filter(fn($s) => $s->class_type === 'spare-inf');
+        $adultSeats = $seats->filter(fn ($s) => in_array($s->class_type, ['business', 'economy', 'spare-pax']));
+        $crewSeats = $seats->filter(fn ($s) => in_array($s->class_type, ['cockpit', 'attendant']));
+        $infantSeats = $seats->filter(fn ($s) => $s->class_type === 'spare-inf');
 
         $qtyAdult = $adultSeats->count();
         $qtyCrew = $crewSeats->count();
         $qtyInfant = $infantSeats->count();
 
-        $expAdult = $adultSeats->filter(fn($s) => $s->expiry_date && $s->expiry_date < $today)->count();
-        $expCrew = $crewSeats->filter(fn($s) => $s->expiry_date && $s->expiry_date < $today)->count();
-        $expInfant = $infantSeats->filter(fn($s) => $s->expiry_date && $s->expiry_date < $today)->count();
+        $expAdult = $adultSeats->filter(fn ($s) => $s->expiry_date && $s->expiry_date < $today)->count();
+        $expCrew = $crewSeats->filter(fn ($s) => $s->expiry_date && $s->expiry_date < $today)->count();
+        $expInfant = $infantSeats->filter(fn ($s) => $s->expiry_date && $s->expiry_date < $today)->count();
 
         // Get last update time from the collection
         $lastUpdate = $seats->max('updated_at');
 
-        /** @var \App\Models\User|null $user */
+        /** @var User|null $user */
         $user = Auth::user();
 
         return view($template, [
             'registration' => $registration,
             'layout' => $layout,
             'seats' => $seats,
-            'lastUpdate' => $lastUpdate ? \Carbon\Carbon::parse($lastUpdate) : null,
+            'lastUpdate' => $lastUpdate ? Carbon::parse($lastUpdate) : null,
             'aircraft' => $aircraft,
             'qtyAdult' => $qtyAdult,
             'qtyCrew' => $qtyCrew,
@@ -70,8 +72,8 @@ class AircraftController extends Controller
             'expAdult' => $expAdult,
             'expCrew' => $expCrew,
             'expInfant' => $expInfant,
-            'logs' => ($user && $user->isAdmin()) 
-                ? ActivityLog::with(['user', 'aircraft'])->where('registration', $registration)->latest()->take(10)->get() 
+            'logs' => ($user && $user->isAdmin())
+                ? ActivityLog::with(['user', 'aircraft'])->where('registration', $registration)->latest()->take(10)->get()
                 : collect(),
         ]);
     }
@@ -82,7 +84,7 @@ class AircraftController extends Controller
     public function seatStatus(string $registration, string $status)
     {
         $aircraft = Aircraft::where('registration', $registration)->first();
-        if (!$aircraft) {
+        if (! $aircraft) {
             return response()->json(['error' => 'Aircraft not found'], 404);
         }
 
@@ -90,29 +92,33 @@ class AircraftController extends Controller
         $today = now()->startOfDay();
 
         // Filter seats by status
-        $filtered = $seats->filter(function ($seat) use ($status, $today) {
+        $filtered = $seats->filter(function ($seat) use ($status) {
             return $seat->status === $status;
         });
 
         // Group by P/N category
         $pnMap = [
-            'adult'  => ['pn' => $aircraft->pn_adult, 'label' => 'Adult', 'types' => ['business', 'economy', 'first', 'spare-pax']],
-            'crew'   => ['pn' => $aircraft->pn_crew, 'label' => 'Crew', 'types' => ['cockpit', 'attendant']],
+            'adult' => ['pn' => $aircraft->pn_adult, 'label' => 'Adult', 'types' => ['business', 'economy', 'first', 'spare-pax']],
+            'crew' => ['pn' => $aircraft->pn_crew, 'label' => 'Crew', 'types' => ['cockpit', 'attendant']],
             'infant' => ['pn' => $aircraft->pn_infant, 'label' => 'Infant', 'types' => ['spare-inf']],
         ];
 
         $groups = [];
         foreach ($pnMap as $category => $info) {
-            if (empty($info['pn'])) continue;
+            if (empty($info['pn'])) {
+                continue;
+            }
 
-            $catSeats = $filtered->filter(fn($s) => in_array($s->class_type, $info['types']));
-            if ($catSeats->isEmpty()) continue;
+            $catSeats = $filtered->filter(fn ($s) => in_array($s->class_type, $info['types']));
+            if ($catSeats->isEmpty()) {
+                continue;
+            }
 
             $groups[] = [
                 'pn' => $info['pn'],
                 'category' => $info['label'],
                 'count' => $catSeats->count(),
-                'seats' => $catSeats->sortBy('seat_id')->values()->map(fn($s) => [
+                'seats' => $catSeats->sortBy('seat_id')->values()->map(fn ($s) => [
                     'seat_id' => $s->seat_id,
                     'expiry_date' => $s->expiry_date ? $s->expiry_date->format('j M Y') : '-',
                     'days_remaining' => $s->days_remaining,
@@ -181,7 +187,7 @@ class AircraftController extends Controller
                     $row = $matches[1] ?: null;
                     $col = $matches[2] ?: $seatId;
 
-                    if ($row && !empty($classRows)) {
+                    if ($row && ! empty($classRows)) {
                         $rowNum = (int) $row;
                         foreach ($classRows as $class => $rows) {
                             if (in_array($rowNum, $rows)) {
@@ -209,7 +215,7 @@ class AircraftController extends Controller
             // Determine all unique P/Ns affected by this update
             $affectedPns = [];
             $aircraft = Aircraft::where('registration', $registration)->first();
-            
+
             foreach ($seatIds as $seatId) {
                 if (str_starts_with($seatId, 'inf-')) {
                     $affectedPns[] = $aircraft->pn_infant;
@@ -230,18 +236,18 @@ class AircraftController extends Controller
                     'seat_count' => count($seatIds),
                     'expiry_date' => $expiryDate,
                     'pns' => $uniquePns, // Changed from 'pn' to 'pns' (array)
-                    'seats' => array_slice($seatIds, 0, 50)
-                ]
+                    'seats' => array_slice($seatIds, 0, 50),
+                ],
             ]);
 
             return response()->json([
                 'success' => true,
-                'message' => count($seatIds) . ' seat(s) updated',
+                'message' => count($seatIds).' seat(s) updated',
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error: ' . $e->getMessage(),
+                'message' => 'Error: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -258,7 +264,7 @@ class AircraftController extends Controller
         $seatId = $request->input('seat_id');
 
         // Only allow deletion of spare seats (pax-*, inf-*)
-        if (!str_starts_with($seatId, 'pax-') && !str_starts_with($seatId, 'inf-')) {
+        if (! str_starts_with($seatId, 'pax-') && ! str_starts_with($seatId, 'inf-')) {
             return response()->json([
                 'success' => false,
                 'message' => 'Only spare seats (PAX/INF) can be deleted',
@@ -277,8 +283,8 @@ class AircraftController extends Controller
                 'action' => 'delete',
                 'details' => [
                     'seat_id' => $seatId,
-                    'type' => str_starts_with($seatId, 'pax-') ? 'spare-pax' : 'spare-inf'
-                ]
+                    'type' => str_starts_with($seatId, 'pax-') ? 'spare-pax' : 'spare-inf',
+                ],
             ]);
 
             return response()->json([
@@ -307,7 +313,7 @@ class AircraftController extends Controller
         // Fallback if config missing
         if (empty($sections)) {
             $sections = [
-                ['name' => 'Economy Class', 'rows' => range(21, 46), 'columns' => ['A', 'B', 'C', 'H', 'J', 'K']]
+                ['name' => 'Economy Class', 'rows' => range(21, 46), 'columns' => ['A', 'B', 'C', 'H', 'J', 'K']],
             ];
         }
 
@@ -330,7 +336,7 @@ class AircraftController extends Controller
         $sections = config("aircraft_economy_sections.{$layout}", []);
         if (empty($sections)) {
             $sections = [
-                ['name' => 'Economy Class', 'rows' => range(21, 46), 'columns' => ['A', 'B', 'C', 'H', 'J', 'K']]
+                ['name' => 'Economy Class', 'rows' => range(21, 46), 'columns' => ['A', 'B', 'C', 'H', 'J', 'K']],
             ];
         }
 
@@ -343,8 +349,9 @@ class AircraftController extends Controller
 
             foreach ($columns as $col) {
                 $input = $request->input("section_{$sectionIndex}_col_{$col}", '');
-                if (empty(trim($input)))
+                if (empty(trim($input))) {
                     continue;
+                }
 
                 $lines = array_filter(array_map('trim', preg_split('/[\r\n]+/', $input)));
                 $rowIndex = 0;
@@ -356,16 +363,18 @@ class AircraftController extends Controller
                 // Process each input line
                 while ($lineIndex < count($lines)) {
                     // Stop if we ran out of rows
-                    if ($rowIndex >= count($rows))
+                    if ($rowIndex >= count($rows)) {
                         break;
+                    }
 
                     $row = $rows[$rowIndex];
-                    $seatId = $row . $col;
+                    $seatId = $row.$col;
 
                     // Check if this specific seat is an exception (doesn't exist)
                     if (in_array($seatId, $paramExceptions)) {
                         // Skip this seat (it doesn't exist), try next row
                         $rowIndex++;
+
                         continue;
                     }
 
@@ -395,12 +404,12 @@ class AircraftController extends Controller
 
         // Process PAX Spare (auto-count from lines)
         $paxDates = $request->input('pax_dates', '');
-        if (!empty(trim($paxDates))) {
+        if (! empty(trim($paxDates))) {
             $lines = array_filter(array_map('trim', preg_split('/[\r\n]+/', $paxDates)));
             for ($i = 0; $i < count($lines); $i++) {
                 $parsedDate = $this->parseFlexibleDate($lines[$i]);
                 if ($parsedDate) {
-                    $seatId = 'pax-' . ($i + 1);
+                    $seatId = 'pax-'.($i + 1);
                     Seat::updateOrCreate(
                         ['registration' => $registration, 'seat_id' => $seatId],
                         [
@@ -417,12 +426,12 @@ class AircraftController extends Controller
 
         // Process INF Spare (auto-count from lines)
         $infDates = $request->input('inf_dates', '');
-        if (!empty(trim($infDates))) {
+        if (! empty(trim($infDates))) {
             $lines = array_filter(array_map('trim', preg_split('/[\r\n]+/', $infDates)));
             for ($i = 0; $i < count($lines); $i++) {
                 $parsedDate = $this->parseFlexibleDate($lines[$i]);
                 if ($parsedDate) {
-                    $seatId = 'inf-' . ($i + 1);
+                    $seatId = 'inf-'.($i + 1);
                     Seat::updateOrCreate(
                         ['registration' => $registration, 'seat_id' => $seatId],
                         [
@@ -445,8 +454,8 @@ class AircraftController extends Controller
                 'action' => 'batch',
                 'details' => [
                     'seat_count' => $savedCount,
-                    'message' => 'Performed batch update for ' . $savedCount . ' seats'
-                ]
+                    'message' => 'Performed batch update for '.$savedCount.' seats',
+                ],
             ]);
         }
 
@@ -457,11 +466,12 @@ class AircraftController extends Controller
     /**
      * Parse flexible date formats: dd/mm/yyyy, dd-mmm-yy, mmm-yy
      */
-    private function parseFlexibleDate(string $dateStr): ?\Carbon\Carbon
+    private function parseFlexibleDate(string $dateStr): ?Carbon
     {
         $dateStr = trim($dateStr);
-        if (empty($dateStr))
+        if (empty($dateStr)) {
             return null;
+        }
 
         $formats = [
             'Y-m-d',     // 2030-03-01
@@ -480,12 +490,13 @@ class AircraftController extends Controller
 
         foreach ($formats as $format) {
             try {
-                $date = \Carbon\Carbon::createFromFormat($format, $dateStr);
+                $date = Carbon::createFromFormat($format, $dateStr);
                 if ($date) {
                     // For month-year only formats, set to first day
                     if (in_array($format, ['M-y', 'M-Y', 'M/y', 'M/Y'])) {
                         $date->startOfMonth();
                     }
+
                     return $date;
                 }
             } catch (\Exception $e) {
@@ -497,7 +508,7 @@ class AircraftController extends Controller
         try {
             $parsed = strtotime($dateStr);
             if ($parsed !== false) {
-                return \Carbon\Carbon::createFromTimestamp($parsed);
+                return Carbon::createFromTimestamp($parsed);
             }
         } catch (\Exception $e) {
             // Do nothing, let it return null below
@@ -506,4 +517,3 @@ class AircraftController extends Controller
         return null;
     }
 }
-

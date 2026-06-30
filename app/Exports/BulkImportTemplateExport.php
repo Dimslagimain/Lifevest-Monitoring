@@ -3,12 +3,13 @@
 namespace App\Exports;
 
 use Maatwebsite\Excel\Concerns\FromArray;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithStyles;
-use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class BulkImportTemplateExport implements FromArray, WithHeadings, WithStyles, ShouldAutoSize
+class BulkImportTemplateExport implements FromArray, ShouldAutoSize, WithHeadings, WithStyles
 {
     protected $type;
 
@@ -17,9 +18,6 @@ class BulkImportTemplateExport implements FromArray, WithHeadings, WithStyles, S
         $this->type = $type;
     }
 
-    /**
-     * @return array
-     */
     public function headings(): array
     {
         if ($this->type === 'aircraft') {
@@ -33,9 +31,6 @@ class BulkImportTemplateExport implements FromArray, WithHeadings, WithStyles, S
         return [];
     }
 
-    /**
-     * @return array
-     */
     public function array(): array
     {
         // Provide exactly ONE example row per type, with a clear [CONTOH] tag so it's auto-ignored
@@ -56,9 +51,6 @@ class BulkImportTemplateExport implements FromArray, WithHeadings, WithStyles, S
         return [];
     }
 
-    /**
-     * @param Worksheet $sheet
-     */
     public function styles(Worksheet $sheet)
     {
         // Style the first row (headings)
@@ -66,14 +58,14 @@ class BulkImportTemplateExport implements FromArray, WithHeadings, WithStyles, S
             1 => [
                 'font' => ['bold' => true, 'color' => ['argb' => 'FFFFFFFF']],
                 'fill' => [
-                    'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                    'fillType' => Fill::FILL_SOLID,
                     'startColor' => ['argb' => 'FF0D9488'], // A nice teal color matching the premium theme
                 ],
             ],
             2 => [ // The warning row
                 'font' => ['bold' => true, 'color' => ['argb' => 'FFB91C1C']], // Red text
                 'fill' => [
-                    'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                    'fillType' => Fill::FILL_SOLID,
                     'startColor' => ['argb' => 'FFFEE2E2'], // Light red background
                 ],
             ],

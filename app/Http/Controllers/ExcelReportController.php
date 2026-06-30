@@ -2,26 +2,34 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ActivityLog;
 use App\Models\Aircraft;
 use App\Models\Seat;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
-use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class ExcelReportController extends Controller
 {
-    private string $colorHeader    = 'FF1A237E';
+    private string $colorHeader = 'FF1A237E';
+
     private string $colorSubHeader = 'FF283593';
-    private string $colorExpired   = 'FFE1BEE7';
-    private string $colorCritical  = 'FFFFCDD2';
-    private string $colorWarning   = 'FFFFF9C4';
-    private string $colorSafe      = 'FFC8E6C9';
-    private string $colorWhite     = 'FFFFFFFF';
+
+    private string $colorExpired = 'FFE1BEE7';
+
+    private string $colorCritical = 'FFFFCDD2';
+
+    private string $colorWarning = 'FFFFF9C4';
+
+    private string $colorSafe = 'FFC8E6C9';
+
+    private string $colorWhite = 'FFFFFFFF';
+
     private string $colorLightGray = 'FFF5F5F5';
 
     public function exportReplacementPlan()
@@ -45,8 +53,8 @@ class ExcelReportController extends Controller
             $airlineName = $aircraft->airline?->name ?? 'Unknown';
 
             $pnMap = [
-                'adult'  => ['pn' => $aircraft->pn_adult,  'types' => ['business', 'economy', 'first', 'spare-pax']],
-                'crew'   => ['pn' => $aircraft->pn_crew,   'types' => ['cockpit', 'attendant']],
+                'adult' => ['pn' => $aircraft->pn_adult,  'types' => ['business', 'economy', 'first', 'spare-pax']],
+                'crew' => ['pn' => $aircraft->pn_crew,   'types' => ['cockpit', 'attendant']],
                 'infant' => ['pn' => $aircraft->pn_infant, 'types' => ['spare-inf']],
             ];
 
@@ -71,7 +79,7 @@ class ExcelReportController extends Controller
                         break;
                     }
                 }
-                if (!$seatPn || !$seatCategory) {
+                if (! $seatPn || ! $seatCategory) {
                     continue;
                 }
 
@@ -87,33 +95,33 @@ class ExcelReportController extends Controller
                 }
 
                 $rowData = [
-                    'airline'    => $airlineName,
-                    'reg'        => $reg,
-                    'type'       => $acType,
-                    'seat_id'    => $seat->seat_id,
+                    'airline' => $airlineName,
+                    'reg' => $reg,
+                    'type' => $acType,
+                    'seat_id' => $seat->seat_id,
                     'class_type' => strtoupper($seat->class_type),
-                    'pn'         => $seatPn,
-                    'category'   => strtoupper($seatCategory),
-                    'expiry'     => $expiryDate->format('d-M-Y'),
+                    'pn' => $seatPn,
+                    'category' => strtoupper($seatCategory),
+                    'expiry' => $expiryDate->format('d-M-Y'),
                     'expiry_raw' => $expiryDate,
-                    'days'       => (int) $daysRemaining,
-                    'status'     => $status,
+                    'days' => (int) $daysRemaining,
+                    'status' => $status,
                 ];
                 $allRows[] = $rowData;
 
                 $intervals = [];
                 if ($expiryDate->lt($today)) {
                     $intervals = [
-                        'weekly'  => ['key' => '0000-00-Overdue', 'label' => 'Overdue', 'short' => 'Overdue'],
+                        'weekly' => ['key' => '0000-00-Overdue', 'label' => 'Overdue', 'short' => 'Overdue'],
                         'monthly' => ['key' => '0000-00-Overdue', 'label' => 'Overdue', 'short' => 'Overdue'],
-                        'yearly'  => ['key' => '0000-00-Overdue', 'label' => 'Overdue', 'short' => 'Overdue'],
+                        'yearly' => ['key' => '0000-00-Overdue', 'label' => 'Overdue', 'short' => 'Overdue'],
                     ];
                 } else {
                     $weekStart = $expiryDate->copy()->startOfWeek();
                     $weekEnd = $expiryDate->copy()->endOfWeek();
                     $intervals['weekly'] = [
                         'key' => $expiryDate->format('o-\WW'),
-                        'label' => $weekStart->format('d M') . ' - ' . $weekEnd->format('d M Y'),
+                        'label' => $weekStart->format('d M').' - '.$weekEnd->format('d M Y'),
                         'short' => $expiryDate->format('o-\WW'), // short form for matrix column
                     ];
                     $intervals['monthly'] = [
@@ -130,11 +138,11 @@ class ExcelReportController extends Controller
 
                 foreach ($intervals as $intervalName => $bucketInfo) {
                     $bucketKey = $bucketInfo['key'];
-                    if (!isset($intervalData[$intervalName][$bucketKey])) {
+                    if (! isset($intervalData[$intervalName][$bucketKey])) {
                         $intervalData[$intervalName][$bucketKey] = [
                             'label' => $bucketInfo['label'],
                             'short' => $bucketInfo['short'],
-                            'rows'  => [],
+                            'rows' => [],
                         ];
                     }
                     $rowCopy = $rowData;
@@ -147,14 +155,14 @@ class ExcelReportController extends Controller
         foreach (['weekly', 'monthly', 'yearly'] as $intervalName) {
             ksort($intervalData[$intervalName]);
             foreach ($intervalData[$intervalName] as &$bucket) {
-                usort($bucket['rows'], fn($a, $b) => $a['expiry_raw'] <=> $b['expiry_raw']);
+                usort($bucket['rows'], fn ($a, $b) => $a['expiry_raw'] <=> $b['expiry_raw']);
             }
             unset($bucket);
         }
 
         $allPns = collect($allRows)->pluck('pn')->filter()->unique()->sort()->values()->toArray();
 
-        $spreadsheet = new Spreadsheet();
+        $spreadsheet = new Spreadsheet;
         $spreadsheet->removeSheetByIndex(0);
 
         foreach (['weekly', 'monthly', 'yearly'] as $intervalName) {
@@ -163,8 +171,8 @@ class ExcelReportController extends Controller
 
         $spreadsheet->setActiveSheetIndex(0);
 
-        $filename = 'Replacement_Plan_' . date('Y-m-d_His') . '.xlsx';
-        $tempPath = storage_path('app/' . $filename);
+        $filename = 'Replacement_Plan_'.date('Y-m-d_His').'.xlsx';
+        $tempPath = storage_path('app/'.$filename);
 
         $writer = new Xlsx($spreadsheet);
         $writer->save($tempPath);
@@ -188,8 +196,8 @@ class ExcelReportController extends Controller
             $airlineName = $aircraft->airline?->name ?? 'Unknown';
 
             $pnMap = [
-                'adult'  => ['pn' => $aircraft->pn_adult,  'types' => ['business', 'economy', 'first', 'spare-pax']],
-                'crew'   => ['pn' => $aircraft->pn_crew,   'types' => ['cockpit', 'attendant']],
+                'adult' => ['pn' => $aircraft->pn_adult,  'types' => ['business', 'economy', 'first', 'spare-pax']],
+                'crew' => ['pn' => $aircraft->pn_crew,   'types' => ['cockpit', 'attendant']],
                 'infant' => ['pn' => $aircraft->pn_infant, 'types' => ['spare-inf']],
             ];
 
@@ -199,7 +207,7 @@ class ExcelReportController extends Controller
 
             foreach ($seats as $seat) {
                 $expiryDate = Carbon::parse($seat->expiry_date);
-                
+
                 $seatPn = null;
                 $seatCategory = null;
                 foreach ($pnMap as $category => $info) {
@@ -209,7 +217,9 @@ class ExcelReportController extends Controller
                         break;
                     }
                 }
-                if (!$seatPn || !$seatCategory) continue;
+                if (! $seatPn || ! $seatCategory) {
+                    continue;
+                }
 
                 $daysRemaining = $today->diffInDays($expiryDate, false);
                 if ($daysRemaining < 0) {
@@ -224,20 +234,20 @@ class ExcelReportController extends Controller
 
                 $allRows[] = [
                     'status' => $status,
-                    'pn'     => $seatPn,
+                    'pn' => $seatPn,
                 ];
             }
         }
 
-        $spreadsheet = new Spreadsheet();
+        $spreadsheet = new Spreadsheet;
         $spreadsheet->removeSheetByIndex(0);
 
         $this->buildSummarySheet($spreadsheet, $allRows, $today, $threeMonthsBoundary);
 
         $spreadsheet->setActiveSheetIndex(0);
 
-        $filename = 'LifeVest_Summary_' . date('Y-m-d_His') . '.xlsx';
-        $tempPath = storage_path('app/' . $filename);
+        $filename = 'LifeVest_Summary_'.date('Y-m-d_His').'.xlsx';
+        $tempPath = storage_path('app/'.$filename);
 
         $writer = new Xlsx($spreadsheet);
         $writer->save($tempPath);
@@ -252,7 +262,7 @@ class ExcelReportController extends Controller
         $sheet = $spreadsheet->createSheet();
         $sheet->setTitle('Summary');
 
-        $sheet->mergeCells("A1:E1");
+        $sheet->mergeCells('A1:E1');
         $sheet->setCellValue('A1', 'LIFE VEST REPLACEMENT DASHBOARD — GMF AeroAsia');
         $sheet->getStyle('A1')->applyFromArray([
             'font' => ['bold' => true, 'size' => 14, 'color' => ['argb' => $this->colorWhite]],
@@ -261,8 +271,8 @@ class ExcelReportController extends Controller
         ]);
         $sheet->getRowDimension(1)->setRowHeight(35);
 
-        $sheet->mergeCells("A2:E2");
-        $sheet->setCellValue('A2', 'Generated: ' . now()->format('d M Y, H:i'));
+        $sheet->mergeCells('A2:E2');
+        $sheet->setCellValue('A2', 'Generated: '.now()->format('d M Y, H:i'));
         $sheet->getStyle('A2')->applyFromArray([
             'font' => ['italic' => true, 'size' => 10, 'color' => ['argb' => $this->colorWhite]],
             'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => $this->colorSubHeader]],
@@ -281,10 +291,10 @@ class ExcelReportController extends Controller
         $sheet->getStyle("A{$row}")->getFont()->setBold(true)->setSize(12);
         $row++;
 
-        $expiredCount  = count(array_filter($allRows, fn($r) => $r['status'] === 'EXPIRED'));
-        $criticalCount = count(array_filter($allRows, fn($r) => $r['status'] === 'CRITICAL'));
-        $warningCount  = count(array_filter($allRows, fn($r) => $r['status'] === 'WARNING'));
-        $totalCount    = count($allRows);
+        $expiredCount = count(array_filter($allRows, fn ($r) => $r['status'] === 'EXPIRED'));
+        $criticalCount = count(array_filter($allRows, fn ($r) => $r['status'] === 'CRITICAL'));
+        $warningCount = count(array_filter($allRows, fn ($r) => $r['status'] === 'WARNING'));
+        $totalCount = count($allRows);
 
         $summaryItems = [
             ['Total Life Vests Tracked', $totalCount, $this->colorLightGray],
@@ -305,7 +315,7 @@ class ExcelReportController extends Controller
             $sheet->getStyle("E{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
             $row++;
         }
-        
+
         // --- Legend ---
         $row += 2;
         $sheet->setCellValue("A{$row}", 'Legend:');
@@ -327,7 +337,7 @@ class ExcelReportController extends Controller
             ]);
             $row++;
         }
-        
+
         // --- TOP PART NUMBERS REQUIRING ATTENTION ---
         $row += 2;
         $sheet->setCellValue("A{$row}", 'TOP PART NUMBERS REQUIRING REPLACEMENT');
@@ -338,27 +348,27 @@ class ExcelReportController extends Controller
         foreach ($allRows as $r) {
             if (in_array($r['status'], ['EXPIRED', 'CRITICAL', 'WARNING'])) {
                 $pn = $r['pn'] ?? 'UNKNOWN';
-                if (!isset($pnCounts[$pn])) {
+                if (! isset($pnCounts[$pn])) {
                     $pnCounts[$pn] = ['total' => 0, 'expired' => 0, 'critical' => 0, 'warning' => 0];
                 }
                 $pnCounts[$pn]['total']++;
                 $pnCounts[$pn][strtolower($r['status'])]++;
             }
         }
-        
-        uasort($pnCounts, fn($a, $b) => $b['total'] <=> $a['total']);
+
+        uasort($pnCounts, fn ($a, $b) => $b['total'] <=> $a['total']);
         $topPns = array_slice($pnCounts, 0, 10, true); // Get top 10
-        
+
         if (empty($topPns)) {
-            $sheet->setCellValue("A{$row}", "Semua Part Number dalam kondisi aman.");
+            $sheet->setCellValue("A{$row}", 'Semua Part Number dalam kondisi aman.');
             $sheet->mergeCells("A{$row}:E{$row}");
         } else {
-            $sheet->setCellValue("A{$row}", "Part Number");
-            $sheet->setCellValue("B{$row}", "Total Qty");
-            $sheet->setCellValue("C{$row}", "Expired");
-            $sheet->setCellValue("D{$row}", "Critical");
-            $sheet->setCellValue("E{$row}", "Warning");
-            
+            $sheet->setCellValue("A{$row}", 'Part Number');
+            $sheet->setCellValue("B{$row}", 'Total Qty');
+            $sheet->setCellValue("C{$row}", 'Expired');
+            $sheet->setCellValue("D{$row}", 'Critical');
+            $sheet->setCellValue("E{$row}", 'Warning');
+
             $sheet->getStyle("A{$row}:E{$row}")->applyFromArray([
                 'font' => ['bold' => true, 'color' => ['argb' => $this->colorWhite], 'size' => 10],
                 'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => $this->colorHeader]],
@@ -366,14 +376,14 @@ class ExcelReportController extends Controller
                 'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['argb' => 'FF424242']]],
             ]);
             $row++;
-            
+
             foreach ($topPns as $pn => $counts) {
                 $sheet->setCellValue("A{$row}", $pn);
                 $sheet->setCellValue("B{$row}", $counts['total']);
                 $sheet->setCellValue("C{$row}", $counts['expired']);
                 $sheet->setCellValue("D{$row}", $counts['critical']);
                 $sheet->setCellValue("E{$row}", $counts['warning']);
-                
+
                 $sheet->getStyle("A{$row}:E{$row}")->applyFromArray([
                     'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['argb' => 'FFE0E0E0']]],
                 ]);
@@ -390,7 +400,7 @@ class ExcelReportController extends Controller
 
         // --- PART 1: P/N SUMMARY MATRIX ---
         $row = 1;
-        $sheet->setCellValue("A{$row}", strtoupper($tabName) . ' P/N SUMMARY MATRIX');
+        $sheet->setCellValue("A{$row}", strtoupper($tabName).' P/N SUMMARY MATRIX');
         $sheet->getStyle("A{$row}")->getFont()->setBold(true)->setSize(12);
         $row += 2;
 
@@ -432,7 +442,7 @@ class ExcelReportController extends Controller
 
         $matrixLastCol = $gtColStr;
         $row++;
-        
+
         $grandTotalBucket = array_fill(0, count($bucketKeys) + 1, 0);
 
         foreach ($allPns as $pn) {
@@ -448,26 +458,26 @@ class ExcelReportController extends Controller
             $colIdx = 2;
             foreach ($bucketKeys as $bKey) {
                 $cColStr = Coordinate::stringFromColumnIndex($colIdx);
-                $c = count(array_filter($dataBuckets[$bKey]['rows'], fn($r) => $r['pn'] === $pn));
-                
+                $c = count(array_filter($dataBuckets[$bKey]['rows'], fn ($r) => $r['pn'] === $pn));
+
                 $sheet->setCellValue("{$cColStr}{$row}", $c);
                 $sheet->getStyle("{$cColStr}{$row}")->applyFromArray([
                     'font' => ['size' => 10],
                     'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER, 'vertical' => Alignment::VERTICAL_CENTER],
                     'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['argb' => 'FFE0E0E0']]],
                 ]);
-                
+
                 // Urgency Coloring
                 if ($bKey === '0000-00-Overdue') {
                     $sheet->getStyle("{$cColStr}{$row}")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB($this->colorExpired);
                 }
-                
+
                 $pnGrandTotal += $c;
                 $grandTotalBucket[$bIdx] += $c;
                 $bIdx++;
                 $colIdx++;
             }
-            
+
             // Grand Total cell
             $sheet->setCellValue("{$gtColStr}{$row}", $pnGrandTotal);
             $sheet->getStyle("{$gtColStr}{$row}")->applyFromArray([
@@ -505,7 +515,7 @@ class ExcelReportController extends Controller
 
         // --- PART 2: RAW DATA TABLE ---
         $row += 4;
-        
+
         $tableHeaderRow = $row;
         $headers = ['Period', 'No', 'Airline', 'Registration', 'Aircraft Type', 'Seat ID', 'Class', 'Part Number', 'Category', 'Expiry Date', 'Days Remaining', 'Status'];
         $colWidths = [24, 6, 20, 14, 14, 10, 14, 20, 12, 16, 16, 14];
@@ -525,11 +535,11 @@ class ExcelReportController extends Controller
         $sheet->getRowDimension($tableHeaderRow)->setRowHeight(25);
 
         $row++;
-        
+
         $tableData = [];
         $statusMap = [];
         $idx = 1;
-        
+
         foreach ($dataBuckets as $bKey => $bData) {
             foreach ($bData['rows'] as $data) {
                 $tableData[] = [
@@ -550,11 +560,11 @@ class ExcelReportController extends Controller
             }
         }
 
-        if (!empty($tableData)) {
+        if (! empty($tableData)) {
             $sheet->fromArray($tableData, null, "A{$row}");
-            
+
             $lastDataRow = $row + count($tableData) - 1;
-            
+
             // Bulk Apply Table Borders & Vertical Align
             $sheet->getStyle("A{$row}:L{$lastDataRow}")->applyFromArray([
                 'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['argb' => 'FFE0E0E0']]],
@@ -581,26 +591,26 @@ class ExcelReportController extends Controller
                 }
                 $currentRow++;
             }
-            if (!empty($statusMap)) {
+            if (! empty($statusMap)) {
                 $statusBlocks[] = ['status' => $currentStatus, 'start' => $blockStart, 'end' => $currentRow - 1];
             }
 
             foreach ($statusBlocks as $block) {
                 $status = $block['status'];
                 $bgColor = match ($status) {
-                    'EXPIRED'  => $this->colorExpired,
+                    'EXPIRED' => $this->colorExpired,
                     'CRITICAL' => $this->colorCritical,
-                    'WARNING'  => $this->colorWarning,
-                    'SAFE'     => $this->colorSafe,
-                    default    => $this->colorLightGray,
+                    'WARNING' => $this->colorWarning,
+                    'SAFE' => $this->colorSafe,
+                    default => $this->colorLightGray,
                 };
-                
+
                 $statusFontColor = match ($status) {
-                    'EXPIRED'  => 'FF7B1FA2',
+                    'EXPIRED' => 'FF7B1FA2',
                     'CRITICAL' => 'FFC62828',
-                    'WARNING'  => 'FFF57F17',
-                    'SAFE'     => 'FF2E7D32',
-                    default    => 'FF000000',
+                    'WARNING' => 'FFF57F17',
+                    'SAFE' => 'FF2E7D32',
+                    default => 'FF000000',
                 };
 
                 $sheet->getStyle("A{$block['start']}:L{$block['end']}")
@@ -616,8 +626,8 @@ class ExcelReportController extends Controller
         if ($lastDataRow >= $tableHeaderRow + 1) {
             $sheet->setAutoFilter("A{$tableHeaderRow}:L{$lastDataRow}");
         }
-        
-        // Freeze both the Summary Matrix columns and the Raw Data Top header 
+
+        // Freeze both the Summary Matrix columns and the Raw Data Top header
         // This is tricky in Excel when stacking. We will just freeze A2 (no horizontal freeze)
         // Actually, freeze pane is global. We will freeze underneath the raw table header.
         $freezeRow = $tableHeaderRow + 1;
@@ -626,17 +636,17 @@ class ExcelReportController extends Controller
 
     public function exportActivityLog(Request $request)
     {
-        $logs = \App\Models\ActivityLog::with(['user', 'aircraft'])
+        $logs = ActivityLog::with(['user', 'aircraft'])
             ->whereIn('action', ['update', 'batch', 'pn_update', 'delete', 'import'])
             ->orderBy('created_at', 'desc')
             ->get();
 
-        $spreadsheet = new Spreadsheet();
+        $spreadsheet = new Spreadsheet;
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setTitle('Activity Log');
 
         // Header Style
-        $sheet->mergeCells("A1:H1");
+        $sheet->mergeCells('A1:H1');
         $sheet->setCellValue('A1', 'GMF AEROASIA - CABIN MAINTENANCE');
         $sheet->getStyle('A1')->applyFromArray([
             'font' => ['bold' => true, 'size' => 14, 'color' => ['argb' => $this->colorWhite]],
@@ -645,7 +655,7 @@ class ExcelReportController extends Controller
         ]);
         $sheet->getRowDimension(1)->setRowHeight(35);
 
-        $sheet->mergeCells("A2:H2");
+        $sheet->mergeCells('A2:H2');
         $sheet->setCellValue('A2', 'LIFE VEST TRACKER - FULL ACTIVITY AUDIT LOG');
         $sheet->getStyle('A2')->applyFromArray([
             'font' => ['bold' => true, 'size' => 11, 'color' => ['argb' => $this->colorWhite]],
@@ -654,8 +664,8 @@ class ExcelReportController extends Controller
         ]);
         $sheet->getRowDimension(2)->setRowHeight(22);
 
-        $sheet->mergeCells("A3:H3");
-        $sheet->setCellValue('A3', 'Generated on: ' . now()->format('d M Y, H:i'));
+        $sheet->mergeCells('A3:H3');
+        $sheet->setCellValue('A3', 'Generated on: '.now()->format('d M Y, H:i'));
         $sheet->getStyle('A3')->applyFromArray([
             'font' => ['italic' => true, 'size' => 9],
             'alignment' => ['horizontal' => Alignment::HORIZONTAL_RIGHT],
@@ -666,8 +676,8 @@ class ExcelReportController extends Controller
         $colIdx = 1;
         foreach ($headers as $header) {
             $colStr = Coordinate::stringFromColumnIndex($colIdx);
-            $sheet->setCellValue($colStr . '5', $header);
-            $sheet->getStyle($colStr . '5')->applyFromArray([
+            $sheet->setCellValue($colStr.'5', $header);
+            $sheet->getStyle($colStr.'5')->applyFromArray([
                 'font' => ['bold' => true, 'color' => ['argb' => $this->colorWhite]],
                 'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => $this->colorHeader]],
                 'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
@@ -693,55 +703,59 @@ class ExcelReportController extends Controller
                 $pns = $log->details['pns'] ?? (isset($log->details['pn']) ? [$log->details['pn']] : []);
                 if (empty($pns) && isset($log->details['seats'][0]) && $log->aircraft) {
                     $firstSeat = $log->details['seats'][0];
-                    if (str_starts_with($firstSeat, 'inf-')) { $pns[] = $log->aircraft->pn_infant; }
-                    elseif (in_array($firstSeat, ['captain', 'fo', 'obs-1', 'obs-2']) || str_starts_with($firstSeat, 'att/')) { $pns[] = $log->aircraft->pn_crew; }
-                    else { $pns[] = $log->aircraft->pn_adult; }
+                    if (str_starts_with($firstSeat, 'inf-')) {
+                        $pns[] = $log->aircraft->pn_infant;
+                    } elseif (in_array($firstSeat, ['captain', 'fo', 'obs-1', 'obs-2']) || str_starts_with($firstSeat, 'att/')) {
+                        $pns[] = $log->aircraft->pn_crew;
+                    } else {
+                        $pns[] = $log->aircraft->pn_adult;
+                    }
                 }
-                $pn = !empty($pns) ? implode("\n", $pns) : '-';
+                $pn = ! empty($pns) ? implode("\n", $pns) : '-';
             } elseif ($log->action === 'pn_update') {
                 $changes = [];
-                foreach(['adult', 'crew', 'infant'] as $t) {
-                    if(($log->details['old'][$t] ?? '') !== ($log->details['new'][$t] ?? '')) {
-                        $changes[] = strtoupper($t) . ": " . ($log->details['old'][$t] ?: '---') . " -> " . ($log->details['new'][$t] ?: '---');
+                foreach (['adult', 'crew', 'infant'] as $t) {
+                    if (($log->details['old'][$t] ?? '') !== ($log->details['new'][$t] ?? '')) {
+                        $changes[] = strtoupper($t).': '.($log->details['old'][$t] ?: '---').' -> '.($log->details['new'][$t] ?: '---');
                     }
                 }
                 $pn = implode(' | ', $changes);
             }
 
-            $sheet->setCellValue('A' . $rowIdx, $log->created_at->format('d/m/Y H:i'));
-            $sheet->setCellValue('B' . $rowIdx, strtoupper($log->user->name ?? 'SYSTEM'));
-            $sheet->setCellValue('C' . $rowIdx, $log->registration ?? '-');
-            $sheet->setCellValue('D' . $rowIdx, strtoupper($log->action));
-            
+            $sheet->setCellValue('A'.$rowIdx, $log->created_at->format('d/m/Y H:i'));
+            $sheet->setCellValue('B'.$rowIdx, strtoupper($log->user->name ?? 'SYSTEM'));
+            $sheet->setCellValue('C'.$rowIdx, $log->registration ?? '-');
+            $sheet->setCellValue('D'.$rowIdx, strtoupper($log->action));
+
             $details = '-';
             if ($log->action === 'suspend_user') {
-                $details = 'TARGET: ' . ($log->details['target_user_name'] ?? '-') . ' | REASON: ' . ($log->details['reason'] ?? '-');
+                $details = 'TARGET: '.($log->details['target_user_name'] ?? '-').' | REASON: '.($log->details['reason'] ?? '-');
             } elseif ($log->action === 'unsuspend_user') {
-                $details = 'TARGET: ' . ($log->details['target_user_name'] ?? '-');
+                $details = 'TARGET: '.($log->details['target_user_name'] ?? '-');
             } elseif (isset($log->details['seats'])) {
-                $details = implode(', ', (array)$log->details['seats']);
+                $details = implode(', ', (array) $log->details['seats']);
             } elseif ($log->action === 'import') {
                 $details = $log->details['message'] ?? 'BULK IMPORT';
             } elseif (isset($log->details['seat_id'])) {
                 $details = $log->details['seat_id'];
             }
 
-            $sheet->setCellValue('E' . $rowIdx, $pn);
-            $sheet->setCellValue('F' . $rowIdx, $log->details['seat_count'] ?? (isset($log->details['seats']) ? count($log->details['seats']) : '-'));
-            $sheet->setCellValue('G' . $rowIdx, $details);
-            
+            $sheet->setCellValue('E'.$rowIdx, $pn);
+            $sheet->setCellValue('F'.$rowIdx, $log->details['seat_count'] ?? (isset($log->details['seats']) ? count($log->details['seats']) : '-'));
+            $sheet->setCellValue('G'.$rowIdx, $details);
+
             $expiryDateStr = $log->details['expiry_date'] ?? '-';
-            $sheet->setCellValue('H' . $rowIdx, $expiryDateStr);
+            $sheet->setCellValue('H'.$rowIdx, $expiryDateStr);
 
             // Apply Alignment & Wrap Text to all columns in the row
             $sheet->getStyle("A{$rowIdx}:H{$rowIdx}")->getAlignment()
                 ->setHorizontal('center')
                 ->setVertical(Alignment::VERTICAL_CENTER)
                 ->setWrapText(true);
-            
+
             // Override P/N (E) and Seats List (G) to Left Alignment for better readability
-            $sheet->getStyle('E' . $rowIdx)->getAlignment()->setHorizontal('left');
-            $sheet->getStyle('G' . $rowIdx)->getAlignment()->setHorizontal('left');
+            $sheet->getStyle('E'.$rowIdx)->getAlignment()->setHorizontal('left');
+            $sheet->getStyle('G'.$rowIdx)->getAlignment()->setHorizontal('left');
 
             // Zebra Stripping & Borders
             $range = "A{$rowIdx}:H{$rowIdx}";
@@ -751,18 +765,18 @@ class ExcelReportController extends Controller
             }
 
             // Status Coloring
-            $statusColor = match($log->action) {
+            $statusColor = match ($log->action) {
                 'delete' => 'FFFFCDD2', // Reddish
                 'add', 'batch' => 'FFC8E6C9', // Greenish
                 default => 'FFE3F2FD', // Blueish
             };
-            $sheet->getStyle('D' . $rowIdx)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB($statusColor);
+            $sheet->getStyle('D'.$rowIdx)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB($statusColor);
 
             $rowIdx++;
         }
 
-        $filename = 'LifeVest_ActivityLog_' . date('Y-m-d_His') . '.xlsx';
-        $tempPath = storage_path('app/' . $filename);
+        $filename = 'LifeVest_ActivityLog_'.date('Y-m-d_His').'.xlsx';
+        $tempPath = storage_path('app/'.$filename);
         $writer = new Xlsx($spreadsheet);
         $writer->save($tempPath);
 
@@ -774,15 +788,15 @@ class ExcelReportController extends Controller
      */
     public function exportSingleActivity(int $id)
     {
-        $log = \App\Models\ActivityLog::with(['user', 'aircraft'])->findOrFail($id);
+        $log = ActivityLog::with(['user', 'aircraft'])->findOrFail($id);
         $today = now()->startOfDay();
 
-        $spreadsheet = new Spreadsheet();
+        $spreadsheet = new Spreadsheet;
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setTitle('Activity Detail');
 
         // ---- HEADER ----
-        $sheet->mergeCells("A1:H1");
+        $sheet->mergeCells('A1:H1');
         $sheet->setCellValue('A1', 'GMF AEROASIA - CABIN MAINTENANCE');
         $sheet->getStyle('A1')->applyFromArray([
             'font' => ['bold' => true, 'size' => 14, 'color' => ['argb' => $this->colorWhite]],
@@ -791,7 +805,7 @@ class ExcelReportController extends Controller
         ]);
         $sheet->getRowDimension(1)->setRowHeight(35);
 
-        $sheet->mergeCells("A2:H2");
+        $sheet->mergeCells('A2:H2');
         $sheet->setCellValue('A2', 'LIFE VEST TRACKER - ACTIVITY DETAIL REPORT');
         $sheet->getStyle('A2')->applyFromArray([
             'font' => ['bold' => true, 'size' => 11, 'color' => ['argb' => $this->colorWhite]],
@@ -800,8 +814,8 @@ class ExcelReportController extends Controller
         ]);
         $sheet->getRowDimension(2)->setRowHeight(22);
 
-        $sheet->mergeCells("A3:H3");
-        $sheet->setCellValue('A3', 'Generated on: ' . now()->format('d M Y, H:i'));
+        $sheet->mergeCells('A3:H3');
+        $sheet->setCellValue('A3', 'Generated on: '.now()->format('d M Y, H:i'));
         $sheet->getStyle('A3')->applyFromArray([
             'font' => ['italic' => true, 'size' => 9],
             'alignment' => ['horizontal' => Alignment::HORIZONTAL_RIGHT],
@@ -813,7 +827,7 @@ class ExcelReportController extends Controller
         $sheet->getStyle("A{$row}")->getFont()->setBold(true)->setSize(12);
         $row++;
 
-        $actionLabel = strtoupper(match($log->action) {
+        $actionLabel = strtoupper(match ($log->action) {
             'update' => 'Seats Updated',
             'batch' => 'Batch Input',
             'pn_update' => 'P/N Update',
@@ -822,29 +836,33 @@ class ExcelReportController extends Controller
             default => $log->action,
         });
 
-            $expiry_val = $log->details['expiry_date'] ?? '-';
-            // Jika formatnya YYYY-MM-DD, ubah ke d M Y
-            if ($expiry_val !== '-' && preg_match('/^\d{4}-\d{2}-\d{2}$/', $expiry_val)) {
-                $expiry_val = Carbon::parse($expiry_val)->format('d M Y');
-            }
-            $summaryFields = [
-                ['Date & Time', $log->created_at->format('d/m/Y H:i:s')],
-                ['User Account', strtoupper($log->user->name ?? 'SYSTEM')],
-                ['Aircraft Reg', $log->registration ?? '-'],
-                ['Activity Type', $actionLabel],
-                ['Qty Seats', $log->details['seat_count'] ?? (isset($log->details['seats']) ? count($log->details['seats']) : '-')],
-                ['Expiry Date Set', $expiry_val],
-            ];
+        $expiry_val = $log->details['expiry_date'] ?? '-';
+        // Jika formatnya YYYY-MM-DD, ubah ke d M Y
+        if ($expiry_val !== '-' && preg_match('/^\d{4}-\d{2}-\d{2}$/', $expiry_val)) {
+            $expiry_val = Carbon::parse($expiry_val)->format('d M Y');
+        }
+        $summaryFields = [
+            ['Date & Time', $log->created_at->format('d/m/Y H:i:s')],
+            ['User Account', strtoupper($log->user->name ?? 'SYSTEM')],
+            ['Aircraft Reg', $log->registration ?? '-'],
+            ['Activity Type', $actionLabel],
+            ['Qty Seats', $log->details['seat_count'] ?? (isset($log->details['seats']) ? count($log->details['seats']) : '-')],
+            ['Expiry Date Set', $expiry_val],
+        ];
 
         // P/N info
         $pns = $log->details['pns'] ?? (isset($log->details['pn']) ? [$log->details['pn']] : []);
         if (empty($pns) && isset($log->details['seats'][0]) && $log->aircraft) {
             $firstSeat = $log->details['seats'][0];
-            if (str_starts_with($firstSeat, 'inf-')) { $pns[] = $log->aircraft->pn_infant; }
-            elseif (in_array($firstSeat, ['captain', 'fo', 'obs-1', 'obs-2']) || str_starts_with($firstSeat, 'att/')) { $pns[] = $log->aircraft->pn_crew; }
-            else { $pns[] = $log->aircraft->pn_adult; }
+            if (str_starts_with($firstSeat, 'inf-')) {
+                $pns[] = $log->aircraft->pn_infant;
+            } elseif (in_array($firstSeat, ['captain', 'fo', 'obs-1', 'obs-2']) || str_starts_with($firstSeat, 'att/')) {
+                $pns[] = $log->aircraft->pn_crew;
+            } else {
+                $pns[] = $log->aircraft->pn_adult;
+            }
         }
-        if (!empty($pns)) {
+        if (! empty($pns)) {
             $summaryFields[] = ['Part Number(s)', implode(', ', $pns)];
         }
 
@@ -875,7 +893,7 @@ class ExcelReportController extends Controller
         $sheet->getColumnDimension('H')->setWidth(14);
 
         // ---- SEAT DETAIL TABLE ----
-        if (in_array($log->action, ['update', 'batch', 'import']) && !empty($log->details['seats'])) {
+        if (in_array($log->action, ['update', 'batch', 'import']) && ! empty($log->details['seats'])) {
             $row += 2;
             $sheet->setCellValue("A{$row}", 'SEAT DETAIL');
             $sheet->getStyle("A{$row}")->getFont()->setBold(true)->setSize(12);
@@ -903,8 +921,8 @@ class ExcelReportController extends Controller
             $pnMap = [];
             if ($aircraft) {
                 $pnMap = [
-                    'adult'  => ['pn' => $aircraft->pn_adult, 'types' => ['business', 'economy', 'first', 'spare-pax']],
-                    'crew'   => ['pn' => $aircraft->pn_crew, 'types' => ['cockpit', 'attendant']],
+                    'adult' => ['pn' => $aircraft->pn_adult, 'types' => ['business', 'economy', 'first', 'spare-pax']],
+                    'crew' => ['pn' => $aircraft->pn_crew, 'types' => ['cockpit', 'attendant']],
                     'infant' => ['pn' => $aircraft->pn_infant, 'types' => ['spare-inf']],
                 ];
             }
@@ -918,7 +936,7 @@ class ExcelReportController extends Controller
             foreach ($seatIds as $seatId) {
                 $seat = $seats->get($seatId);
                 $classType = $seat ? strtoupper($seat->class_type) : '-';
-                
+
                 // Determine P/N
                 $seatPn = '-';
                 if ($seat && $aircraft) {
@@ -1046,7 +1064,7 @@ class ExcelReportController extends Controller
         $datePart = $log->created_at->format('Ymd_Hi');
         $filename = "Activity_{$actionPart}{$regPart}_{$datePart}.xlsx";
 
-        $tempPath = storage_path('app/' . $filename);
+        $tempPath = storage_path('app/'.$filename);
         $writer = new Xlsx($spreadsheet);
         $writer->save($tempPath);
 

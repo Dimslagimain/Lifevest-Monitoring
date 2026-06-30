@@ -39,15 +39,81 @@ class AdminPermissionTest extends TestCase
         $user = User::factory()->create(['role' => 'admin']);
         $registration = 'PK-TNP';
 
-        // Mock aircraft and seat if necessary, but at least check middleware
         $response = $this->actingAs($user)
             ->post("/aircraft/{$registration}/update-seats", [
                 'seat_ids' => ['1A'],
                 'expiry_date' => '2030-01-01',
             ]);
 
-        // If it's 302/403, it means middleware blocked it.
-        // If it's something else (like 404 because PK-TNP doesn't exist), it means it passed middleware.
         $this->assertNotEquals(403, $response->status());
+    }
+
+    public function test_regular_user_cannot_update_seats()
+    {
+        $user = User::factory()->create(['role' => 'user']);
+
+        $response = $this->actingAs($user)
+            ->post("/aircraft/PK-TNP/update-seats", [
+                'seat_ids' => ['1A'],
+                'expiry_date' => '2030-01-01',
+            ]);
+
+        $this->assertEquals(403, $response->status());
+    }
+
+    public function test_regular_user_cannot_access_fleet_create()
+    {
+        $user = User::factory()->create(['role' => 'user']);
+
+        $this->actingAs($user)
+            ->get(route('fleet.create'))
+            ->assertStatus(403);
+    }
+
+    public function test_regular_user_cannot_access_bulk_import()
+    {
+        $user = User::factory()->create(['role' => 'user']);
+
+        $this->actingAs($user)
+            ->get(route('superadmin.bulk-import'))
+            ->assertStatus(403);
+    }
+
+    public function test_admin_cannot_access_superadmin_routes()
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $this->actingAs($admin)
+            ->get(route('superadmin.users'))
+            ->assertStatus(403);
+
+        $this->actingAs($admin)
+            ->get(route('superadmin.bulk-import'))
+            ->assertStatus(403);
+
+        $this->actingAs($admin)
+            ->get(route('superadmin.pdf-scan'))
+            ->assertStatus(403);
+    }
+
+    public function test_superadmin_can_access_all_admin_routes()
+    {
+        $superadmin = User::factory()->create(['role' => 'superadmin']);
+
+        $this->actingAs($superadmin)
+            ->get(route('fleet.create'))
+            ->assertStatus(200);
+
+        $this->actingAs($superadmin)
+            ->get(route('superadmin.users'))
+            ->assertStatus(200);
+
+        $this->actingAs($superadmin)
+            ->get(route('superadmin.bulk-import'))
+            ->assertStatus(200);
+
+        $this->actingAs($superadmin)
+            ->get(route('superadmin.pdf-scan'))
+            ->assertStatus(200);
     }
 }

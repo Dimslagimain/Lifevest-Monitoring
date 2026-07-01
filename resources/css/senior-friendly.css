@@ -1,0 +1,113 @@
+/* ========================================
+   SENIOR-FRIENDLY ENHANCEMENTS
+   Aksesibilitas untuk pengguna usia 40+
+   Meng-override CSS variables & menambah style
+   ======================================== */
+
+:root {
+    /* Layout */
+    --sidebar-width: 270px;
+
+    /* Perbesar font & spacing */
+    --spacing-sm: 10px;
+    --spacing-md: 18px;
+    --spacing-lg: 28px;
+    --spacing-xl: 36px;
+
+    /* Perbesar border radius — lebih lembut */
+    --radius-sm: 8px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --radius-xl: 16px;
+
+    /* Shadow lebih jelas untuk depth */
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.35);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.35);
+    --shadow-xl: 0 16px 40px rgba(0, 0, 0, 0.4);
+
+    /* Border lebih jelas */
+    --border: rgba(148, 163, 184, 0.8);
+    --border-subtle: rgba(148, 163, 184, 0.55);
+}
+
+/* Font lebih besar */
+body {
+    font-size: 16px;
+}
+
+.sidebar-nav-item {
+    padding: 12px 16px;
+    min-height: 44px;
+}
+
+/* Tombol lebih besar */
+.btn:not(.btn-icon) {
+    padding: 10px 20px;
+    min-height: 44px;
+}
+
+.btn-icon {
+    width: 44px;
+    height: 44px;
+}
+
+/* Table lebih lega */
+.fleet-th,
+.fleet-td,
+.seat-modal-table th,
+.seat-modal-table td,
+.premium-table th,
+.premium-table td {
+    padding: 0.85rem 1rem !important;
+}
+
+/* Summary cards lebih kontras */
+.summary-card {
+    padding: 1.35rem 1.15rem;
+}
+
+.summary-value {
+    font-size: 2.4rem;
+}
+
+/* Navbar & sidebar lebih besar */
+.navbar-container {
+    height: 68px;
+}
+
+.navbar-spacer {
+    height: 68px;
+}
+
+body.sidebar-collapsed .app-container {
+    margin-left: 0;
+}
+
+/* Kontras lebih tinggi di light mode */
+[data-theme="light"] {
+    --border: rgba(15, 23, 42, 0.5);
+    --border-subtle: rgba(15, 23, 42, 0.3);
+    --text-muted: #475569;
+}
+
+/* Form input lebih besar */
+.form-input,
+.form-select,
+.input-premium,
+.date-input {
+    padding: 12px 16px;
+    font-size: 0.95rem;
+}
+
+/* Focus ring jelas untuk aksesibilitas keyboard */
+*:focus-visible {
+    outline: 3px solid var(--primary);
+    outline-offset: 2px;
+}
+
+/* Navbar item user lebih nyaman */
+.navbar-user-btn {
+    padding: 0.5rem 0.75rem;
+    min-height: 44px;
+}

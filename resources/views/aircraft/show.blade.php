@@ -5,17 +5,14 @@
 @endsection
 
 @section('content')
-    <!-- Toolbar -->
     <x-toolbar :registration="$registration" />
 
-    <!-- Part Number Info -->
     <x-part-number-bar :aircraft="$aircraft" :qtyAdult="$qtyAdult ?? 0" :qtyCrew="$qtyCrew ?? 0" :qtyInfant="$qtyInfant ?? 0" :expAdult="$expAdult ?? 0" :expCrew="$expCrew ?? 0" :expInfant="$expInfant ?? 0" />
 
-    <!-- Status Legend -->
     <x-status-legend />
-    @include('aircraft.partials.a330-900a')
 
-    <!-- Date Modal -->
+    @include('aircraft.partials.' . $partial)
+
     @include('components.date-modal')
 @endsection
 

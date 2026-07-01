@@ -38,8 +38,8 @@ class AircraftController extends Controller
             ->get()
             ->keyBy('seat_id');
 
-        // Determine template from DB layout
-        $template = 'aircraft.'.($aircraft->layout ?? 'show');
+        // Consolidated view with dynamic partial
+        $partial = $aircraft->layout ?? 'b737-e46';
 
         // Reuse the collection for stats to avoid redundant DB queries
         $today = now()->startOfDay();
@@ -62,7 +62,8 @@ class AircraftController extends Controller
         /** @var User|null $user */
         $user = Auth::user();
 
-        return view($template, [
+        return view('aircraft.show', [
+            'partial' => $partial,
             'registration' => $registration,
             'layout' => $layout,
             'seats' => $seats,

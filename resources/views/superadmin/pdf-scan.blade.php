@@ -1,25 +1,17 @@
 @extends('layouts.app')
 
 @section('content')
-    <div style="max-width: 800px; margin: 1rem auto; padding: 0 1rem;">
-        <!-- Modern Header -->
-        <div style="text-align: center; margin-bottom: 1.5rem;">
-            <div
-                style="display: inline-flex; align-items: center; justify-content: center; width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.2), rgba(var(--primary-rgb), 0.05)); border: 1px solid rgba(var(--primary-rgb), 0.1); margin-bottom: 1rem; box-shadow: 0 8px 16px -4px rgba(var(--primary-rgb), 0.1);">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--primary-color)"
-                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M23 7l-7 5 7 5V7z"></path>
-                    <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
-                </svg>
-            </div>
-            <h1
-                style="font-size: 2rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.03em; margin: 0 0 0.5rem 0;">
-                Smart PDF Scanner</h1>
-            <p style="font-size: 1.05rem; color: var(--text-muted); max-width: 600px; margin: 0 auto; line-height: 1.5;">
-                Unggah dokumen LOPA atau daftar periksa Anda untuk mengekstrak data Life Vest secara otomatis menggunakan
-                teknologi AI.</p>
-        </div>
+<div style="max-width: 800px; margin: 0 auto; padding: 0 1rem;">
+    <div style="text-align: center; margin-bottom: 0.5rem;">
+        <h1 style="font-size: 1.5rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.03em; margin: 0 0 0.25rem 0;">
+            Smart PDF Scanner
+        </h1>
 
+        <p style="font-size: 0.9rem; color: var(--text-muted); max-width: 600px; margin: 0 auto; line-height: 1.4;">
+            Unggah dokumen LOPA atau daftar periksa Anda untuk mengekstrak data Life Vest secara otomatis menggunakan
+            teknologi AI.
+        </p>
+    </div>
         @if (session('error'))
             <div
                 style="margin-bottom: 2rem; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); padding: 1rem 1.5rem; border-radius: 12px; display: flex; align-items: center; gap: 1rem;">
@@ -36,29 +28,29 @@
         @endif
 
         <div
-            style="background: var(--bg-card); border-radius: 24px; border: 1px solid var(--border-subtle); box-shadow: var(--shadow-lg); padding: 2rem; position: relative; overflow: hidden;">
+            style="background: var(--bg-card); border-radius: 20px; border: 1px solid var(--border-subtle); box-shadow: var(--shadow-lg); padding: 1.25rem; position: relative; overflow: hidden;">
             <form action="{{ route('superadmin.pdf-scan.process') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
-                <div style="margin-bottom: 1.5rem;">
-                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+                <div style="margin-bottom: 0.75rem;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
                         <div
-                            style="width: 28px; height: 28px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem;">
+                            style="width: 24px; height: 24px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem;">
                             1</div>
-                        <h3 style="margin: 0; font-size: 1.1rem; font-weight: 700; color: var(--text-primary);">Unggah File
+                        <h3 style="margin: 0; font-size: 1rem; font-weight: 700; color: var(--text-primary);">Unggah File
                             PDF atau Gambar</h3>
                     </div>
 
-                    <div style="padding-left: 2.5rem;">
+                    <div style="padding-left: 2.25rem;">
                         <div class="upload-area" id="upload-area"
-                            style="border: 2px dashed var(--border); border-radius: 16px; padding: 2rem; text-align: center; cursor: pointer; transition: all 0.2s ease; background: var(--bg-dark); position: relative;">
+                            style="border: 2px dashed var(--border); border-radius: 12px; padding: 1.25rem; text-align: center; cursor: pointer; transition: all 0.2s ease; background: var(--bg-dark); position: relative;">
                             <input type="file" name="file" id="file" accept=".pdf,image/*" style="display: none;"
                                 required>
 
                             <div id="upload-content">
                                 <div
-                                    style="background: var(--primary-glow); width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem auto;">
-                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none"
+                                    style="background: var(--primary-glow); width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem auto;">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
                                         stroke="var(--primary)" stroke-width="2" stroke-linecap="round"
                                         stroke-linejoin="round">
                                         <path
@@ -68,12 +60,12 @@
                                     </svg>
                                 </div>
                                 <h3
-                                    style="margin: 0 0 0.5rem 0; font-weight: 700; font-size: 1.2rem; color: var(--text-primary);">
+                                    style="margin: 0 0 0.25rem 0; font-weight: 700; font-size: 1.1rem; color: var(--text-primary);">
                                     Pilih File PDF atau Foto Scan</h3>
-                                <p style="margin: 0 0 1.5rem 0; color: var(--text-muted); font-size: 0.95rem;">Mendukung
+                                <p style="margin: 0 0 0.75rem 0; color: var(--text-muted); font-size: 0.9rem;">Mendukung
                                     format PDF, JPG, PNG (Maks. 20MB)</p>
                                 <button type="button" class="btn btn-secondary"
-                                    style="pointer-events: none; padding: 0.75rem 2rem; border-radius: 8px;">Pilih
+                                    style="pointer-events: none; padding: 0.5rem 1.5rem; border-radius: 8px;">Pilih
                                     File...</button>
                             </div>
 
@@ -129,9 +121,9 @@
                 </div>
 
                 <div
-                    style="padding-left: 2.5rem; margin-top: 1.5rem; border-top: 1px solid var(--border-subtle); padding-top: 1.5rem;">
+                    style="padding-left: 2.25rem; margin-top: 0.75rem; border-top: 1px solid var(--border-subtle); padding-top: 0.75rem;">
                     <button type="submit" id="submit-btn" class="btn btn-primary"
-                        style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.75rem; padding: 1.25rem; font-size: 1.1rem; font-weight: 700; border-radius: 12px; opacity: 0.5; pointer-events: none;">
+                        style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 1rem; font-size: 1.05rem; font-weight: 700; border-radius: 10px; opacity: 0.5; pointer-events: none;">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>

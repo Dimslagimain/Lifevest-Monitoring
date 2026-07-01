@@ -3,13 +3,15 @@
 @section('content')
 <div style="max-width: 800px; margin: 0 auto; padding: 0 1rem;">
     <!-- Modern Header -->
-    <div style="text-align: center; margin-bottom: 0.5rem;">
-        <div style="display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.2), rgba(var(--primary-rgb), 0.05)); border: 1px solid rgba(var(--primary-rgb), 0.1); margin-bottom: 0.5rem; box-shadow: 0 8px 16px -4px rgba(var(--primary-rgb), 0.1);">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <div style="text-align: center; margin-bottom: 0.5rem;">
+            <h1 style="font-size: 1.5rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.03em; margin: 0 0 0.25rem 0;">
+                Bulk Import Data
+            </h1>
+
+            <p style="font-size: 0.9rem; color: var(--text-muted); max-width: 600px; margin: 0 auto; line-height: 1.4;">
+                Unggah file spreadsheet untuk memproses penambahan data atau pembaruan massal secara otomatis.
+            </p>
         </div>
-        <h1 style="font-size: 1.5rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.03em; margin: 0 0 0.25rem 0;">Bulk Import Data</h1>
-        <p style="font-size: 0.9rem; color: var(--text-muted); max-width: 600px; margin: 0 auto; line-height: 1.4;">Unggah file spreadsheet untuk memproses penambahan data atau pembaruan massal secara otomatis.</p>
-    </div>
 
     @if(session('success'))
         <div style="margin-bottom: 2rem; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); padding: 1rem 1.5rem; border-radius: 12px; display: flex; align-items: center; gap: 1rem;">
@@ -120,11 +122,11 @@
 
 <style>
     .upload-area:hover {
-        border-color: var(--primary-color) !important;
+        border-color: var(--primary) !important;
         background: rgba(var(--primary-rgb), 0.05) !important;
     }
     .upload-area.dragover {
-        border-color: var(--primary-color) !important;
+        border-color: var(--primary) !important;
         background: rgba(var(--primary-rgb), 0.1) !important;
         transform: scale(1.02);
     }

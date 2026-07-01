@@ -2,28 +2,14 @@
 
 @section('content')
 <div class="dashboard-container" style="max-width: 800px; margin: 0 auto;">
-    <div class="header-section" style="background: var(--bg-card); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm);">
-        <div>
-            <h1 class="page-title" style="margin: 0; font-weight: 800; letter-spacing: -0.03em;">Account Settings</h1>
-            <p class="page-subtitle" style="margin-top: 0.5rem; opacity: 0.8;">Manage your personal profile and security settings.</p>
-        </div>
-    </div>
+    <x-page-header title="Account Settings" subtitle="Manage your personal profile and security settings." />
 
-    @if(session('success'))
-        <div class="alert alert-success" style="margin-top: 1.5rem; background: rgba(34, 197, 94, 0.1); color: #22c55e; padding: 1rem; border-radius: 8px; border: 1px solid rgba(34, 197, 94, 0.2); display: flex; align-items: center; gap: 0.5rem;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-            {{ session('success') }}
-        </div>
-    @endif
-
+    <x-alert type="success" :message="session('success')" />
     @if($errors->any())
-        <div class="alert alert-danger" style="margin-top: 1.5rem; background: rgba(239, 68, 68, 0.1); color: #ef4444; padding: 1rem; border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.2); display: flex; align-items: center; gap: 0.5rem;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
-            <span>{{ $errors->first() }}</span>
-        </div>
+        <x-alert type="error">{{ $errors->first() }}</x-alert>
     @endif
 
-    <div class="card" style="margin-top: 2rem; padding: 2.5rem;">
+    <x-card class="card" style="margin-top: 2rem;" padding="2.5rem">
         <!-- Profile Info (ReadOnly) -->
         <div style="margin-bottom: 3rem;">
             <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
@@ -90,6 +76,6 @@
                 </div>
             </form>
         </div>
-    </div>
+    </x-card>
 </div>
 @endsection

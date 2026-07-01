@@ -1,12 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="header-section" style="background: var(--bg-card); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm); margin-bottom: 2rem;">
-        <div>
-            <h2 class="form-header" style="text-align: left; margin: 0; font-weight: 800; letter-spacing: -0.03em;">Fleet Manager</h2>
-            <p style="margin-top: 0.25rem; opacity: 0.7; font-size: 0.9rem;">Management of aircraft and airlines system-wide.</p>
-        </div>
-        <div class="header-actions">
+    <x-page-header title="Fleet Manager" subtitle="Management of aircraft and airlines system-wide.">
+        <x-slot:actions>
             @if($tab === 'aircraft')
                 <a href="{{ route('fleet.create') }}" class="btn btn-primary" style="padding: 0.7rem 1.4rem; font-weight: 700;">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right: 4px;"><path d="M12 5v14M5 12h14"/></svg>
@@ -18,21 +14,11 @@
                     New Airline
                 </a>
             @endif
-        </div>
-    </div>
+        </x-slot:actions>
+    </x-page-header>
 
-    @if(session('success'))
-        <div class="alert-box alert-success">
-            {{ session('success') }}
-        </div>
-    @endif
-
-    @if(session('error'))
-        <div class="alert-box alert-danger"
-            style="background: rgba(239, 68, 68, 0.1); border-color: var(--danger); color: var(--danger);">
-            {{ session('error') }}
-        </div>
-    @endif
+    <x-alert type="success" :message="session('success')" />
+    <x-alert type="error" :message="session('error')" />
 
     <!-- Simple & Clean Tab Switcher -->
     <div class="tab-pill-container" style="display: flex; gap: 4px; margin-bottom: 2.5rem; background: var(--bg-card-solid); padding: 5px; border-radius: 12px; width: fit-content; border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm);">
@@ -53,27 +39,28 @@
     @if($tab === 'aircraft')
         <!-- Aircraft Tab Content -->
         <!-- Practical Filters -->
-        <div class="filter-bar" style="display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; margin-bottom: 1.5rem; background: var(--bg-card); padding: 1.25rem; border-radius: 12px; border: 1px solid var(--border-subtle);">
+        <x-card padding="1.25rem" class="filter-bar" style="margin-bottom: 1.5rem;">
+        <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center;">
             <div style="position: relative; flex: 1; min-width: 200px; max-width: 300px;">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
                 <input type="text" id="fleetSearch" placeholder="Search registration..." class="form-input"
                     style="width: 100%; padding-left: 36px;">
             </div>
 
-            <select id="filterAirline" class="form-select" style="min-width: 180px; cursor: pointer;">
+            <select id="filterAirline" class="form-select" style="min-width: 400px; height: 48px; cursor: pointer;">
                 <option value="">All Airlines</option>
                 @foreach($airlines as $airline)
                     <option value="{{ $airline->name }}">{{ $airline->name }}</option>
                 @endforeach
             </select>
 
-            <select id="filterStatus" class="form-select" style="min-width: 130px; cursor: pointer;">
+            <select id="filterStatus" class="form-select" style="min-width: 160px; height: 48px; cursor: pointer;">
                 <option value="">All Status</option>
                 <option value="active">Active</option>
                 <option value="prolong">Prolong</option>
             </select>
 
-            <select id="filterType" class="form-select" style="min-width: 150px; cursor: pointer;">
+            <select id="filterType" class="form-select" style="min-width: 180px; height: 48px; cursor: pointer;">
                 <option value="">All Types</option>
                 @php
                     $uniqueTypes = $fleet->pluck('type')->unique()->sort();
@@ -85,8 +72,9 @@
 
             <button type="button" id="clearFilters" class="btn btn-secondary" style="padding: 0.5rem 1.25rem; font-weight: 600;">Reset Filters</button>
         </div>
+    </x-card>
 
-        <div class="fleet-table-wrapper" style="background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border-subtle); overflow: hidden;">
+    <x-card class="fleet-table-wrapper" padding="0" radius="12px">
             <table class="fleet-table">
                 <thead>
                     <tr>
@@ -153,6 +141,7 @@
                 </tbody>
             </table>
         </div>
+    </x-card>
     @else
         <!-- Airlines Tab Content -->
         <div class="fleet-table-wrapper">

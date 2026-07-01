@@ -2,34 +2,19 @@
 
 @section('content')
 <div class="dashboard-container">
-    <div class="header-section" style="background: var(--bg-card); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm);">
-        <div>
-            <h1 class="page-title" style="margin: 0; font-weight: 800; letter-spacing: -0.03em;">User Accounts Management</h1>
-            <p class="page-subtitle" style="margin-top: 0.5rem; opacity: 0.8;">Manage system access, roles, and user permissions.</p>
-        </div>
-        <div class="header-actions">
+    <x-page-header title="User Accounts Management" subtitle="Manage system access, roles, and user permissions.">
+        <x-slot:actions>
             <button class="btn btn-primary btn-lg" onclick="openAddModal()" style="padding: 0.8rem 1.5rem; font-weight: 700;">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px;"><path d="M12 5v14M5 12h14"/></svg>
                 Add User Account
             </button>
-        </div>
-    </div>
+        </x-slot:actions>
+    </x-page-header>
 
-    @if(session('success'))
-        <div class="alert alert-success" style="margin-top: 1.5rem; background: rgba(34, 197, 94, 0.1); color: #22c55e; padding: 1rem; border-radius: 8px; border: 1px solid rgba(34, 197, 94, 0.2); display: flex; align-items: center; gap: 0.5rem;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-            {{ session('success') }}
-        </div>
-    @endif
+    <x-alert type="success" :message="session('success')" />
+    <x-alert type="error" :message="session('error')" />
 
-    @if(session('error'))
-        <div class="alert alert-danger" style="margin-top: 1.5rem; background: rgba(239, 68, 68, 0.1); color: #ef4444; padding: 1rem; border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.2); display: flex; align-items: center; gap: 0.5rem;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
-            {{ session('error') }}
-        </div>
-    @endif
-
-    <div class="card" style="margin-top: 2rem; overflow: hidden;">
+    <x-card padding="0" class="card" style="margin-top: 2rem; overflow: hidden;">
         <div class="table-responsive">
             <table class="data-table">
                 <thead>
@@ -114,19 +99,11 @@
                 </tbody>
             </table>
         </div>
-    </div>
+    </x-card>
 </div>
 
-<!-- Add/Edit Modal -->
-<div id="userModal" class="modal-overlay-premium">
-    <div class="modal-content-premium">
-        <div class="modal-header-premium">
-            <h2 id="modalTitle">Add New User</h2>
-            <button class="modal-close-premium" onclick="closeModal()">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
-            </button>
-        </div>
-        <form id="userForm" method="POST" style="padding: var(--spacing-lg);">
+<x-modal id="userModal" title="Add New User" size="lg">
+    <form id="userForm" method="POST">
             @csrf
             <div id="methodField"></div>
             
@@ -159,20 +136,11 @@
                 <button type="submit" class="btn btn-primary" id="submitBtn" style="padding: 0.6rem 2rem; font-weight: 700;">Save Changes</button>
             </div>
         </form>
-    </div>
-</div>
+</x-modal>
 
-<!-- Suspend Modal -->
-<div id="suspendModal" class="modal-overlay-premium">
-    <div class="modal-content-premium" style="max-width: 450px;">
-        <div class="modal-header-premium">
-            <h2 id="suspendModalTitle">Suspend Account</h2>
-            <button class="modal-close-premium" onclick="closeSuspendModal()">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
-            </button>
-        </div>
-        <form id="suspendForm" method="POST" style="padding: var(--spacing-lg);">
-            @csrf
+<x-modal id="suspendModal" title="Suspend Account" size="sm">
+    <form id="suspendForm" method="POST">
+        @csrf
             <div class="form-group-premium">
                 <label>Reason for Suspension</label>
                 <textarea name="reason" id="suspensionReason" class="input-premium" required placeholder="Describe why this account is being suspended..." style="min-height: 100px; resize: vertical;"></textarea>
@@ -184,8 +152,7 @@
                 <button type="submit" class="btn btn-primary" style="background: #f59e0b; border-color: #f59e0b; padding: 0.6rem 2rem; font-weight: 700;">Suspend Account</button>
             </div>
         </form>
-    </div>
-</div>
+    </x-modal>
 
 <style>
     .data-table {

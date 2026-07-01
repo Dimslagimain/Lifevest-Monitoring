@@ -18,7 +18,7 @@
 
 /* ========== SIDEBAR ========== */
 .sidebar {
-    width: 260px;
+    width: var(--sidebar-width, 260px);
     background: var(--bg-card);
     border-right: 2px solid var(--border);
     display: flex;
@@ -222,7 +222,7 @@ html[data-theme="dark"] .theme-toggle-btn-nav .moon-icon {
 
 /* ========== APP CONTAINER ========== */
 .app-container {
-    margin-left: 260px;
+    margin-left: var(--sidebar-width, 260px);
     background: var(--bg-secondary);
     min-height: calc(100vh - var(--navbar-height, 60px));
     transition: margin-left 0.3s ease, width 0.3s ease;

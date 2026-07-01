@@ -12,18 +12,17 @@ html, body {
 :root {
     --primary: #0891b2;        /* GMF Teal (Cyan-600) */
     --primary-hover: #0e7490;  /* Cyan-700 */
-    --text-main: #1e293b;
+    --text-primary: #1e293b;
     --text-muted: #64748b;
-    --bg-form: #ffffff;
-    --border-color: #e2e8f0;
+    --bg-card: #ffffff;
+    --border: #e2e8f0;
 }
 
 [data-theme="dark"] {
-    --text-main: #ffffff;
+    --text-primary: #ffffff;
     --text-muted: #94a3b8;
-    --bg-form: #0f172a;
-    --border-color: rgba(148, 163, 184, 0.45);
-    --bg-card: rgba(30, 41, 59, 0.7);
+    --bg-card: #0f172a;
+    --border: rgba(148, 163, 184, 0.45);
 }
 
 .auth-split-container {
@@ -96,7 +95,7 @@ html, body {
 /* --- Right Side: Form --- */
 .auth-form-side {
     flex: 0.8;
-    background: var(--bg-form);
+    background: var(--bg-card);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -128,7 +127,7 @@ html, body {
 .auth-form-header h1 {
     font-size: 2.25rem;
     font-weight: 800;
-    color: var(--text-main);
+    color: var(--text-primary);
     margin: 0 0 0.75rem;
     letter-spacing: -0.01em;
 }
@@ -147,7 +146,7 @@ html, body {
     width: 44px;
     height: 44px;
     border-radius: 12px;
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--border);
     background: transparent;
     color: var(--text-muted);
     cursor: pointer;
@@ -158,8 +157,8 @@ html, body {
 }
 
 .theme-toggle:hover {
-    background: var(--border-color);
-    color: var(--text-main);
+    background: var(--border);
+    color: var(--text-primary);
 }
 
 .theme-toggle svg {
@@ -186,7 +185,7 @@ html, body {
 .auth-field label {
     font-size: 0.85rem;
     font-weight: 700;
-    color: var(--text-main);
+    color: var(--text-primary);
 }
 
 .input-with-icon {
@@ -208,11 +207,11 @@ html, body {
     width: 100%;
     padding: 0.85rem 1rem 0.85rem 3rem;
     background: transparent;
-    border: 1.5px solid var(--border-color);
+    border: 1.5px solid var(--border);
     border-radius: 10px;
     font-size: 0.95rem;
     font-family: inherit;
-    color: var(--text-main);
+    color: var(--text-primary);
     transition: all 150ms ease;
 }
 
@@ -229,7 +228,7 @@ html, body {
 .input-with-icon input:-webkit-autofill:active {
     -webkit-background-clip: text;
     -webkit-text-fill-color: var(--text-main) !important;
-    box-shadow: 0 0 0 1000px var(--bg-form) inset !important;
+    box-shadow: 0 0 0 1000px var(--bg-card) inset !important;
     transition: background-color 5000s ease-in-out 0s;
 }
 
@@ -360,7 +359,7 @@ html, body {
 .auth-form-footer {
     margin-top: 3rem;
     padding-top: 2rem;
-    border-top: 1px solid var(--border-color);
+    border-top: 1px solid var(--border);
     text-align: center;
 }
 
@@ -375,7 +374,7 @@ html, body {
 @media (max-width: 1024px) {
     .auth-split-container {
         flex-direction: column;
-        background: var(--bg-form); /* Match the form background */
+        background: var(--bg-card);
     }
     
     .auth-image-side {
@@ -411,8 +410,8 @@ html, body {
         padding: 2.5rem 1.5rem;
         margin-top: -30px; /* Overlap the image for a premium look */
         border-radius: 30px 30px 0 0; /* Rounded top corners */
-        background: var(--bg-form);
-        z-index: 20; /* Ensure it stays above the image */
+        background: var(--bg-card);
+        z-index: 20;
         box-shadow: 0 -10px 20px rgba(0,0,0,0.05); /* Slight shadow */
     }
     
@@ -424,6 +423,6 @@ html, body {
     .theme-toggle {
         top: 1.5rem;
         right: 1.5rem;
-        background: var(--bg-form);
+        background: var(--bg-card);
     }
 }

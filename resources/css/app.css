@@ -2,8 +2,9 @@
 @import './style.css';         /* Define all CSS variables for themes */
 @import './layout.css';        /* Layout structure (uses style.css variables) */
 @import './dashboard.css';     /* Dashboard components (uses style.css variables) */
+@import './senior-friendly.css'; /* Senior-friendly & accessibility overrides */
 
 /* Define navbar height for layout calculations */
 :root {
-    --navbar-height: 64px;
+    --navbar-height: 68px;
 }

@@ -32,6 +32,7 @@
 
     /* Neutrals - Clean operational aviation palette */
     --bg-dark: #0a0f1d;
+    --bg-dark-rgb: 10, 15, 29;
     /* True near-black cooler grey */
     --bg-gradient-end: #0f172a;
     /* Slate-900 */
@@ -49,6 +50,9 @@
     /* SANGAT CERAH */
     --text-muted: #cbd5e1;
     /* slate-300 - SANGAT JELAS */
+
+    /* Layout */
+    --sidebar-width: 260px;
 
     /* Spacing */
     --spacing-xs: 4px;
@@ -115,6 +119,7 @@
 /* --- LIGHT THEME --- */
 [data-theme="light"] {
     --bg-dark: #f8fafc;
+    --bg-dark-rgb: 248, 250, 252;
     --bg-gradient-end: #edf2f7;
     --bg-card: #ffffff;
     --bg-card-solid: #ffffff;

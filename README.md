@@ -169,7 +169,7 @@ Konfigurasi layout kursi pesawat didasarkan pada empat file pengaturan utama di 
 ### Langkah Instalasi
 1.  **Clone dan Masuk ke Direktori Proyek**:
     ```bash
-    git clone <repository-url>
+    git clone <github.com/ragepanz/lifevest-laravel>
     cd lifevest-laravel
     ```
 2.  **Instal Dependensi Backend & Frontend**:

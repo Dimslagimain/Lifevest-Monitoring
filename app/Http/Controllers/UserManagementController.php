@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreUserRequest;
-use App\Http\Requests\UpdateUserRequest;
 use App\Http\Requests\SuspendUserRequest;
+use App\Http\Requests\UpdateUserRequest;
 use App\Models\ActivityLog;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;

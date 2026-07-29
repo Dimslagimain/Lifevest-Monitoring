@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use App\Models\Aircraft;
 use App\Models\Airline;
-use App\Models\Seat;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;

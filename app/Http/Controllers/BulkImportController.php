@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Exports\BulkImportTemplateExport;
+use App\Http\Requests\ImportRequest;
 use App\Imports\AircraftImport;
 use App\Imports\SeatImport;
 use App\Imports\UserImport;
-use App\Http\Requests\ImportRequest;
 use App\Models\ActivityLog;
 use App\Models\Aircraft;
 use Carbon\Carbon;

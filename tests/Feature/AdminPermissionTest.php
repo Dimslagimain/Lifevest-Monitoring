@@ -53,7 +53,7 @@ class AdminPermissionTest extends TestCase
         $user = User::factory()->create(['role' => 'user']);
 
         $response = $this->actingAs($user)
-            ->post("/aircraft/PK-TNP/update-seats", [
+            ->post('/aircraft/PK-TNP/update-seats', [
                 'seat_ids' => ['1A'],
                 'expiry_date' => '2030-01-01',
             ]);

@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ActivityLog;
-use App\Models\Aircraft;
-use App\Models\Seat;
 use App\Http\Requests\DeleteSeatRequest;
 use App\Http\Requests\StoreBatchInputRequest;
 use App\Http\Requests\UpdateSeatsRequest;
+use App\Models\ActivityLog;
+use App\Models\Aircraft;
+use App\Models\Seat;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;

@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreAircraftRequest;
-use App\Http\Requests\UpdateAircraftRequest;
 use App\Http\Requests\StoreAirlineRequest;
+use App\Http\Requests\UpdateAircraftRequest;
 use App\Http\Requests\UpdateAirlineRequest;
 use App\Models\ActivityLog;
 use App\Models\Aircraft;

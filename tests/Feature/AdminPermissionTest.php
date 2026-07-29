@@ -75,11 +75,11 @@ class AdminPermissionTest extends TestCase
         $user = User::factory()->create(['role' => 'user']);
 
         $this->actingAs($user)
-            ->get(route('superadmin.bulk-import'))
+            ->get(route('admin.bulk-import'))
             ->assertStatus(403);
     }
 
-    public function test_admin_cannot_access_superadmin_routes()
+    public function test_admin_cannot_access_superadmin_only_routes()
     {
         $admin = User::factory()->create(['role' => 'admin']);
 
@@ -88,15 +88,24 @@ class AdminPermissionTest extends TestCase
             ->assertStatus(403);
 
         $this->actingAs($admin)
-            ->get(route('superadmin.bulk-import'))
-            ->assertStatus(403);
-
-        $this->actingAs($admin)
-            ->get(route('superadmin.pdf-scan'))
+            ->get(route('fleet.create'))
             ->assertStatus(403);
     }
 
-    public function test_superadmin_can_access_all_admin_routes()
+    public function test_admin_can_access_admin_routes()
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $this->actingAs($admin)
+            ->get(route('admin.bulk-import'))
+            ->assertStatus(200);
+
+        $this->actingAs($admin)
+            ->get(route('admin.pdf-scan'))
+            ->assertStatus(200);
+    }
+
+    public function test_superadmin_can_access_all_routes()
     {
         $superadmin = User::factory()->create(['role' => 'superadmin']);
 
@@ -109,11 +118,11 @@ class AdminPermissionTest extends TestCase
             ->assertStatus(200);
 
         $this->actingAs($superadmin)
-            ->get(route('superadmin.bulk-import'))
+            ->get(route('admin.bulk-import'))
             ->assertStatus(200);
 
         $this->actingAs($superadmin)
-            ->get(route('superadmin.pdf-scan'))
+            ->get(route('admin.pdf-scan'))
             ->assertStatus(200);
     }
 }

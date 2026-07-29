@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\ActivityLog;
 use App\Models\Aircraft;
 use App\Models\Airline;
 use App\Models\Seat;
@@ -15,6 +16,8 @@ class AircraftControllerTest extends TestCase
 
     private User $admin;
 
+    private User $superadmin;
+
     private User $regularUser;
 
     private Airline $airline;
@@ -26,6 +29,7 @@ class AircraftControllerTest extends TestCase
         parent::setUp();
 
         $this->admin = User::factory()->create(['role' => 'admin']);
+        $this->superadmin = User::factory()->create(['role' => 'superadmin']);
         $this->regularUser = User::factory()->create(['role' => 'user']);
 
         $this->airline = Airline::create([
@@ -60,6 +64,51 @@ class AircraftControllerTest extends TestCase
 
         $response = $this->get(route('aircraft.show', 'PK-UNKNOWN'));
         $response->assertStatus(404);
+    }
+
+    public function test_admin_sees_activity_logs_on_show_page()
+    {
+        ActivityLog::create([
+            'user_id' => $this->admin->id,
+            'registration' => 'PK-GIA',
+            'action' => 'update',
+            'details' => ['seat_count' => 1, 'seats' => ['1A']],
+        ]);
+
+        $this->actingAs($this->admin)
+            ->get(route('aircraft.show', $this->aircraft->registration))
+            ->assertStatus(200)
+            ->assertSee('Activity Log');
+    }
+
+    public function test_superadmin_sees_activity_logs_on_show_page()
+    {
+        ActivityLog::create([
+            'user_id' => $this->superadmin->id,
+            'registration' => 'PK-GIA',
+            'action' => 'update',
+            'details' => ['seat_count' => 1, 'seats' => ['1A']],
+        ]);
+
+        $this->actingAs($this->superadmin)
+            ->get(route('aircraft.show', $this->aircraft->registration))
+            ->assertStatus(200)
+            ->assertSee('Activity Log');
+    }
+
+    public function test_regular_user_does_not_see_activity_logs_on_show_page()
+    {
+        ActivityLog::create([
+            'user_id' => $this->admin->id,
+            'registration' => 'PK-GIA',
+            'action' => 'update',
+            'details' => ['seat_count' => 1, 'seats' => ['1A']],
+        ]);
+
+        $this->actingAs($this->regularUser)
+            ->get(route('aircraft.show', $this->aircraft->registration))
+            ->assertStatus(200)
+            ->assertDontSee('Activity Log');
     }
 
     public function test_seat_status_returns_json_statistics()
@@ -156,6 +205,25 @@ class AircraftControllerTest extends TestCase
         $this->assertDatabaseHas('seats', [
             'registration' => 'PK-GIA',
             'seat_id' => '21A',
+        ]);
+    }
+
+    public function test_superadmin_can_update_seats()
+    {
+        $this->actingAs($this->superadmin);
+
+        $response = $this->post(route('aircraft.updateSeats', $this->aircraft->registration), [
+            'seat_ids' => ['1A'],
+            'expiry_date' => '2030-06-01',
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJson(['success' => true]);
+
+        $this->assertDatabaseHas('seats', [
+            'registration' => 'PK-GIA',
+            'seat_id' => '1A',
+            'expiry_date' => '2030-06-01 00:00:00',
         ]);
     }
 

@@ -34,26 +34,26 @@ class PdfScanControllerTest extends TestCase
 
     public function test_guest_cannot_access_pdf_scan_routes()
     {
-        $this->get(route('superadmin.pdf-scan'))->assertRedirect('/login');
-        $this->post(route('superadmin.pdf-scan.process'))->assertRedirect('/login');
-        $this->get(route('superadmin.pdf-scan.clear'))->assertRedirect('/login');
-        $this->post(route('superadmin.pdf-scan.export'))->assertRedirect('/login');
+        $this->get(route('admin.pdf-scan'))->assertRedirect('/login');
+        $this->post(route('admin.pdf-scan.process'))->assertRedirect('/login');
+        $this->get(route('admin.pdf-scan.clear'))->assertRedirect('/login');
+        $this->post(route('admin.pdf-scan.export'))->assertRedirect('/login');
     }
 
-    public function test_non_superadmin_cannot_access_pdf_scan_routes()
+    public function test_admin_can_access_pdf_scan_routes()
     {
         $this->actingAs($this->admin);
-        $this->get(route('superadmin.pdf-scan'))->assertStatus(403);
+        $this->get(route('admin.pdf-scan'))->assertStatus(200);
 
         $this->actingAs($this->regularUser);
-        $this->get(route('superadmin.pdf-scan'))->assertStatus(403);
+        $this->get(route('admin.pdf-scan'))->assertStatus(403);
     }
 
     public function test_superadmin_can_access_pdf_scan_index_without_session()
     {
-        $response = $this->actingAs($this->superadmin)->get(route('superadmin.pdf-scan'));
+        $response = $this->actingAs($this->superadmin)->get(route('admin.pdf-scan'));
         $response->assertStatus(200);
-        $response->assertViewIs('superadmin.pdf-scan');
+        $response->assertViewIs('admin.pdf-scan');
     }
 
     public function test_superadmin_can_access_pdf_scan_index_with_session()
@@ -68,9 +68,9 @@ class PdfScanControllerTest extends TestCase
 
         session(['pdf_scan_result' => $dummyResult]);
 
-        $response = $this->actingAs($this->superadmin)->get(route('superadmin.pdf-scan'));
+        $response = $this->actingAs($this->superadmin)->get(route('admin.pdf-scan'));
         $response->assertStatus(200);
-        $response->assertViewIs('superadmin.pdf-scan-review');
+        $response->assertViewIs('admin.pdf-scan-review');
         $response->assertViewHas('registration', 'PK-GIA');
     }
 
@@ -78,16 +78,16 @@ class PdfScanControllerTest extends TestCase
     {
         session(['pdf_scan_result' => ['some' => 'data']]);
 
-        $response = $this->actingAs($this->superadmin)->get(route('superadmin.pdf-scan.clear'));
+        $response = $this->actingAs($this->superadmin)->get(route('admin.pdf-scan.clear'));
 
-        $response->assertRedirect(route('superadmin.pdf-scan'));
+        $response->assertRedirect(route('admin.pdf-scan'));
         $this->assertNull(session('pdf_scan_result'));
     }
 
     public function test_scan_requires_file()
     {
         $response = $this->actingAs($this->superadmin)
-            ->post(route('superadmin.pdf-scan.process'), []);
+            ->post(route('admin.pdf-scan.process'), []);
 
         $response->assertSessionHasErrors('file');
     }
@@ -109,12 +109,12 @@ class PdfScanControllerTest extends TestCase
         });
 
         $response = $this->actingAs($this->superadmin)
-            ->post(route('superadmin.pdf-scan.process'), [
+            ->post(route('admin.pdf-scan.process'), [
                 'file' => $file,
             ]);
 
         $response->assertStatus(200);
-        $response->assertViewIs('superadmin.pdf-scan-review');
+        $response->assertViewIs('admin.pdf-scan-review');
         $response->assertViewHas('registration', 'PK-GIA');
 
         // Assert stored in session
@@ -133,12 +133,12 @@ class PdfScanControllerTest extends TestCase
         });
 
         $response = $this->actingAs($this->superadmin)
-            ->from(route('superadmin.pdf-scan'))
-            ->post(route('superadmin.pdf-scan.process'), [
+            ->from(route('admin.pdf-scan'))
+            ->post(route('admin.pdf-scan.process'), [
                 'file' => $file,
             ]);
 
-        $response->assertRedirect(route('superadmin.pdf-scan'));
+        $response->assertRedirect(route('admin.pdf-scan'));
         $response->assertSessionHas('error');
         $this->assertStringContainsString('Koneksi timeout', session('error'));
     }
@@ -154,12 +154,12 @@ class PdfScanControllerTest extends TestCase
         });
 
         $response = $this->actingAs($this->superadmin)
-            ->from(route('superadmin.pdf-scan'))
-            ->post(route('superadmin.pdf-scan.process'), [
+            ->from(route('admin.pdf-scan'))
+            ->post(route('admin.pdf-scan.process'), [
                 'file' => $file,
             ]);
 
-        $response->assertRedirect(route('superadmin.pdf-scan'));
+        $response->assertRedirect(route('admin.pdf-scan'));
         $response->assertSessionHas('error');
         $this->assertStringContainsString('Rate limit tercapai', session('error'));
     }
@@ -180,7 +180,7 @@ class PdfScanControllerTest extends TestCase
         ];
 
         $response = $this->actingAs($this->superadmin)
-            ->post(route('superadmin.pdf-scan.export'), [
+            ->post(route('admin.pdf-scan.export'), [
                 'data' => $data,
                 'include_verification' => true,
                 'master_registration' => 'PK-GIA',

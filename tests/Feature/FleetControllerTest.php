@@ -13,6 +13,8 @@ class FleetControllerTest extends TestCase
 {
     use RefreshDatabase;
 
+    private User $superadmin;
+
     private User $admin;
 
     private User $regularUser;
@@ -23,6 +25,7 @@ class FleetControllerTest extends TestCase
     {
         parent::setUp();
 
+        $this->superadmin = User::factory()->create(['role' => 'superadmin']);
         $this->admin = User::factory()->create(['role' => 'admin']);
         $this->regularUser = User::factory()->create(['role' => 'user']);
         $this->airline = Airline::create([
@@ -53,9 +56,42 @@ class FleetControllerTest extends TestCase
         ])->assertStatus(403);
     }
 
-    public function test_admin_can_create_aircraft()
+    public function test_superadmin_can_view_fleet_edit_page()
+    {
+        $this->actingAs($this->superadmin);
+
+        $aircraft = Aircraft::create([
+            'registration' => 'PK-EDIT',
+            'airline_id' => $this->airline->id,
+            'type' => 'B737-800',
+            'layout' => 'b737-e46',
+            'status' => 'active',
+        ]);
+
+        $this->get(route('fleet.edit', $aircraft->id))
+            ->assertStatus(200)
+            ->assertSee('PK-EDIT');
+    }
+
+    public function test_admin_cannot_view_fleet_edit_page()
     {
         $this->actingAs($this->admin);
+
+        $aircraft = Aircraft::create([
+            'registration' => 'PK-EDIT',
+            'airline_id' => $this->airline->id,
+            'type' => 'B737-800',
+            'layout' => 'b737-e46',
+            'status' => 'active',
+        ]);
+
+        $this->get(route('fleet.edit', $aircraft->id))
+            ->assertStatus(403);
+    }
+
+    public function test_superadmin_can_create_aircraft()
+    {
+        $this->actingAs($this->superadmin);
 
         $response = $this->post(route('fleet.store'), [
             'registration' => 'PK-GIA',
@@ -72,9 +108,9 @@ class FleetControllerTest extends TestCase
         ]);
     }
 
-    public function test_admin_cannot_create_aircraft_with_duplicate_registration()
+    public function test_superadmin_cannot_create_aircraft_with_duplicate_registration()
     {
-        $this->actingAs($this->admin);
+        $this->actingAs($this->superadmin);
 
         Aircraft::create([
             'registration' => 'PK-GIA',
@@ -96,9 +132,9 @@ class FleetControllerTest extends TestCase
         $response->assertSessionHasErrors('registration');
     }
 
-    public function test_admin_can_update_aircraft_including_pn_numbers()
+    public function test_superadmin_can_update_aircraft_including_pn_numbers()
     {
-        $this->actingAs($this->admin);
+        $this->actingAs($this->superadmin);
 
         $aircraft = Aircraft::create([
             'registration' => 'PK-GIA',
@@ -135,9 +171,9 @@ class FleetControllerTest extends TestCase
         ]);
     }
 
-    public function test_admin_can_delete_aircraft_and_cascades_delete_seats()
+    public function test_superadmin_can_delete_aircraft_and_cascades_delete_seats()
     {
-        $this->actingAs($this->admin);
+        $this->actingAs($this->superadmin);
 
         $aircraft = Aircraft::create([
             'registration' => 'PK-GIA',
@@ -162,9 +198,9 @@ class FleetControllerTest extends TestCase
         $this->assertDatabaseMissing('seats', ['registration' => 'PK-GIA']);
     }
 
-    public function test_admin_can_create_and_delete_airlines()
+    public function test_superadmin_can_create_and_delete_airlines()
     {
-        $this->actingAs($this->admin);
+        $this->actingAs($this->superadmin);
 
         // Store Airline
         $response = $this->post(route('airlines.store'), [
@@ -183,9 +219,9 @@ class FleetControllerTest extends TestCase
         $this->assertDatabaseMissing('airlines', ['name' => 'Citilink']);
     }
 
-    public function test_admin_cannot_delete_airline_with_assigned_aircraft()
+    public function test_superadmin_cannot_delete_airline_with_assigned_aircraft()
     {
-        $this->actingAs($this->admin);
+        $this->actingAs($this->superadmin);
 
         Aircraft::create([
             'registration' => 'PK-GIA',

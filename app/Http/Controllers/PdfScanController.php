@@ -30,17 +30,17 @@ class PdfScanController extends Controller
         if (session()->has('pdf_scan_result')) {
             $data = session('pdf_scan_result');
 
-            return view('superadmin.pdf-scan-review', $data);
+            return view('admin.pdf-scan-review', $data);
         }
 
-        return view('superadmin.pdf-scan');
+        return view('admin.pdf-scan');
     }
 
     public function clearScan()
     {
         session()->forget('pdf_scan_result');
 
-        return redirect()->route('superadmin.pdf-scan');
+        return redirect()->route('admin.pdf-scan');
     }
 
     public function scan(ScanRequest $request)
@@ -212,7 +212,7 @@ class PdfScanController extends Controller
             // Simpan ke session agar tidak hilang saat navigasi
             session(['pdf_scan_result' => $result]);
 
-            return view('superadmin.pdf-scan-review', $result);
+            return view('admin.pdf-scan-review', $result);
         } catch (ConnectionException $e) {
             Storage::delete($path);
             Log::error('[PDF Scan] Connection timeout', ['error' => $e->getMessage()]);

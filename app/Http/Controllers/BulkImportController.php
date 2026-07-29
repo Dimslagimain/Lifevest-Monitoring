@@ -21,7 +21,7 @@ class BulkImportController extends Controller
      */
     public function index()
     {
-        return view('superadmin.bulk-import');
+        return view('admin.bulk-import');
     }
 
     /**
@@ -30,8 +30,14 @@ class BulkImportController extends Controller
     public function import(ImportRequest $request)
     {
 
+        $type = $request->import_type;
+
+        // User import hanya untuk superadmin
+        if ($type === 'user' && ! Auth::user()->isSuperAdmin()) {
+            abort(403);
+        }
+
         try {
-            $type = $request->import_type;
             $file = $request->file('file');
 
             if ($type === 'aircraft') {
@@ -127,6 +133,11 @@ class BulkImportController extends Controller
     {
         if (! in_array($type, ['aircraft', 'seat', 'user'])) {
             abort(404);
+        }
+
+        // Template user hanya untuk superadmin
+        if ($type === 'user' && ! Auth::user()->isSuperAdmin()) {
+            abort(403);
         }
 
         return Excel::download(new BulkImportTemplateExport($type), "template_{$type}_import.xlsx");

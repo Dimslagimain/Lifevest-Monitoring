@@ -29,7 +29,7 @@
 
         <div
             style="background: var(--bg-card); border-radius: 20px; border: 1px solid var(--border-subtle); box-shadow: var(--shadow-lg); padding: 1.25rem; position: relative; overflow: hidden;">
-            <form action="{{ route('superadmin.pdf-scan.process') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('admin.pdf-scan.process') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
                 <div style="margin-bottom: 0.75rem;">

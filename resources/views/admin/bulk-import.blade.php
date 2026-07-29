@@ -35,7 +35,7 @@
         <!-- Decorative blob background -->
         <div style="position: absolute; top: -100px; right: -100px; width: 300px; height: 300px; background: radial-gradient(circle, var(--primary-glow) 0%, transparent 70%); border-radius: 50%; pointer-events: none;"></div>
 
-        <form action="{{ route('superadmin.bulk-import.process') }}" method="POST" enctype="multipart/form-data" style="position: relative; z-index: 1;">
+        <form action="{{ route('admin.bulk-import.process') }}" method="POST" enctype="multipart/form-data" style="position: relative; z-index: 1;">
             @csrf
             
             <div style="margin-bottom: 0.75rem;">
@@ -50,7 +50,9 @@
                             <option value="" disabled selected>Tentukan entitas yang akan di-import</option>
                             <option value="aircraft">Aircraft (Armada Pesawat)</option>
                             <option value="seat">Life Vest (Data Expiry Date)</option>
+                            @if(auth()->user() && auth()->user()->isSuperAdmin())
                             <option value="user">User Account (Akun Pengguna)</option>
+                            @endif
                         </select>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; right: 1.25rem; top: 50%; transform: translateY(-50%); pointer-events: none; color: var(--text-muted);"><polyline points="6 9 12 15 18 9"></polyline></svg>
                     </div>
@@ -160,7 +162,7 @@
             if (this.value) {
                 templateContainer.style.opacity = '1';
                 templateContainer.style.pointerEvents = 'auto';
-                templateBtn.href = "{{ url('/superadmin/bulk-import/template') }}/" + this.value;
+                templateBtn.href = "{{ url('/admin/bulk-import/template') }}/" + this.value;
                 checkSubmitStatus();
             }
         });

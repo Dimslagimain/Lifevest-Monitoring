@@ -184,13 +184,13 @@
 
 <script>
     const modal = document.getElementById('userModal');
+    const modalTitleEl = modal.querySelector('.modal-header-premium h2');
     const form = document.getElementById('userForm');
     const methodField = document.getElementById('methodField');
-    const modalTitle = document.getElementById('modalTitle');
     const submitBtn = document.getElementById('submitBtn');
 
     function openAddModal() {
-        modalTitle.innerText = "Add New User";
+        modalTitleEl.innerText = "Add New User";
         submitBtn.innerText = "Create User Account";
         form.action = "{{ route('superadmin.users.store') }}";
         methodField.innerHTML = "";
@@ -206,7 +206,7 @@
     }
 
     function openEditModal(user) {
-        modalTitle.innerText = "Edit User: " + user.name;
+        modalTitleEl.innerText = "Edit User: " + user.name;
         submitBtn.innerText = "Save Changes";
         form.action = "/superadmin/users/" + user.id;
         methodField.innerHTML = '<input type="hidden" name="_method" value="PUT">';
@@ -232,7 +232,7 @@
 
     // Suspend Modal Logic
     function openSuspendModal(user) {
-        document.getElementById('suspendModalTitle').innerText = "Suspend Account: " + user.name;
+        document.getElementById('suspendModal').querySelector('.modal-header-premium h2').innerText = "Suspend Account: " + user.name;
         document.getElementById('suspendForm').action = "/superadmin/users/" + user.id + "/suspend";
         document.getElementById('suspensionReason').value = "";
         document.getElementById('suspendModal').style.display = 'flex';

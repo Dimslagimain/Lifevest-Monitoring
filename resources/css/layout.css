@@ -227,6 +227,28 @@ html[data-theme="dark"] .theme-toggle-btn-nav .moon-icon {
     min-height: calc(100vh - var(--navbar-height, 60px));
     transition: margin-left 0.3s ease, width 0.3s ease;
     width: calc(100% - 260px);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Background watermark using user-provided dashboard background image */
+.app-container::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url('../../public/images/background_dashboard-removebg-preview.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.06; /* Subtle watermark in light theme */
+    pointer-events: none;
+    z-index: 0;
+    transition: opacity 150ms ease, filter 150ms ease;
+}
+
+[data-theme="dark"] .app-container::before {
+    filter: invert(1); /* Invert batik lines to white on dark theme */
+    opacity: 0.035; /* Soft watermark in dark theme */
 }
 
 body.sidebar-collapsed .app-container {
@@ -239,6 +261,8 @@ body.sidebar-collapsed .app-container {
     width: 100% !important;
     margin: 0 !important;
     max-width: none !important;
+    position: relative;
+    z-index: 1;
 }
 
 /* ========== RESPONSIVE ========== */

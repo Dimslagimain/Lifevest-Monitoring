@@ -3,6 +3,8 @@
 @section('content')
     <x-page-header title="Fleet Manager" subtitle="Management of aircraft and airlines system-wide.">
         <x-slot:actions>
+            @auth
+            @if(Auth::user()->isSuperAdmin())
             @if($tab === 'aircraft')
                 <a href="{{ route('fleet.create') }}" class="btn btn-primary" style="padding: 0.7rem 1.4rem; font-weight: 700;">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right: 4px;"><path d="M12 5v14M5 12h14"/></svg>
@@ -14,6 +16,8 @@
                     New Airline
                 </a>
             @endif
+            @endif
+            @endauth
         </x-slot:actions>
     </x-page-header>
 
@@ -104,6 +108,8 @@
                             </td>
                             <td class="fleet-td text-right">
                                 <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                                    @auth
+                                    @if(Auth::user()->isSuperAdmin())
                                     <a href="{{ route('fleet.edit', $aircraft->id) }}" class="btn-icon" title="Edit Aircraft">
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                                     </a>
@@ -121,6 +127,8 @@
                                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                                         </button>
                                     </form>
+                                    @endif
+                                    @endauth
                                 </div>
                             </td>
                         </tr>
@@ -166,6 +174,8 @@
                             </td>
                             <td class="fleet-td text-right">
                                 <div style="display: flex; gap: 0.75rem; justify-content: flex-end; align-items: center;">
+                                    @auth
+                                    @if(Auth::user()->isSuperAdmin())
                                     <a href="{{ route('airlines.edit', $airline->id) }}" class="btn btn-icon" title="Edit Airline">
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                                     </a>
@@ -183,6 +193,8 @@
                                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                                         </button>
                                     </form>
+                                    @endif
+                                    @endauth
                                 </div>
                             </td>
                         </tr>

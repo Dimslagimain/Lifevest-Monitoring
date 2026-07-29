@@ -72,7 +72,7 @@
         <div style="display: grid; grid-template-columns: 1fr 420px; gap: 1.5rem;">
             <!-- LOPA Layout Container -->
             <div style="display: flex; flex-direction: column; gap: 1.5rem;">
-                <form id="export-form" action="{{ route('superadmin.pdf-scan.export') }}" method="POST">
+                <form id="export-form" action="{{ route('admin.pdf-scan.export') }}" method="POST">
                     @csrf
                     <input type="hidden" name="master_registration" id="export-master-registration"
                         value="{{ $registration }}">
@@ -809,7 +809,7 @@
                         buttonsStyling: false,
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            window.location.href = "{{ route('superadmin.pdf-scan.clear') }}";
+                            window.location.href = "{{ route('admin.pdf-scan.clear') }}";
                         }
                     });
                 });

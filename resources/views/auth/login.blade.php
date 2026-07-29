@@ -55,7 +55,7 @@
 
             <div class="auth-form-container">
                 <div class="auth-form-header">
-                    <span class="welcome-accent">Welcome</span>
+                    <span class="welcome-accent">Welcome!</span>
                     <h1>Sign in</h1>
                     <p>Enter your credentials to access Life Vest Tracker</p>
                 </div>
@@ -110,7 +110,7 @@
                 </form>
 
                 <div class="auth-form-footer">
-                    <p>&copy; {{ date('Y') }} GMF AeroAsia &mdash; Fleet Management</p>
+                    <p>&copy; {{ date('Y') }} GMF AeroAsia &mdash; Life Vest Tracker</p>
                 </div>
             </div>
         </div>

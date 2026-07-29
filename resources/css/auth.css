@@ -21,8 +21,8 @@ html, body {
 [data-theme="dark"] {
     --text-primary: #ffffff;
     --text-muted: #94a3b8;
-    --bg-card: #0f172a;
-    --border: rgba(148, 163, 184, 0.45);
+    --bg-card: #0b1220;
+    --border: rgba(148, 163, 184, 0.25);
 }
 
 .auth-split-container {
@@ -102,9 +102,40 @@ html, body {
     padding: 4rem;
     position: relative;
     transition: background-color 150ms ease;
+    overflow: hidden;
+}
+
+/* Premium mesh gradient glow in dark mode */
+[data-theme="dark"] .auth-form-side {
+    background: 
+        radial-gradient(circle at 80% 20%, rgba(8, 145, 178, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 20% 80%, rgba(14, 116, 144, 0.1) 0%, transparent 50%),
+        #0b1220;
+}
+
+/* Background pattern overlay (using user-provided batik image) */
+.auth-form-side::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url('../../public/images/form_login_bg-removebg-preview.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.08; /* Subtle watermark in light theme */
+    pointer-events: none;
+    z-index: 1;
+    transition: opacity 150ms ease, filter 150ms ease;
+}
+
+[data-theme="dark"] .auth-form-side::before {
+    filter: invert(1); /* Invert dark batik lines to light on navy */
+    opacity: 0.05; /* Soft watermark in dark theme */
 }
 
 .auth-form-container {
+    position: relative;
+    z-index: 2;
     width: 100%;
     max-width: 400px;
 }
@@ -154,6 +185,7 @@ html, body {
     align-items: center;
     justify-content: center;
     transition: all 0.2s ease;
+    z-index: 2;
 }
 
 .theme-toggle:hover {

@@ -51,7 +51,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/fleet', [FleetController::class, 'index'])->name('fleet.index');
 
     // ============================================
-    // ADMIN-ONLY ROUTES
+    // ADMIN-ONLY ROUTES (also accessible by superadmin)
     // ============================================
     Route::middleware('admin')->group(function () {
 
@@ -62,6 +62,29 @@ Route::middleware('auth')->group(function () {
         // Batch Input
         Route::get('/aircraft/{registration}/batch-input', [AircraftController::class, 'batchInput'])->name('aircraft.batchInput');
         Route::post('/aircraft/{registration}/batch-input', [AircraftController::class, 'storeBatchInput'])->name('aircraft.storeBatchInput');
+
+        // Bulk Import (aircraft & seat only; user import is superadmin-only in controller)
+        Route::get('/admin/bulk-import', [BulkImportController::class, 'index'])->name('admin.bulk-import');
+        Route::post('/admin/bulk-import', [BulkImportController::class, 'import'])->name('admin.bulk-import.process');
+        Route::get('/admin/bulk-import/template/{type}', [BulkImportController::class, 'downloadTemplate'])->name('admin.bulk-import.template');
+
+        // PDF Scan
+        Route::get('/admin/pdf-scan', [PdfScanController::class, 'index'])->name('admin.pdf-scan');
+        Route::post('/admin/pdf-scan', [PdfScanController::class, 'scan'])->name('admin.pdf-scan.process');
+        Route::get('/admin/pdf-scan/clear', [PdfScanController::class, 'clearScan'])->name('admin.pdf-scan.clear');
+        Route::post('/admin/pdf-scan/export', [PdfScanController::class, 'exportExcel'])->name('admin.pdf-scan.export');
+    });
+
+    // ============================================
+    // SUPERADMIN-ONLY ROUTES
+    // ============================================
+    Route::middleware('superadmin')->group(function () {
+        Route::get('/superadmin/users', [UserManagementController::class, 'index'])->name('superadmin.users');
+        Route::post('/superadmin/users', [UserManagementController::class, 'store'])->name('superadmin.users.store');
+        Route::put('/superadmin/users/{user}', [UserManagementController::class, 'update'])->name('superadmin.users.update');
+        Route::delete('/superadmin/users/{user}', [UserManagementController::class, 'destroy'])->name('superadmin.users.destroy');
+        Route::post('/superadmin/users/{user}/suspend', [UserManagementController::class, 'suspend'])->name('superadmin.users.suspend');
+        Route::post('/superadmin/users/{user}/unsuspend', [UserManagementController::class, 'unsuspend'])->name('superadmin.users.unsuspend');
 
         // Fleet Management (CRUD - except index & show)
         Route::get('/fleet/create', [FleetController::class, 'create'])->name('fleet.create');
@@ -77,28 +100,5 @@ Route::middleware('auth')->group(function () {
         Route::get('/fleet/airlines/{id}/edit', [FleetController::class, 'editAirline'])->name('airlines.edit');
         Route::put('/fleet/airlines/{id}', [FleetController::class, 'updateAirline'])->name('airlines.update');
         Route::delete('/fleet/airlines/{id}', [FleetController::class, 'destroyAirline'])->name('airlines.destroy');
-    });
-
-    // ============================================
-    // SUPERADMIN-ONLY ROUTES
-    // ============================================
-    Route::middleware('superadmin')->group(function () {
-        Route::get('/superadmin/users', [UserManagementController::class, 'index'])->name('superadmin.users');
-        Route::post('/superadmin/users', [UserManagementController::class, 'store'])->name('superadmin.users.store');
-        Route::put('/superadmin/users/{user}', [UserManagementController::class, 'update'])->name('superadmin.users.update');
-        Route::delete('/superadmin/users/{user}', [UserManagementController::class, 'destroy'])->name('superadmin.users.destroy');
-        Route::post('/superadmin/users/{user}/suspend', [UserManagementController::class, 'suspend'])->name('superadmin.users.suspend');
-        Route::post('/superadmin/users/{user}/unsuspend', [UserManagementController::class, 'unsuspend'])->name('superadmin.users.unsuspend');
-
-        // Bulk Import
-        Route::get('/superadmin/bulk-import', [BulkImportController::class, 'index'])->name('superadmin.bulk-import');
-        Route::post('/superadmin/bulk-import', [BulkImportController::class, 'import'])->name('superadmin.bulk-import.process');
-        Route::get('/superadmin/bulk-import/template/{type}', [BulkImportController::class, 'downloadTemplate'])->name('superadmin.bulk-import.template');
-
-        // PDF Scan
-        Route::get('/superadmin/pdf-scan', [PdfScanController::class, 'index'])->name('superadmin.pdf-scan');
-        Route::post('/superadmin/pdf-scan', [PdfScanController::class, 'scan'])->name('superadmin.pdf-scan.process');
-        Route::get('/superadmin/pdf-scan/clear', [PdfScanController::class, 'clearScan'])->name('superadmin.pdf-scan.clear');
-        Route::post('/superadmin/pdf-scan/export', [PdfScanController::class, 'exportExcel'])->name('superadmin.pdf-scan.export');
     });
 });

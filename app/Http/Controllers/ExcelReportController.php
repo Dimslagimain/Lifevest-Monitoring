@@ -83,7 +83,7 @@ class ExcelReportController extends Controller
                     continue;
                 }
 
-                $daysRemaining = $today->diffInDays($expiryDate, false);
+                $daysRemaining = $this->getDaysRemaining($today, $expiryDate);
                 if ($daysRemaining < 0) {
                     $status = 'EXPIRED';
                 } elseif ($daysRemaining < 90) {
@@ -221,7 +221,7 @@ class ExcelReportController extends Controller
                     continue;
                 }
 
-                $daysRemaining = $today->diffInDays($expiryDate, false);
+                $daysRemaining = $this->getDaysRemaining($today, $expiryDate);
                 if ($daysRemaining < 0) {
                     $status = 'EXPIRED';
                 } elseif ($daysRemaining < 90) {
@@ -956,7 +956,7 @@ class ExcelReportController extends Controller
                 if ($seat && $seat->expiry_date) {
                     $expiry = Carbon::parse($seat->expiry_date);
                     $expiryStr = $expiry->format('d-M-Y');
-                    $days = (int) $today->diffInDays($expiry, false);
+                    $days = $this->getDaysRemaining($today, $expiry);
                     $daysStr = $days;
 
                     if ($days < 0) {
@@ -1069,5 +1069,17 @@ class ExcelReportController extends Controller
         $writer->save($tempPath);
 
         return response()->download($tempPath, $filename)->deleteFileAfterSend(true);
+    }
+
+    /**
+     * Calculate days remaining safely without Carbon 3 float overflow division by zero
+     */
+    private function getDaysRemaining(Carbon $fromDate, Carbon $toDate): int
+    {
+        $start = $fromDate->copy()->startOfDay();
+        $end = $toDate->copy()->startOfDay();
+        $diff = $start->diff($end);
+
+        return (int) ($diff->invert ? -$diff->days : $diff->days);
     }
 }

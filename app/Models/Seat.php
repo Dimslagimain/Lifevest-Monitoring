@@ -28,7 +28,7 @@ class Seat extends Model
             return 'no-data';
         }
 
-        $daysRemaining = now()->startOfDay()->diffInDays($this->expiry_date, false);
+        $daysRemaining = $this->days_remaining;
 
         if ($daysRemaining < 0) {
             return 'expired';
@@ -50,6 +50,10 @@ class Seat extends Model
             return null;
         }
 
-        return now()->startOfDay()->diffInDays($this->expiry_date, false);
+        $today = now()->startOfDay();
+        $expiry = \Illuminate\Support\Carbon::parse($this->expiry_date)->startOfDay();
+        $diff = $today->diff($expiry);
+
+        return (int) ($diff->invert ? -$diff->days : $diff->days);
     }
 }

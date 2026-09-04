@@ -56,21 +56,14 @@ RUN composer install \
 # Copy seluruh aplikasi
 COPY . .
 
-
-# Copy Vite build hasil dari Node stage
 COPY --from=assets /app/public/build ./public/build
 
-
-# Permission Laravel
 RUN chmod -R 775 storage bootstrap/cache
 
-
-# Storage symlink
 RUN php artisan storage:link || true
 
+RUN touch storage/logs/laravel.log
 
 EXPOSE 8080
 
-
-# Railway Start Command
-CMD ["sh", "-c", "php -S 0.0.0.0:${PORT:-8080} -t public"]
+CMD ["sh", "-c", "tail -f storage/logs/laravel.log & php -S 0.0.0.0:${PORT:-8080} -t public"]
